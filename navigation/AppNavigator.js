@@ -4,7 +4,7 @@ import MainNavigator from "./MainNavigator";
 import StartScreen from "../screens/StartScreen";
 
 const AppNavigator = () => {
-  const isAuth = true;
+  const isAuth = false;
 
   return (
     <NavigationContainer>
