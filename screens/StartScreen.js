@@ -1,8 +1,26 @@
-import React from "react";
-import { Text, StyleSheet, View, TouchableOpacity } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+  Text,
+  StyleSheet,
+  View,
+  TouchableOpacity,
+  Dimensions,
+} from "react-native";
 import StartForm from "../components/StartForm";
+import SignInForm from "../components/SignInForm";
+import SignUpForm from "../components/SignUpForm";
+import { FORM_TYPES } from "../constants/formTypes";
+
+const screenWidth = Dimensions.get("window").width;
 
 const StartScreen = (props) => {
+  const [formType, setFormType] = useState(FORM_TYPES.START);
+
+  let CurrentComponent;
+  if (formType === "start") CurrentComponent = StartForm;
+  else if (formType === "signin") CurrentComponent = SignInForm;
+  else if (formType === "signup") CurrentComponent = SignUpForm;
+
   return (
     <View style={styles.pageContainer}>
       <View style={styles.logoContainer}>
@@ -11,7 +29,9 @@ const StartScreen = (props) => {
           {"무질서함에서 질서를, \n복잡함 속에서 아름다움을"}
         </Text>
       </View>
-      <StartForm />
+      <View style={styles.formContainer}>
+        <CurrentComponent setFormType={setFormType} />
+      </View>
     </View>
   );
 };
@@ -19,11 +39,11 @@ const StartScreen = (props) => {
 const styles = StyleSheet.create({
   pageContainer: {
     flex: 1,
-    justifyContent: "center",
+    justifyContent: "space-between",
     alignItems: "center",
-    gap: 256,
   },
   logoContainer: {
+    marginTop: "30%",
     flexDirection: "column",
     gap: 40,
   },
@@ -39,6 +59,13 @@ const styles = StyleSheet.create({
     fontFamily: "logo",
     fontSize: 80,
     color: "#743D7B",
+  },
+  formContainer: {
+    marginBottom: "10%",
+    paddingHorizontal: 40,
+    width: screenWidth,
+    alignItems: "center",
+    justifyContent: "center",
   },
 });
 

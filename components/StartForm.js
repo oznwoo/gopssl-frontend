@@ -2,16 +2,25 @@ import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import colors from "../styles/color";
 import { commonStyles } from "../styles/commonStyles";
+import { FORM_TYPES } from "../constants/formTypes";
 
-const StartForm = () => {
+const StartForm = ({ setFormType }) => {
+  const handleSignUp = () => {
+    setFormType(FORM_TYPES.SIGN_UP);
+  };
+  const handleSignIn = () => {
+    setFormType(FORM_TYPES.SIGN_IN);
+  };
+
   return (
-    <View style={styles.buttonContainer}>
+    <View style={styles.formContainer}>
       <TouchableOpacity
         style={{
           ...styles.button,
           ...styles.purpleButton,
           ...commonStyles.dropShadow,
         }}
+        onPress={handleSignUp}
       >
         <Text style={styles.purpleButtonText}>회원가입</Text>
       </TouchableOpacity>
@@ -21,6 +30,7 @@ const StartForm = () => {
           ...styles.whiteButton,
           ...commonStyles.dropShadow,
         }}
+        onPress={handleSignIn}
       >
         <Text style={styles.whiteButtonText}>로그인</Text>
       </TouchableOpacity>
@@ -31,10 +41,9 @@ const StartForm = () => {
 export default StartForm;
 
 const styles = StyleSheet.create({
-  buttonContainer: {
+  formContainer: {
     flexDirection: "row",
     gap: 16,
-    paddingHorizontal: 24,
   },
   button: {
     paddingVertical: 12,
