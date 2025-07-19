@@ -10,12 +10,17 @@ const SignUpForm = ({ setFormType }) => {
     setFormType(FORM_TYPES.SIGN_IN);
   };
 
+  const handleSignUp = () => {
+    setFormType(FORM_TYPES.INFO);
+  };
+
   return (
     <View style={styles.formContainer}>
-      <Input title={"이름"} />
-      <Input title={"이메일"} autoCapitalize="none" />
-      <Input title={"비밀번호"} />
+      <Input id="name" label={"이름"} />
+      <Input id="email" label={"이메일"} autoCapitalize="none" />
+      <Input id="password" label={"비밀번호"} />
       <TouchableOpacity
+        onPress={handleSignUp}
         style={{
           ...styles.button,
           ...styles.purpleButton,

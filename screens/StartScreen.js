@@ -9,6 +9,7 @@ import {
 import StartForm from "../components/StartForm";
 import SignInForm from "../components/SignInForm";
 import SignUpForm from "../components/SignUpForm";
+import InfoForm from "../components/InfoForm";
 import { FORM_TYPES } from "../constants/formTypes";
 
 const screenWidth = Dimensions.get("window").width;
@@ -20,6 +21,7 @@ const StartScreen = (props) => {
   if (formType === "start") CurrentComponent = StartForm;
   else if (formType === "signin") CurrentComponent = SignInForm;
   else if (formType === "signup") CurrentComponent = SignUpForm;
+  else if (formType === "info") CurrentComponent = InfoForm;
 
   return (
     <View style={styles.pageContainer}>

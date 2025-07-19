@@ -16,11 +16,15 @@ const SignInForm = ({ setFormType }) => {
     setFormType(FORM_TYPES.SIGN_UP);
   };
 
+  const handleSignIn = () => {
+    setFormType(FORM_TYPES.INFO);
+  };
+
   return (
     <View style={styles.formContainer}>
       <View style={styles.contentContainer}>
-        <Input title={"이메일"} />
-        <Input title={"비밀번호"} />
+        <Input id="email" label={"이메일"} />
+        <Input id="password" label={"비밀번호"} />
         <TouchableOpacity
           onPress={handleTransition}
           style={styles.transitionButton}
@@ -31,6 +35,7 @@ const SignInForm = ({ setFormType }) => {
 
       <View style={styles.contentContainer}>
         <TouchableOpacity
+          onPress={handleSignIn}
           style={{
             ...styles.button,
             ...styles.purpleButton,

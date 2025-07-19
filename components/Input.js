@@ -8,20 +8,27 @@ import {
 } from "react-native";
 import colors from "../styles/color";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 const Input = (props) => {
-  const [secure, setSecure] = useState(true);
+  const [secure, setSecure] = useState(props.secureTextEntry);
+
   return (
     <View style={styles.inputContainer}>
-      <Text style={styles.inputTitle}>{props.title}</Text>
+      <Text style={styles.inputTitle}>{props.label}</Text>
       <TextInput {...props} style={styles.input} secureTextEntry={secure} />
-      {props.title === "비밀번호" && (
+      {props.id === "password" && (
         <TouchableOpacity onPress={() => setSecure((prev) => !prev)}>
           <MaterialCommunityIcons
             name={secure ? "eye" : "eye-off"}
             size={24}
             color={colors.purple}
           />
+        </TouchableOpacity>
+      )}
+      {props.id === "address" && (
+        <TouchableOpacity onPress={() => {}}>
+          <Ionicons name="search" size={24} color={colors.purple} />
         </TouchableOpacity>
       )}
     </View>
