@@ -1,10 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Text,
   StyleSheet,
   View,
-  TouchableOpacity,
   Dimensions,
+  KeyboardAvoidingView,
+  Platform,
+  TouchableWithoutFeedback,
+  Keyboard,
+  ScrollView,
 } from "react-native";
 import StartForm from "../components/StartForm";
 import SignInForm from "../components/SignInForm";
@@ -13,6 +17,7 @@ import InfoForm from "../components/InfoForm";
 import { FORM_TYPES } from "../constants/formTypes";
 
 const screenWidth = Dimensions.get("window").width;
+const screenHeight = Dimensions.get("window").height;
 
 const StartScreen = (props) => {
   const [formType, setFormType] = useState(FORM_TYPES.START);
@@ -24,30 +29,48 @@ const StartScreen = (props) => {
   else if (formType === "info") CurrentComponent = InfoForm;
 
   return (
-    <View style={styles.pageContainer}>
-      <View style={styles.logoContainer}>
-        <Text style={styles.logo}>Gopssl</Text>
-        <Text style={styles.phrase}>
-          {"무질서함에서 질서를, \n복잡함 속에서 아름다움을"}
-        </Text>
-      </View>
-      <View style={styles.formContainer}>
-        <CurrentComponent setFormType={setFormType} />
-      </View>
-    </View>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={{ flex: 1 }}
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View style={styles.pageContainer}>
+          <View style={styles.logoContainer}>
+            <Text style={styles.logo}>Gopssl</Text>
+            <Text style={styles.phrase}>
+              {"무질서함에서 질서를, \n복잡함 속에서 아름다움을"}
+            </Text>
+          </View>
+
+          <View style={styles.flexibleFormContainer}>
+            <CurrentComponent setFormType={setFormType} />
+          </View>
+        </View>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
   pageContainer: {
     flex: 1,
-    justifyContent: "space-between",
+    backgroundColor: "#fff",
     alignItems: "center",
+    justifyContent: "flex-start",
+    paddingTop: screenHeight * 0.1, // 15% 아래
+    paddingBottom: screenHeight * 0.05, // 15% 아래
+    paddingHorizontal: 40,
   },
   logoContainer: {
-    marginTop: "30%",
-    flexDirection: "column",
-    gap: 40,
+    alignItems: "center",
+
+    marginBottom: 40,
+  },
+  flexibleFormContainer: {
+    flex: 1,
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "flex-end", // 폼 중앙 정렬
   },
   phrase: {
     fontFamily: "gamtanBatangR",
@@ -63,11 +86,8 @@ const styles = StyleSheet.create({
     color: "#743D7B",
   },
   formContainer: {
-    marginBottom: "10%",
-    paddingHorizontal: 40,
-    width: screenWidth,
+    width: "100%",
     alignItems: "center",
-    justifyContent: "center",
   },
 });
 

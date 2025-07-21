@@ -9,13 +9,19 @@ import {
 import colors from "../styles/color";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { BlurView } from "expo-blur";
+import { commonStyles } from "../styles/commonStyles";
 
 const Input = (props) => {
   const [secure, setSecure] = useState(props.secureTextEntry);
 
   return (
     <View style={styles.container}>
-      <View style={styles.inputContainer}>
+      <BlurView
+        style={{ ...styles.inputContainer, ...commonStyles.blurView }}
+        tint="xlight" // or "xlight", "dark"
+        intensity={30}
+      >
         <Text style={styles.inputTitle}>{props.label}</Text>
         <TextInput {...props} style={styles.input} secureTextEntry={secure} />
         {props.id === "password" && (
@@ -32,7 +38,7 @@ const Input = (props) => {
             <Ionicons name="search" size={24} color={colors.purple} />
           </TouchableOpacity>
         )}
-      </View>
+      </BlurView>
       <View style={styles.errorContainer}>
         {props.errorText && (
           <Text style={styles.errorText}>{props.errorText}</Text>
@@ -54,6 +60,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
     gap: 12,
+    backgroundColor: "rgba(255,255,255,0.1)",
   },
   inputTitle: {
     fontSize: 16,
