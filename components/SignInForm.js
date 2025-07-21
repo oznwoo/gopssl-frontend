@@ -1,5 +1,6 @@
 import React from "react";
 import {
+  ActivityIndicator,
   StyleSheet,
   Text,
   TextInput,
@@ -7,9 +8,11 @@ import {
   View,
 } from "react-native";
 import colors from "../styles/color";
-import { commonStyles } from "../styles/commonStyles";
 import { FORM_TYPES } from "../constants/formTypes";
 import Input from "./Input";
+import { Formik } from "formik";
+import { SignInSchema } from "../schemas/signInSchema";
+import SubmitButton from "./SubmitButton";
 
 const SignInForm = ({ setFormType }) => {
   const handleTransition = () => {
@@ -21,34 +24,74 @@ const SignInForm = ({ setFormType }) => {
   };
 
   return (
-    <View style={styles.formContainer}>
-      <View style={styles.contentContainer}>
-        <Input id="email" label={"이메일"} />
-        <Input id="password" label={"비밀번호"} />
-        <TouchableOpacity onPress={() => {}} style={styles.transitionButton}>
-          <Text style={styles.transitionText}>비밀번호 찾기</Text>
-        </TouchableOpacity>
-      </View>
+    <Formik
+      initialValues={{ email: "", password: "" }}
+      validationSchema={SignInSchema}
+      onSubmit={handleSignIn}
+    >
+      {({
+        handleChange,
+        handleBlur,
+        handleSubmit,
+        values,
+        errors,
+        touched,
+        isSubmitting,
+        isValid,
+        dirty,
+      }) => (
+        <View style={styles.formContainer}>
+          <View style={styles.contentContainer}>
+            <Input
+              id="email"
+              label={"이메일"}
+              autoCapitalize="none"
+              value={values.email}
+              onChangeText={handleChange("email")}
+              onBlur={handleBlur("email")}
+              errorText={touched.email && errors.email}
+            />
+            <Input
+              id="password"
+              label={"비밀번호"}
+              secureTextEntry
+              value={values.password}
+              onChangeText={handleChange("password")}
+              onBlur={handleBlur("password")}
+              errorText={touched.password && errors.password}
+            />
+            <TouchableOpacity
+              onPress={() => {}}
+              style={styles.transitionButton}
+            >
+              <Text style={styles.transitionText}>비밀번호 찾기</Text>
+            </TouchableOpacity>
+          </View>
 
-      <View style={styles.contentContainer}>
-        <TouchableOpacity
-          onPress={handleSignIn}
-          style={{
-            ...styles.button,
-            ...styles.purpleButton,
-            ...commonStyles.dropShadow,
-          }}
-        >
-          <Text style={styles.purpleButtonText}>로그인</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={handleTransition}
-          style={styles.transitionButton}
-        >
-          <Text style={styles.transitionText}>회원가입</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+          <View style={styles.contentContainer}>
+            {isSubmitting ? (
+              <ActivityIndicator
+                size="small"
+                color={colors.purple}
+                style={{ marginTop: 10 }}
+              />
+            ) : (
+              <SubmitButton
+                title={"로그인"}
+                onPress={handleSubmit}
+                disable={!isValid || !dirty}
+              />
+            )}
+            <TouchableOpacity
+              onPress={handleTransition}
+              style={styles.transitionButton}
+            >
+              <Text style={styles.transitionText}>회원가입</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
+    </Formik>
   );
 };
 
@@ -60,7 +103,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   contentContainer: {
-    gap: 16,
+    gap: 12,
   },
   inputContainer: {
     flexDirection: "row",
