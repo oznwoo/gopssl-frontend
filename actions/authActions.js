@@ -53,14 +53,17 @@ export const signUp = ({ name, email, password }) => {
 export const signIn = ({ email, password }) => {
   return async (dispatch) => {
     try {
-      const response = await axios.post(`${BASE_URL}/auth/signin`, {
-        email,
-        password,
+      const params = new URLSearchParams();
+      params.append("username", email); // OAuth2PasswordRequestForm에서는 username으로 받음
+      params.append("password", password);
+
+      const response = await axios.post(`${BASE_URL}/auth/signin`, params, {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
       });
 
-      const { token } = response.data;
-
-      dispatch(loginSuccess({ token, user }));
+      const token = response.data.access_token;
 
       await AsyncStorage.setItem("token", token);
 
@@ -77,7 +80,24 @@ export const signIn = ({ email, password }) => {
 
       await AsyncStorage.setItem("user", JSON.stringify(user));
     } catch (e) {
-      console.error("Login failed", e);
+      let errorMessage =
+        "로그인에 실패했습니다. 아이디나 비밀번호를 확인해주세요.";
+      let statusCode = null;
+
+      if (e.response) {
+        const { status, data } = e.response;
+        statusCode = status;
+
+        if (status === 400 && typeof data.detail === "string") {
+          errorMessage = data.detail;
+        } else if (status === 422 && Array.isArray(data.detail)) {
+          errorMessage = data.detail[0]?.msg || errorMessage;
+        }
+      }
+
+      const customError = new Error(errorMessage);
+      customError.status = statusCode; // ✅ 상태코드 추가
+      throw customError;
     }
   };
 };

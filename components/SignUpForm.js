@@ -34,7 +34,7 @@ const SignUpForm = ({ setFormType }) => {
       if (error.status === 400) {
         setErrors({ email: error.message });
       } else {
-        setErrors({ password: "알 수 없는 오류가 발생했습니다." });
+        setErrors({ password: error.message });
       }
       setIsLoading(false);
     } finally {

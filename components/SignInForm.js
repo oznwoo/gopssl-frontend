@@ -13,14 +13,32 @@ import Input from "./Input";
 import { Formik } from "formik";
 import { SignInSchema } from "../schemas/signInSchema";
 import SubmitButton from "./SubmitButton";
+import { signIn } from "../actions/authActions";
+import { useDispatch } from "react-redux";
 
 const SignInForm = ({ setFormType }) => {
+  const dispatch = useDispatch();
+
   const handleTransition = () => {
     setFormType(FORM_TYPES.SIGN_UP);
   };
 
-  const handleSignIn = () => {
-    setFormType(FORM_TYPES.INFO);
+  const handleSignIn = async (values, { setSubmitting, setErrors }) => {
+    try {
+      await dispatch(signIn(values));
+      setFormType(FORM_TYPES.INFO);
+    } catch (error) {
+      console.log("에러 상태코드:", error.status); // 여기서 접근 가능!
+
+      // 400은 중복 이메일 에러로 처리
+      if (error.status === 400) {
+        setErrors({ email: error.message });
+      } else {
+        setErrors({ password: error.message });
+      }
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (

@@ -75,5 +75,6 @@ const styles = StyleSheet.create({
     color: colors.alert,
     fontFamily: "nanumSquareR",
     letterSpacing: -0.5,
+    textAlign: "right",
   },
 });
