@@ -4,6 +4,8 @@ import { SafeAreaView, StyleSheet, View } from "react-native";
 import * as Font from "expo-font";
 import AppNavigator from "./navigation/AppNavigator";
 import { enableScreens } from "react-native-screens";
+import { Provider } from "react-redux";
+import { store } from "./store/store";
 
 enableScreens();
 
@@ -38,10 +40,12 @@ export default function App() {
   }, []);
 
   return (
-    <SafeAreaView style={styles.container}>
-      <AppNavigator />
-      <StatusBar style="auto" />
-    </SafeAreaView>
+    <Provider store={store}>
+      <SafeAreaView style={styles.container}>
+        <AppNavigator />
+        <StatusBar style="auto" />
+      </SafeAreaView>
+    </Provider>
   );
 }
 

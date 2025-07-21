@@ -25,10 +25,7 @@ const SignInForm = ({ setFormType }) => {
       <View style={styles.contentContainer}>
         <Input id="email" label={"이메일"} />
         <Input id="password" label={"비밀번호"} />
-        <TouchableOpacity
-          onPress={handleTransition}
-          style={styles.transitionButton}
-        >
+        <TouchableOpacity onPress={() => {}} style={styles.transitionButton}>
           <Text style={styles.transitionText}>비밀번호 찾기</Text>
         </TouchableOpacity>
       </View>

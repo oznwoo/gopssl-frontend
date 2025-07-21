@@ -14,23 +14,30 @@ const Input = (props) => {
   const [secure, setSecure] = useState(props.secureTextEntry);
 
   return (
-    <View style={styles.inputContainer}>
-      <Text style={styles.inputTitle}>{props.label}</Text>
-      <TextInput {...props} style={styles.input} secureTextEntry={secure} />
-      {props.id === "password" && (
-        <TouchableOpacity onPress={() => setSecure((prev) => !prev)}>
-          <MaterialCommunityIcons
-            name={secure ? "eye" : "eye-off"}
-            size={24}
-            color={colors.purple}
-          />
-        </TouchableOpacity>
-      )}
-      {props.id === "address" && (
-        <TouchableOpacity onPress={() => {}}>
-          <Ionicons name="search" size={24} color={colors.purple} />
-        </TouchableOpacity>
-      )}
+    <View style={styles.container}>
+      <View style={styles.inputContainer}>
+        <Text style={styles.inputTitle}>{props.label}</Text>
+        <TextInput {...props} style={styles.input} secureTextEntry={secure} />
+        {props.id === "password" && (
+          <TouchableOpacity onPress={() => setSecure((prev) => !prev)}>
+            <MaterialCommunityIcons
+              name={secure ? "eye" : "eye-off"}
+              size={24}
+              color={colors.purple}
+            />
+          </TouchableOpacity>
+        )}
+        {props.id === "address" && (
+          <TouchableOpacity onPress={() => {}}>
+            <Ionicons name="search" size={24} color={colors.purple} />
+          </TouchableOpacity>
+        )}
+      </View>
+      <View style={styles.errorContainer}>
+        {props.errorText && (
+          <Text style={styles.errorText}>{props.errorText}</Text>
+        )}
+      </View>
     </View>
   );
 };
@@ -59,5 +66,14 @@ const styles = StyleSheet.create({
     flex: 1,
     fontFamily: "nanumSquareR",
     fontSize: 16,
+  },
+  errorContainer: {
+    alignItems: "flex-end",
+    marginTop: 4,
+  },
+  errorText: {
+    color: colors.alert,
+    fontFamily: "nanumSquareR",
+    letterSpacing: -0.5,
   },
 });
