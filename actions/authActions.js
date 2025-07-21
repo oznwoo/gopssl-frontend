@@ -11,7 +11,6 @@ export const signUp = ({ name, email, password }) => {
         email,
         password,
       });
-      console.log(name, email, password);
 
       const token = response.data.access_token; // 백엔드 키 이름에 맞춤
 
@@ -31,9 +30,11 @@ export const signUp = ({ name, email, password }) => {
       await AsyncStorage.setItem("user", JSON.stringify(user));
     } catch (e) {
       let errorMessage = "회원가입에 실패했습니다.";
+      let statusCode = null;
 
       if (e.response) {
         const { status, data } = e.response;
+        statusCode = status;
 
         if (status === 400 && typeof data.detail === "string") {
           errorMessage = data.detail;
@@ -42,8 +43,9 @@ export const signUp = ({ name, email, password }) => {
         }
       }
 
-      // 에러 메시지를 컴포넌트에 전달
-      throw new Error(errorMessage);
+      const customError = new Error(errorMessage);
+      customError.status = statusCode; // ✅ 상태코드 추가
+      throw customError;
     }
   };
 };
