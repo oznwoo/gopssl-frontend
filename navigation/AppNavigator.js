@@ -1,7 +1,7 @@
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import MainNavigator from "./MainNavigator";
-import StartScreen from "../screens/StartScreen";
+import AuthNavigator from "./AuthNavigator";
 
 const AppNavigator = () => {
   const isAuth = false;
@@ -9,7 +9,7 @@ const AppNavigator = () => {
   return (
     <NavigationContainer>
       {isAuth && <MainNavigator />}
-      {!isAuth && <StartScreen />}
+      {!isAuth && <AuthNavigator />}
     </NavigationContainer>
   );
 };

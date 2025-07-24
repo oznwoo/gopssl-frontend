@@ -34,7 +34,7 @@ const Input = (props) => {
           </TouchableOpacity>
         )}
         {props.id === "address" && (
-          <TouchableOpacity onPress={() => {}}>
+          <TouchableOpacity onPress={props.onPressIcon}>
             <Ionicons name="search" size={24} color={colors.purple} />
           </TouchableOpacity>
         )}

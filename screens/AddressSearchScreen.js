@@ -1,0 +1,139 @@
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  TextInput,
+  FlatList,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+} from "react-native";
+import debounce from "lodash.debounce";
+import { searchAddress } from "../actions/addressActions";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import colors from "../styles/color";
+import { commonStyles } from "../styles/commonStyles";
+
+const AddressSearchScreen = ({ navigation, route }) => {
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState([]);
+
+  useEffect(() => {
+    if (query.trim()) {
+      debouncedSearch(query);
+    } else {
+      setResults([]);
+    }
+  }, [query]);
+
+  const debouncedSearch = debounce(async (text) => {
+    try {
+      const res = await searchAddress(text);
+      setResults(res);
+    } catch (e) {
+      // 에러 핸들링
+    }
+  }, 300);
+
+  const handleSelect = (item) => {
+    const selected = item.road_address?.address_name || item.address_name;
+    route.params?.onSelect(selected); // 부모로 전달
+    navigation.goBack(); // 이전 화면으로
+  };
+
+  return (
+    <View style={styles.pageContainer}>
+      <View style={styles.inputContainer}>
+        <TouchableOpacity style={styles.backButton}>
+          <Ionicons name="arrow-back" size={24} color={colors.purple} />
+        </TouchableOpacity>
+        <TextInput
+          placeholder="주소를 입력하세요"
+          onChangeText={setQuery}
+          value={query}
+          style={styles.searchInput}
+        />
+        <TouchableOpacity onPress={() => {}}>
+          <Ionicons name="search" size={24} color={colors.purple} />
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.separatorLine} />
+      <View style={styles.resultContainer}>
+        <FlatList
+          data={results}
+          keyExtractor={(item, index) => item.address_name + index}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              style={styles.addressItem}
+              onPress={() => onSelect(item)}
+            >
+              <Text style={styles.addressName}>
+                {item.road_address || item.jibun_address}
+              </Text>
+              <Text style={styles.zipCode}>{item.zone_no}</Text>
+            </TouchableOpacity>
+          )}
+        />
+      </View>
+    </View>
+  );
+};
+
+export default AddressSearchScreen;
+
+const styles = StyleSheet.create({
+  pageContainer: { flex: 1, backgroundColor: "#fff" },
+  inputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+
+    marginHorizontal: 20,
+    marginBottom: 8,
+    padding: 8,
+
+    borderWidth: 4,
+    borderColor: colors.purple,
+    borderRadius: 12,
+  },
+  backButton: {},
+  searchInput: {
+    flex: 1,
+
+    fontFamily: "NanumSquareB",
+    fontSize: 16,
+    letterSpacing: -0.5,
+  },
+  separatorLine: {
+    width: "100%",
+    height: 2,
+    backgroundColor: "#fff",
+    ...commonStyles.dropShadow,
+    shadowOpacity: 0.5,
+    shadowRadius: 2,
+    shadowOffset: { width: 0, height: 2 },
+  },
+  resultContainer: {
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+  },
+  addressItem: {
+    borderBottomWidth: 1,
+    borderBottomColor: colors.purple,
+    paddingBottom: 10,
+    marginTop: 4,
+  },
+  addressName: {
+    fontFamily: "gamtanDotumB",
+    fontSize: 16,
+    letterSpacing: "-0.5",
+    lineHeight: 26,
+    color: colors.purple,
+  },
+  zipCode: {
+    fontFamily: "nanumSquareR",
+    fontSize: 8,
+    color: colors.purple,
+  },
+});

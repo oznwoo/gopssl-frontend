@@ -8,7 +8,6 @@ import {
   Platform,
   TouchableWithoutFeedback,
   Keyboard,
-  ScrollView,
 } from "react-native";
 import StartForm from "../components/StartForm";
 import SignInForm from "../components/SignInForm";
@@ -16,7 +15,6 @@ import SignUpForm from "../components/SignUpForm";
 import InfoForm from "../components/InfoForm";
 import { FORM_TYPES } from "../constants/formTypes";
 
-const screenWidth = Dimensions.get("window").width;
 const screenHeight = Dimensions.get("window").height;
 
 const StartScreen = (props) => {
@@ -57,13 +55,13 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "flex-start",
-    paddingTop: screenHeight * 0.1, // 15% 아래
-    paddingBottom: screenHeight * 0.05, // 15% 아래
+    paddingTop: screenHeight * 0.1, // 10% 아래
+    paddingBottom: screenHeight * 0.05, // 5% 위
     paddingHorizontal: 40,
   },
   logoContainer: {
     alignItems: "center",
-
+    gap: 16,
     marginBottom: 40,
   },
   flexibleFormContainer: {

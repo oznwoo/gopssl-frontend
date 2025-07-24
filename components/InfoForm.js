@@ -1,35 +1,98 @@
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  ActivityIndicator,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import colors from "../styles/color";
 import { commonStyles } from "../styles/commonStyles";
 import { FORM_TYPES } from "../constants/formTypes";
 import Input from "./Input";
+import SubmitButton from "./SubmitButton";
+import { Formik } from "formik";
+import { InfoSchema } from "../schemas/InfoSchema";
+import { useNavigation } from "@react-navigation/native";
 
 const InfoForm = ({ setFormType }) => {
+  const navigation = useNavigation();
+
   const handleTransition = () => {
     setFormType(FORM_TYPES.SIGN_UP);
   };
 
   return (
-    <View style={styles.formContainer}>
-      <View style={styles.contentContainer}>
-        <Input id="name" label={"매장명"} />
-        <Input id="address" label={"주소"} />
-        <Input id="address-detail" label={"상세주소"} />
-      </View>
+    <Formik
+      initialValues={{ storeName: "", address: "", addressDetail: "" }}
+      validationSchema={InfoSchema}
+      onSubmit={() => {}}
+    >
+      {({
+        handleChange,
+        handleBlur,
+        handleSubmit,
+        values,
+        errors,
+        touched,
+        isSubmitting,
+        isValid,
+        dirty,
+      }) => (
+        <View style={styles.formContainer}>
+          <View style={styles.contentContainer}>
+            <Input
+              id="store_name"
+              label={"매장명"}
+              autoCapitalize="none"
+              value={values.storeName}
+              onChangeText={handleChange("storeName")}
+              onBlur={handleBlur("storeName")}
+              errorText={touched.storeName && errors.storeName}
+            />
+            <Input
+              id="address"
+              label={"주소"}
+              autoCapitalize="none"
+              value={values.address}
+              onChangeText={handleChange("address")}
+              onBlur={handleBlur("address")}
+              errorText={touched.address && errors.address}
+              onPressIcon={() => {
+                navigation.navigate("AddressSearchScreen", {
+                  onSelect: (selected) => setFieldValue("address", selected),
+                });
+              }}
+            />
+            <Input
+              id="address_detail"
+              label={"상세주소"}
+              autoCapitalize="none"
+              value={values.addressDetail}
+              onChangeText={handleChange("addressDetail")}
+              onBlur={handleBlur("addressDetail")}
+              errorText={touched.addressDetail && errors.addressDetail}
+            />
+          </View>
 
-      <View style={styles.contentContainer}>
-        <TouchableOpacity
-          style={{
-            ...styles.button,
-            ...styles.purpleButton,
-            ...commonStyles.dropShadow,
-          }}
-        >
-          <Text style={styles.purpleButtonText}>완료</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+          <View style={styles.contentContainer}>
+            {isSubmitting ? (
+              <ActivityIndicator
+                size="small"
+                color={colors.purple}
+                style={{ marginTop: 10 }}
+              />
+            ) : (
+              <SubmitButton
+                title={"완료"}
+                onPress={handleSubmit}
+                disable={!isValid || !dirty}
+              />
+            )}
+          </View>
+        </View>
+      )}
+    </Formik>
   );
 };
 
