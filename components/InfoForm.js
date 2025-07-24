@@ -8,16 +8,27 @@ import SubmitButton from "./SubmitButton";
 import { Formik } from "formik";
 import { InfoSchema } from "../schemas/InfoSchema";
 import { useNavigation } from "@react-navigation/native";
+import { useDispatch, useSelector } from "react-redux";
+import { registerUserInfo } from "../actions/userActions";
 
 const InfoForm = ({ setFormType }) => {
+  const dispatch = useDispatch();
   const navigation = useNavigation();
+  const userData = useSelector((state) => state.auth.user);
 
   const handleSubmit = async (values, { setSubmitting, setErrors }) => {
     try {
-      await dispatch(signIn(values));
-      setFormType(FORM_TYPES.INFO);
+      await dispatch(
+        registerUserInfo({
+          ...userData,
+          store_name: values.storeName,
+          address: values.address,
+          zip_code: values.zipCode,
+          address_detail: values.addressDetail,
+        })
+      );
     } catch (error) {
-      console.log("에러 상태코드:", error.status); // 여기서 접근 가능!
+      console.log("에러 상태코드:", error.message); // 여기서 접근 가능!
 
       // 400은 중복 이메일 에러로 처리
       if (error.status === 400) {

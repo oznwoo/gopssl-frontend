@@ -1,31 +1,44 @@
 import axios from "axios";
-import { loginSuccess } from "../store/authSlice";
+import { loginSuccess, registerSuccess } from "../store/authSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { BASE_URL } from "../constants/baseURL";
 
-export const registerStore = ({ name, email, password }) => {
+export const registerUserInfo = ({
+  id,
+  name,
+  email,
+  password,
+  store_name,
+  address,
+  zip_code,
+  address_detail,
+}) => {
   return async (dispatch) => {
     try {
-      const response = await axios.put(`${BASE_URL}/${user_id}`, {
+      console.log(
+        id,
         name,
         email,
         password,
+        store_name,
+        address,
+        zip_code,
+        address_detail
+      );
+
+      const response = await axios.put(`${BASE_URL}/users/${id}`, {
+        name,
+        email,
+        password,
+        store_name,
+        address,
+        zip_code,
+        address_detail,
       });
 
-      const token = response.data.access_token; // 백엔드 키 이름에 맞춤
+      const user = response.data;
 
-      await AsyncStorage.setItem("token", token);
-
-      // 토큰 받은 뒤, 유저 정보 요청 추가
-      const userRes = await axios.get(`${BASE_URL}/users/me`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const user = userRes.data;
-
-      dispatch(loginSuccess({ token, user }));
+      dispatch(registerSuccess({ user }));
 
       await AsyncStorage.setItem("user", JSON.stringify(user));
     } catch (e) {
