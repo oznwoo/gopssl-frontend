@@ -13,7 +13,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import colors from "../styles/color";
 import { commonStyles } from "../styles/commonStyles";
 
-const AddressSearchScreen = ({ navigation, route }) => {
+const AddressSearchScreen = ({ navigation }) => {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
 
@@ -40,9 +40,10 @@ const AddressSearchScreen = ({ navigation, route }) => {
       addressName: item.road_address ? item.road_address : item.jibun_address,
       zipCode: item.zone_no,
     };
-
-    route.params?.onSelect(selected);
-    navigation.goBack();
+    navigation.navigate("StartScreen", {
+      selectedAddress: selected,
+      formType: "info",
+    });
   };
 
   return (

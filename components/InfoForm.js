@@ -1,17 +1,19 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
 import colors from "../styles/color";
 import Input from "./Input";
 import SubmitButton from "./SubmitButton";
 import { Formik } from "formik";
 import { InfoSchema } from "../schemas/InfoSchema";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
 import { registerUserInfo } from "../actions/userActions";
 
 const InfoForm = ({ setFormType }) => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
+  const route = useRoute();
+  const selectedAddress = route.params?.selectedAddress;
   const userData = useSelector((state) => state.auth.user);
 
   const handleSubmit = async (values, { setSubmitting, setErrors }) => {
@@ -61,73 +63,78 @@ const InfoForm = ({ setFormType }) => {
         isValid,
         dirty,
         setFieldValue,
-      }) => (
-        <View style={styles.formContainer}>
-          <View style={styles.contentContainer}>
-            <Input
-              id="store_name"
-              label={"매장명"}
-              autoCapitalize="none"
-              value={values.storeName}
-              onChangeText={handleChange("storeName")}
-              onBlur={handleBlur("storeName")}
-              errorText={touched.storeName && errors.storeName}
-            />
-            <Input
-              id="address"
-              label={"주소"}
-              autoCapitalize="none"
-              value={values.address}
-              onChangeText={handleChange("address")}
-              onBlur={handleBlur("address")}
-              errorText={touched.address && errors.address}
-              onPressIcon={() => {
-                navigation.navigate("AddressSearchScreen", {
-                  onSelect: (selected) => {
-                    setFieldValue("address", selected.addressName);
-                    setFieldValue("zipCode", selected.zipCode);
-                  },
-                });
-              }}
-              readOnly
-            />
-
-            <Input
-              id="zip_code"
-              label={"우편번호"}
-              autoCapitalize="none"
-              value={values.zipCode}
-              readOnly
-            />
-
-            <Input
-              id="address_detail"
-              label={"상세주소"}
-              autoCapitalize="none"
-              value={values.addressDetail}
-              onChangeText={handleChange("addressDetail")}
-              onBlur={handleBlur("addressDetail")}
-              errorText={touched.addressDetail && errors.addressDetail}
-            />
-          </View>
-
-          <View style={styles.contentContainer}>
-            {isSubmitting ? (
-              <ActivityIndicator
-                size="small"
-                color={colors.purple}
-                style={{ marginTop: 10 }}
+      }) => {
+        useEffect(() => {
+          if (selectedAddress) {
+            setFieldValue("address", selectedAddress.addressName);
+            setFieldValue("zipCode", selectedAddress.zipCode);
+            // 선택 후 재선택 시 효과 적용 안 되는 문제 방지를 위해 params 초기화도 고려
+            navigation.setParams({ selectedAddress: undefined });
+          }
+        }, [selectedAddress]);
+        return (
+          <View style={styles.formContainer}>
+            <View style={styles.contentContainer}>
+              <Input
+                id="store_name"
+                label={"매장명"}
+                autoCapitalize="none"
+                value={values.storeName}
+                onChangeText={handleChange("storeName")}
+                onBlur={handleBlur("storeName")}
+                errorText={touched.storeName && errors.storeName}
               />
-            ) : (
-              <SubmitButton
-                title={"완료"}
-                onPress={handleSubmit}
-                disable={!isValid || !dirty}
+              <Input
+                id="address"
+                label={"주소"}
+                autoCapitalize="none"
+                value={values.address}
+                onChangeText={handleChange("address")}
+                onBlur={handleBlur("address")}
+                errorText={touched.address && errors.address}
+                onPressIcon={() => {
+                  navigation.navigate("AddressSearchScreen");
+                }}
+                readOnly
               />
-            )}
+
+              <Input
+                id="zip_code"
+                label={"우편번호"}
+                autoCapitalize="none"
+                value={values.zipCode}
+                readOnly
+              />
+
+              <Input
+                id="address_detail"
+                label={"상세주소"}
+                autoCapitalize="none"
+                value={values.addressDetail}
+                onChangeText={handleChange("addressDetail")}
+                onBlur={handleBlur("addressDetail")}
+                errorText={touched.addressDetail && errors.addressDetail}
+              />
+            </View>
+
+            <View style={styles.contentContainer}>
+              {isSubmitting ? (
+                <ActivityIndicator
+                  size="small"
+                  color={colors.purple}
+                  style={{ marginTop: 10 }}
+                />
+              ) : (
+                <SubmitButton
+                  title={"완료"}
+                  onPress={handleSubmit}
+                  disable={!isValid || !dirty}
+                />
+              )}
+            </View>
           </View>
-        </View>
-      )}
+        );
+      }}
     </Formik>
   );
 };

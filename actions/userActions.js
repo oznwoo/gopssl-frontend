@@ -31,7 +31,7 @@ export const registerUserInfo = ({
 
       await AsyncStorage.setItem("user", JSON.stringify(user));
     } catch (e) {
-      let errorMessage = "회원가입에 실패했습니다.";
+      let errorMessage = "회원 정보 입력에 실패했습니다.";
       let statusCode = null;
 
       if (e.response) {

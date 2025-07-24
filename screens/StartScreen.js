@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Text,
   StyleSheet,
@@ -14,11 +14,19 @@ import SignInForm from "../components/SignInForm";
 import SignUpForm from "../components/SignUpForm";
 import InfoForm from "../components/InfoForm";
 import { FORM_TYPES } from "../constants/formTypes";
+import { useRoute, useFocusEffect } from "@react-navigation/native";
 
 const screenHeight = Dimensions.get("window").height;
 
 const StartScreen = (props) => {
+  const route = useRoute();
   const [formType, setFormType] = useState(FORM_TYPES.START);
+
+  useEffect(() => {
+    if (route.params?.formType) {
+      setFormType(route.params.formType);
+    }
+  }, [route.params?.formType]);
 
   let CurrentComponent;
   if (formType === "start") CurrentComponent = StartForm;
