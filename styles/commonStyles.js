@@ -18,9 +18,9 @@ export const commonStyles = StyleSheet.create({
   dropShadow: {
     // iOS 전용 shadow
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.5,
+    shadowRadius: 2,
 
     // Android 전용 shadow
     elevation: 5,

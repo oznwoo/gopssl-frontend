@@ -7,6 +7,11 @@ import SalesComparisionScreen from "../screens/SalesComparisionScreen";
 import SettingScreen from "../screens/SettingScreen";
 
 import { Ionicons } from "@expo/vector-icons";
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+import colors from "../styles/color";
+import { StyleSheet } from "react-native";
+import { commonStyles } from "../styles/commonStyles";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -15,17 +20,41 @@ const TabNavigator = () => (
   <Tab.Navigator
     screenOptions={({ route }) => ({
       tabBarIcon: ({ color, size }) => {
-        let iconName;
+        const iconData = {
+          iconFamily: null,
+          iconName: null,
+        };
 
-        if (route.name === "DailySales") iconName = "home-outline";
-        else if (route.name === "Search") iconName = "search-outline";
-        else if (route.name === "Comparision") iconName = "bar-chart-outline";
-        else if (route.name === "Setting") iconName = "settings-outline";
+        if (route.name === "DailySales") {
+          iconData.iconFamily = FontAwesome6;
+          iconData.iconName = "calendar";
+        } else if (route.name === "Search") {
+          iconData.iconFamily = FontAwesome5;
+          iconData.iconName = "search";
+        } else if (route.name === "Comparision") {
+          iconData.iconFamily = FontAwesome6;
+          iconData.iconName = "chart-simple";
+        } else if (route.name === "Setting") {
+          iconData.iconFamily = Ionicons;
+          iconData.iconName = "settings";
+        }
 
-        return <Ionicons name={iconName} size={size} color={color} />;
+        return (
+          <iconData.iconFamily
+            name={iconData.iconName}
+            size={size}
+            color={color}
+          />
+        );
       },
-      tabBarActiveTintColor: "#007aff",
-      tabBarInactiveTintColor: "gray",
+      tabBarShowLabel: false,
+      tabBarActiveTintColor: "#fff",
+      tabBarInactiveTintColor: colors.lightPurple,
+      tabBarInactiveBackgroundColor: "#fff",
+      tabBarStyle: styles.tabBar,
+      tabBarItemStyle: styles.tabBarItem,
+      tabBarIconStyle: styles.tabBarIcon,
+
       headerShown: false, // 각 탭에서 헤더 숨김
     })}
   >
@@ -51,3 +80,18 @@ const MainNavigator = () => {
 };
 
 export default MainNavigator;
+
+const styles = StyleSheet.create({
+  tabBar: { flex: 1, maxHeight: 64 },
+
+  tabBarItem: {
+    flex: 1,
+    borderRadius: 16,
+    backgroundColor: colors.purple,
+  },
+  tabBarIcon: {
+    marginVertical: "auto",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+});
