@@ -17,6 +17,16 @@ const AddressSearchScreen = ({ navigation, route }) => {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
 
+  const debouncedSearch = debounce(async (text) => {
+    try {
+      const res = await searchAddress(text);
+      setResults(res);
+    } catch (e) {
+      // 에러 핸들링
+      console.error("주소 검색 실패", e);
+    }
+  }, 300);
+
   useEffect(() => {
     if (query.trim()) {
       debouncedSearch(query);
@@ -25,25 +35,23 @@ const AddressSearchScreen = ({ navigation, route }) => {
     }
   }, [query]);
 
-  const debouncedSearch = debounce(async (text) => {
-    try {
-      const res = await searchAddress(text);
-      setResults(res);
-    } catch (e) {
-      // 에러 핸들링
-    }
-  }, 300);
-
   const handleSelect = (item) => {
-    const selected = item.road_address?.address_name || item.address_name;
-    route.params?.onSelect(selected); // 부모로 전달
-    navigation.goBack(); // 이전 화면으로
+    const selected = {
+      addressName: item.road_address ? item.road_address : item.jibun_address,
+      zipCode: item.zone_no,
+    };
+
+    route.params?.onSelect(selected);
+    navigation.goBack();
   };
 
   return (
     <View style={styles.pageContainer}>
       <View style={styles.inputContainer}>
-        <TouchableOpacity style={styles.backButton}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
+        >
           <Ionicons name="arrow-back" size={24} color={colors.purple} />
         </TouchableOpacity>
         <TextInput
@@ -52,23 +60,26 @@ const AddressSearchScreen = ({ navigation, route }) => {
           value={query}
           style={styles.searchInput}
         />
-        <TouchableOpacity onPress={() => {}}>
-          <Ionicons name="search" size={24} color={colors.purple} />
-        </TouchableOpacity>
       </View>
 
       <View style={styles.separatorLine} />
+
       <View style={styles.resultContainer}>
         <FlatList
           data={results}
-          keyExtractor={(item, index) => item.address_name + index}
+          keyExtractor={(item, index) =>
+            (item.address_name ||
+              item.road_address?.address_name ||
+              item.jibun_address ||
+              "unknown") + index
+          }
           renderItem={({ item }) => (
             <TouchableOpacity
               style={styles.addressItem}
-              onPress={() => onSelect(item)}
+              onPress={() => handleSelect(item)}
             >
               <Text style={styles.addressName}>
-                {item.road_address || item.jibun_address}
+                {item.road_address ? item.road_address : item.jibun_address}
               </Text>
               <Text style={styles.zipCode}>{item.zone_no}</Text>
             </TouchableOpacity>
@@ -82,17 +93,18 @@ const AddressSearchScreen = ({ navigation, route }) => {
 export default AddressSearchScreen;
 
 const styles = StyleSheet.create({
-  pageContainer: { flex: 1, backgroundColor: "#fff" },
+  pageContainer: {
+    flex: 1,
+    backgroundColor: "#fff",
+  },
   inputContainer: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     gap: 8,
-
     marginHorizontal: 20,
     marginBottom: 8,
     padding: 8,
-
     borderWidth: 4,
     borderColor: colors.purple,
     borderRadius: 12,
@@ -100,7 +112,6 @@ const styles = StyleSheet.create({
   backButton: {},
   searchInput: {
     flex: 1,
-
     fontFamily: "NanumSquareB",
     fontSize: 16,
     letterSpacing: -0.5,
@@ -127,7 +138,7 @@ const styles = StyleSheet.create({
   addressName: {
     fontFamily: "gamtanDotumB",
     fontSize: 16,
-    letterSpacing: "-0.5",
+    letterSpacing: -0.5,
     lineHeight: 26,
     color: colors.purple,
   },

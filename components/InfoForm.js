@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  ActivityIndicator,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { ActivityIndicator, StyleSheet, View } from "react-native";
 import colors from "../styles/color";
 import { commonStyles } from "../styles/commonStyles";
 import { FORM_TYPES } from "../constants/formTypes";
@@ -18,15 +12,34 @@ import { useNavigation } from "@react-navigation/native";
 const InfoForm = ({ setFormType }) => {
   const navigation = useNavigation();
 
-  const handleTransition = () => {
-    setFormType(FORM_TYPES.SIGN_UP);
+  const handleSubmit = async (values, { setSubmitting, setErrors }) => {
+    try {
+      await dispatch(signIn(values));
+      setFormType(FORM_TYPES.INFO);
+    } catch (error) {
+      console.log("에러 상태코드:", error.status); // 여기서 접근 가능!
+
+      // 400은 중복 이메일 에러로 처리
+      if (error.status === 400) {
+        setErrors({ email: error.message });
+      } else {
+        setErrors({ password: error.message });
+      }
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
     <Formik
-      initialValues={{ storeName: "", address: "", addressDetail: "" }}
+      initialValues={{
+        storeName: "",
+        address: "",
+        zipCode: "",
+        addressDetail: "",
+      }}
       validationSchema={InfoSchema}
-      onSubmit={() => {}}
+      onSubmit={handleSubmit}
     >
       {({
         handleChange,
@@ -38,6 +51,7 @@ const InfoForm = ({ setFormType }) => {
         isSubmitting,
         isValid,
         dirty,
+        setFieldValue,
       }) => (
         <View style={styles.formContainer}>
           <View style={styles.contentContainer}>
@@ -60,10 +74,23 @@ const InfoForm = ({ setFormType }) => {
               errorText={touched.address && errors.address}
               onPressIcon={() => {
                 navigation.navigate("AddressSearchScreen", {
-                  onSelect: (selected) => setFieldValue("address", selected),
+                  onSelect: (selected) => {
+                    setFieldValue("address", selected.addressName);
+                    setFieldValue("zipCode", selected.zipCode);
+                  },
                 });
               }}
+              readOnly
             />
+
+            <Input
+              id="zip_code"
+              label={"우편번호"}
+              autoCapitalize="none"
+              value={values.zipCode}
+              readOnly
+            />
+
             <Input
               id="address_detail"
               label={"상세주소"}
