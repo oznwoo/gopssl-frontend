@@ -1,8 +1,6 @@
 import React from "react";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
 import colors from "../styles/color";
-import { commonStyles } from "../styles/commonStyles";
-import { FORM_TYPES } from "../constants/formTypes";
 import Input from "./Input";
 import SubmitButton from "./SubmitButton";
 import { Formik } from "formik";

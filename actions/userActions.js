@@ -1,5 +1,5 @@
 import axios from "axios";
-import { loginSuccess, registerSuccess } from "../store/authSlice";
+import { registerSuccess } from "../store/authSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { BASE_URL } from "../constants/baseURL";
 
@@ -15,17 +15,6 @@ export const registerUserInfo = ({
 }) => {
   return async (dispatch) => {
     try {
-      console.log(
-        id,
-        name,
-        email,
-        password,
-        store_name,
-        address,
-        zip_code,
-        address_detail
-      );
-
       const response = await axios.put(`${BASE_URL}/users/${id}`, {
         name,
         email,

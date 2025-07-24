@@ -1,5 +1,5 @@
 import axios from "axios";
-import { loginSuccess } from "../store/authSlice";
+import { signUpSuccess, signInSuccess } from "../store/authSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { BASE_URL } from "../constants/baseURL";
 
@@ -25,7 +25,7 @@ export const signUp = ({ name, email, password }) => {
 
       const user = userRes.data;
 
-      dispatch(loginSuccess({ token, user }));
+      dispatch(signUpSuccess({ token, user }));
 
       await AsyncStorage.setItem("user", JSON.stringify(user));
     } catch (e) {
@@ -76,7 +76,7 @@ export const signIn = ({ email, password }) => {
 
       const user = userRes.data;
 
-      dispatch(loginSuccess({ token, user }));
+      dispatch(signInSuccess({ token, user }));
 
       await AsyncStorage.setItem("user", JSON.stringify(user));
     } catch (e) {
