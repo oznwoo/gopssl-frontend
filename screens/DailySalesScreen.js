@@ -1,14 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Text,
   StyleSheet,
   View,
   TouchableOpacity,
   TouchableWithoutFeedback,
+  Animated,
 } from "react-native";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import colors from "../styles/color";
 import { commonStyles } from "../styles/commonStyles";
+import FloatingExpandButton from "../components/FloatingExpandedButton";
 
 const DailySalesScreen = (props) => {
   const [date, setDate] = useState(new Date());
@@ -17,10 +19,6 @@ const DailySalesScreen = (props) => {
   const formattedDate = `${date.getFullYear()}년 ${
     date.getMonth() + 1
   }월 ${date.getDate()}일`;
-
-  const toggleExpanded = () => {
-    setIsExpanded((prev) => !prev);
-  };
 
   const hideExpanded = () => {
     if (isExpanded) setIsExpanded(false);
@@ -72,26 +70,7 @@ const DailySalesScreen = (props) => {
             <Text style={styles.emptyText}>매출이 등록되지 않았습니다.</Text>
           </View>
 
-          {!isExpanded && (
-            <TouchableOpacity
-              onPress={toggleExpanded}
-              style={styles.plusButton}
-            >
-              <FontAwesome5 name="plus" size={24} color="#fff" />
-            </TouchableOpacity>
-          )}
-
-          {isExpanded && (
-            <View style={styles.expandedPlusButton}>
-              <TouchableOpacity style={styles.registerButton}>
-                <Text style={styles.registerText}>매출 등록</Text>
-              </TouchableOpacity>
-              <View style={styles.horizontalLine}></View>
-              <TouchableOpacity style={styles.registerButton}>
-                <Text style={styles.registerText}>고객 등록</Text>
-              </TouchableOpacity>
-            </View>
-          )}
+          <FloatingExpandButton style={styles.plusButton} />
         </View>
 
         <View style={styles.totalContainer}>
@@ -174,39 +153,9 @@ const styles = StyleSheet.create({
   },
   plusButton: {
     position: "absolute",
-    bottom: 20,
     right: 20,
-
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-
-    backgroundColor: colors.purple,
-    borderRadius: 24,
-    ...commonStyles.dropShadow,
-  },
-
-  horizontalLine: {
-    width: "100%",
-
-    backgroundColor: "#fff",
-    height: 2,
-  },
-  expandedPlusButton: {
-    position: "absolute",
     bottom: 20,
-    right: 20,
-
-    borderRadius: 12,
-
-    backgroundColor: colors.purple,
     ...commonStyles.dropShadow,
-  },
-  registerButton: { padding: 16 },
-  registerText: {
-    color: "#fff",
-    fontFamily: "gamtanDotumB",
-    fontSize: 16,
-    letterSpacing: "-0.5",
   },
 
   totalContainer: {
