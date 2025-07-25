@@ -1,23 +1,43 @@
-import React from "react";
+import React, { useState } from "react";
 import { Text, StyleSheet, View, TouchableOpacity } from "react-native";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import colors from "../styles/color";
 import { commonStyles } from "../styles/commonStyles";
 
 const DailySalesScreen = (props) => {
+  const [date, setDate] = useState(new Date());
+
+  const formattedDate = `${date.getFullYear()}년 ${
+    date.getMonth() + 1
+  }월 ${date.getDate()}일`;
+
+  const plusDate = () => {
+    const nextDate = new Date(date);
+    nextDate.setDate(date.getDate() + 1);
+    setDate(nextDate);
+  };
+
+  const minusDate = () => {
+    const prevDate = new Date(date);
+    prevDate.setDate(date.getDate() - 1);
+    setDate(prevDate);
+  };
+
   return (
     <View style={styles.pageContainer}>
       <View style={styles.headerContainer}>
         <View style={styles.horizontalHeader}>
           <TouchableOpacity
+            onPress={minusDate}
             style={{ ...styles.arrowButton, ...styles.horizontalArrowButton }}
           >
             <FontAwesome5 name="chevron-left" size={24} color="#fff" />
           </TouchableOpacity>
           <View style={styles.dateContainer}>
-            <Text style={styles.dateText}>2025년 7월 15일</Text>
+            <Text style={styles.dateText}>{formattedDate}</Text>
           </View>
           <TouchableOpacity
+            onPress={plusDate}
             style={{ ...styles.arrowButton, ...styles.horizontalArrowButton }}
           >
             <FontAwesome5 name="chevron-right" size={24} color="#fff" />
@@ -91,16 +111,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: colors.purple,
   },
-  horizontalLine: {
-    position: "relative",
-    top: 24,
-    height: 2,
-    width: "100%",
-    backgroundColor: "#fff",
-    borderRadius: 1,
-    alignSelf: "center",
-    ...commonStyles.dropShadow,
-  },
+
   contentContainer: {
     flex: 1,
     paddingHorizontal: 40,

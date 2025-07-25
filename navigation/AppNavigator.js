@@ -5,7 +5,7 @@ import AuthNavigator from "./AuthNavigator";
 import { useSelector } from "react-redux";
 
 const AppNavigator = () => {
-  const isAuth = true;
+  const isAuth = useSelector((state) => state.auth.isAuthenticated);
 
   return (
     <NavigationContainer>
