@@ -12,6 +12,8 @@ import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import colors from "../styles/color";
 import { StyleSheet } from "react-native";
 import { commonStyles } from "../styles/commonStyles";
+import CustomerScreen from "../screens/CustomerScreen";
+import SaleScreen from "../screens/SaleScreen";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -70,6 +72,16 @@ const StackNavigator = () => (
     <Stack.Screen
       name="Home"
       component={TabNavigator}
+      options={{ headerShown: false }}
+    />
+    <Stack.Screen
+      name="Customer"
+      component={CustomerScreen}
+      options={{ headerShown: false }}
+    />
+    <Stack.Screen
+      name="Sale"
+      component={SaleScreen}
       options={{ headerShown: false }}
     />
   </Stack.Navigator>
