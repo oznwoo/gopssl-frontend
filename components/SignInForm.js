@@ -121,7 +121,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   contentContainer: {
-    gap: 12,
+    gap: 16,
   },
   inputContainer: {
     flexDirection: "row",

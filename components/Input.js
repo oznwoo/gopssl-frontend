@@ -6,25 +6,42 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
-import colors from "../styles/color";
+import { BlurView } from "expo-blur";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { BlurView } from "expo-blur";
+import colors from "../styles/color";
 import { commonStyles } from "../styles/commonStyles";
 
 const Input = (props) => {
-  const [secure, setSecure] = useState(props.secureTextEntry);
+  const {
+    label,
+    secureTextEntry,
+    id,
+    onPressIcon,
+    errorText,
+    useBlur = true, // ← 기본값 true
+    ...restProps
+  } = props;
+
+  const [secure, setSecure] = useState(secureTextEntry);
+
+  const Container = useBlur ? BlurView : View;
 
   return (
     <View style={styles.container}>
-      <BlurView
-        style={{ ...styles.inputContainer, ...commonStyles.blurView }}
-        tint="xlight" // or "xlight", "dark"
-        intensity={30}
+      <Container
+        style={[styles.inputContainer, useBlur && commonStyles.blurView]}
+        {...(useBlur && { tint: "xlight", intensity: 30 })}
       >
-        <Text style={styles.inputTitle}>{props.label}</Text>
-        <TextInput {...props} style={styles.input} secureTextEntry={secure} />
-        {props.id === "password" && (
+        <Text style={styles.inputTitle}>{label}</Text>
+
+        <TextInput
+          {...restProps}
+          style={styles.input}
+          secureTextEntry={secure}
+        />
+
+        {id === "password" && (
           <TouchableOpacity onPress={() => setSecure((prev) => !prev)}>
             <MaterialCommunityIcons
               name={secure ? "eye" : "eye-off"}
@@ -33,17 +50,19 @@ const Input = (props) => {
             />
           </TouchableOpacity>
         )}
-        {props.id === "address" && (
-          <TouchableOpacity onPress={props.onPressIcon}>
+
+        {id === "address" && (
+          <TouchableOpacity onPress={onPressIcon}>
             <Ionicons name="search" size={24} color={colors.purple} />
           </TouchableOpacity>
         )}
-      </BlurView>
-      <View style={styles.errorContainer}>
-        {props.errorText && (
-          <Text style={styles.errorText}>{props.errorText}</Text>
-        )}
-      </View>
+      </Container>
+
+      {errorText && (
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>{errorText}</Text>
+        </View>
+      )}
     </View>
   );
 };
@@ -51,6 +70,9 @@ const Input = (props) => {
 export default Input;
 
 const styles = StyleSheet.create({
+  container: {
+    width: "100%",
+  },
   inputContainer: {
     flexDirection: "row",
     alignItems: "center",

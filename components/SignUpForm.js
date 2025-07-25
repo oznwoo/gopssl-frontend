@@ -117,7 +117,7 @@ export default SignUpForm;
 
 const styles = StyleSheet.create({
   formContainer: {
-    gap: 12,
+    gap: 16,
     width: "100%",
   },
   transitionButton: {
