@@ -5,7 +5,7 @@ import colors from "../../styles/color";
 
 const DetailInput = ({ value, onChangeText, ...rest }) => {
   return (
-    <BaseInput {...rest}>
+    <BaseInput {...rest} portraitMode={true}>
       <TextInput
         placeholder="고객님을 기억하기 위한 어떠한 것이든 입력해주세요."
         style={styles.detail}

@@ -3,6 +3,7 @@ import React from "react";
 import { StyleSheet, View } from "react-native";
 import colors from "../styles/color";
 import FormHeader from "../components/FormHeader";
+import SaleForm from "../components/SaleForm";
 
 const SaleScreen = () => {
   const navigation = useNavigation();
@@ -15,7 +16,9 @@ const SaleScreen = () => {
     <View style={styles.pageContainer}>
       <FormHeader title="매출 등록" onGoBack={handleGoBack} />
 
-      <View style={styles.contentContainer}></View>
+      <View style={styles.contentContainer}>
+        <SaleForm />
+      </View>
     </View>
   );
 };
@@ -25,9 +28,8 @@ export default SaleScreen;
 const styles = StyleSheet.create({
   pageContainer: {
     flex: 1,
-    backgroundColor: colors.backgroundPurple,
   },
   contentContainer: {
-    paddingHorizontal: 18,
+    flex: 1,
   },
 });

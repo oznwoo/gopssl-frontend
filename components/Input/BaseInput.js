@@ -87,6 +87,6 @@ const styles = StyleSheet.create({
   portraitMode: {
     flexDirection: "column",
     alignItems: "flex-start",
-    paddingBottom: 24,
+    paddingBottom: 16,
   },
 });
