@@ -3,6 +3,7 @@ import React from "react";
 import { StyleSheet, View } from "react-native";
 import colors from "../styles/color";
 import FormHeader from "../components/FormHeader";
+import CustomerForm from "../components/CustomerForm";
 
 const CustomerScreen = () => {
   const navigation = useNavigation();
@@ -15,7 +16,9 @@ const CustomerScreen = () => {
     <View style={styles.pageContainer}>
       <FormHeader title="고객 등록" onGoBack={handleGoBack} />
 
-      <View style={styles.contentContainer}></View>
+      <View style={styles.contentContainer}>
+        <CustomerForm />
+      </View>
     </View>
   );
 };
@@ -25,9 +28,6 @@ export default CustomerScreen;
 const styles = StyleSheet.create({
   pageContainer: {
     flex: 1,
-    backgroundColor: colors.backgroundPurple,
   },
-  contentContainer: {
-    paddingHorizontal: 18,
-  },
+  contentContainer: { flex: 1 },
 });
