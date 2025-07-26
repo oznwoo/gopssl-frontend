@@ -127,7 +127,7 @@ const InfoForm = ({ setFormType }) => {
               ) : (
                 <SubmitButton
                   title={"완료"}
-                  onPress={onSubmit}
+                  onPress={handleSubmit}
                   disable={!isValid || !dirty}
                 />
               )}

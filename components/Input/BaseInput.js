@@ -53,6 +53,7 @@ const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
     borderWidth: 1,
     borderColor: "#EDECF4",
     borderRadius: 8,
@@ -69,7 +70,7 @@ const styles = StyleSheet.create({
     lineHeight: 26,
   },
   input: {
-    width: "100%",
+    flex: 1,
     fontFamily: "nanumSquareR",
     fontSize: 16,
   },
