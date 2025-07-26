@@ -11,7 +11,7 @@ import { Formik } from "formik";
 
 import colors from "../styles/color";
 import { FORM_TYPES } from "../constants/formTypes";
-import Input from "./Input";
+import Input, { BaseInput, PasswordInput } from "./Input";
 import SubmitButton from "./SubmitButton";
 import { signUp } from "../actions/authActions";
 import { SignUpSchema } from "../schemas/signUpSchema";
@@ -60,7 +60,7 @@ const SignUpForm = ({ setFormType }) => {
         dirty,
       }) => (
         <View style={styles.formContainer}>
-          <Input
+          <BaseInput
             id="name"
             label={"이름"}
             value={values.name}
@@ -68,7 +68,7 @@ const SignUpForm = ({ setFormType }) => {
             onBlur={handleBlur("name")}
             errorText={touched.name && errors.name}
           />
-          <Input
+          <BaseInput
             id="email"
             label={"이메일"}
             autoCapitalize="none"
@@ -77,7 +77,7 @@ const SignUpForm = ({ setFormType }) => {
             onBlur={handleBlur("email")}
             errorText={touched.email && errors.email}
           />
-          <Input
+          <PasswordInput
             id="password"
             label={"비밀번호"}
             secureTextEntry
