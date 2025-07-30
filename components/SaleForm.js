@@ -1,5 +1,11 @@
 import React from "react";
-import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import SubmitButton from "./SubmitButton";
 import colors from "../styles/color";
 import { Formik } from "formik";
@@ -8,11 +14,10 @@ import {
   AddressInput,
   BaseInput,
   DetailInput,
-  PhoneNumberInput,
   DateInput,
+  TreatmentInput,
 } from "./Input";
 import { useDispatch, useSelector } from "react-redux";
-import { registerCustomer } from "../actions/customerActions";
 import { useNavigation } from "@react-navigation/native";
 
 const SaleForm = () => {
@@ -36,7 +41,8 @@ const SaleForm = () => {
         saleDate: "",
         paymentType: "",
         detail: "",
-        treatmentList: {},
+        treatmentList: null,
+        extraPrices: null,
       }}
       validationSchema={CustomerSchema}
       onSubmit={handleRegister}
@@ -45,6 +51,7 @@ const SaleForm = () => {
         handleChange,
         handleBlur,
         handleSubmit,
+        setFieldValue,
         values,
         errors,
         touched,
@@ -53,54 +60,58 @@ const SaleForm = () => {
         dirty,
       }) => (
         <View style={styles.formContainer}>
-          <View style={styles.inputContainer}>
-            <AddressInput
-              id="name"
-              label="고객명"
-              useBlur={false}
-              value={values.name}
-              onChangeText={handleChange("name")}
-              onBlur={handleBlur("name")}
-              errorText={touched.name && errors.name}
-              onPressIcon={() => {}}
-            />
-            <DateInput
-              id="phoneNumber"
-              label="시술일"
-              useBlur={false}
-              value={values.phoneNumber}
-              onChangePhoneNumber={handleChange("phoneNumber")}
-              onBlur={handleBlur("phoneNumber")}
-              errorText={touched.phoneNumber && errors.phoneNumber}
-            />
-            <BaseInput
-              id="detail"
-              label="시술"
-              useBlur={false}
-              value={values.detail}
-              onChangeText={handleChange("detail")}
-              onBlur={handleBlur("detail")}
-              errorText={touched.detail && errors.detail}
-            />
-            <BaseInput
-              id="detail"
-              label="결제 유형"
-              useBlur={false}
-              value={values.detail}
-              onChangeText={handleChange("detail")}
-              onBlur={handleBlur("detail")}
-              errorText={touched.detail && errors.detail}
-            />
-            <DetailInput
-              id="detail"
-              label="시술 내용"
-              useBlur={false}
-              value={values.detail}
-              onChangeText={handleChange("detail")}
-              onBlur={handleBlur("detail")}
-              errorText={touched.detail && errors.detail}
-            />
-          </View>
+          <ScrollView>
+            <View style={styles.inputContainer}>
+              <AddressInput
+                id="name"
+                label="고객명"
+                useBlur={false}
+                value={values.name}
+                onChangeText={handleChange("name")}
+                onBlur={handleBlur("name")}
+                errorText={touched.name && errors.name}
+                onPressIcon={() => {}}
+              />
+              <DateInput
+                id="phoneNumber"
+                label="시술일"
+                useBlur={false}
+                value={values.phoneNumber}
+                onChangePhoneNumber={handleChange("phoneNumber")}
+                onBlur={handleBlur("phoneNumber")}
+                errorText={touched.phoneNumber && errors.phoneNumber}
+              />
+              <TreatmentInput
+                id="treatments"
+                label="시술"
+                useBlur={false}
+                onBlur={handleBlur("treatmentList")}
+                errorText={touched.treatmentList && errors.treatmentList}
+                onTreatmentDataChange={({ treatments, extraPrices }) => {
+                  setFieldValue("treatmentList", treatments);
+                  setFieldValue("extraPrices", extraPrices);
+                }}
+              />
+              <BaseInput
+                id="paymentType"
+                label="결제 유형"
+                useBlur={false}
+                value={values.paymentType}
+                onChangeText={handleChange("paymentType")}
+                onBlur={handleBlur("paymentType")}
+                errorText={touched.paymentType && errors.paymentType}
+              />
+              <DetailInput
+                id="detail"
+                label="시술 내용"
+                useBlur={false}
+                value={values.detail}
+                onChangeText={handleChange("detail")}
+                onBlur={handleBlur("detail")}
+                errorText={touched.detail && errors.detail}
+              />
+            </View>
+          </ScrollView>
           <View style={styles.submitContainer}>
             {isSubmitting ? (
               <ActivityIndicator

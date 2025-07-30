@@ -4,3 +4,4 @@ export { default as PhoneNumberInput } from "./PhoneNumberInput";
 export { default as AddressInput } from "./AddressInput";
 export { default as DetailInput } from "./DetailInput";
 export { default as DateInput } from "./DateInput";
+export { default as TreatmentInput } from "./TreatmentInput";
