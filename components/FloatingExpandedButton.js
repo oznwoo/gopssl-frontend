@@ -21,7 +21,7 @@ const FloatingExpandButton = (props) => {
   };
 
   const transitionSale = () => {
-    navigation.navigate("Sale");
+    navigation.navigate("Sale", { saleDate: props.date.toISOString() });
   };
 
   const toggle = () => {

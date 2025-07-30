@@ -1,12 +1,13 @@
 import { useNavigation } from "@react-navigation/native";
 import React from "react";
 import { StyleSheet, View } from "react-native";
-import colors from "../styles/color";
 import FormHeader from "../components/FormHeader";
 import SaleForm from "../components/SaleForm";
 
-const SaleScreen = () => {
+const SaleScreen = ({ route }) => {
   const navigation = useNavigation();
+  const saleDateString = route.params?.saleDate;
+  const saleDate = saleDateString ? new Date(saleDateString) : null;
 
   const handleGoBack = () => {
     navigation.goBack();
@@ -17,7 +18,7 @@ const SaleScreen = () => {
       <FormHeader title="매출 등록" onGoBack={handleGoBack} />
 
       <View style={styles.contentContainer}>
-        <SaleForm />
+        <SaleForm saleDate={saleDate} />
       </View>
     </View>
   );

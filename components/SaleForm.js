@@ -9,25 +9,31 @@ import {
 import SubmitButton from "./SubmitButton";
 import colors from "../styles/color";
 import { Formik } from "formik";
-import { CustomerSchema } from "../schemas/CustomerSchema";
 import {
   AddressInput,
   BaseInput,
   DetailInput,
   DateInput,
   TreatmentInput,
+  TypeInput,
 } from "./Input";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
+import { SaleSchema } from "../schemas/SaleSchema";
 
-const SaleForm = () => {
+const SaleForm = ({ saleDate }) => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const { id } = useSelector((state) => state.auth.user);
+  const formattedSaleDate = saleDate
+    ? `${new Date(saleDate).getFullYear()}년 ${
+        new Date(saleDate).getMonth() + 1
+      }월 ${new Date(saleDate).getDate()}일`
+    : "";
 
   const handleRegister = async (values, { setSubmitting, setErrors }) => {
+    console.log("💾 제출된 값:", values); // ← 여기서 전체 값 확인
     try {
-      // 성공 시 이동
       alert("고객 등록이 완료되었습니다.");
     } catch (error) {
       console.log("에러 상태코드:", error?.response?.status || error.message);
@@ -38,13 +44,13 @@ const SaleForm = () => {
     <Formik
       initialValues={{
         name: "",
-        saleDate: "",
+        saleDate: formattedSaleDate,
         paymentType: "",
         detail: "",
-        treatmentList: null,
-        extraPrices: null,
+        treatmentList: [],
+        extraPrices: {},
       }}
-      validationSchema={CustomerSchema}
+      validationSchema={SaleSchema}
       onSubmit={handleRegister}
     >
       {({
@@ -73,13 +79,13 @@ const SaleForm = () => {
                 onPressIcon={() => {}}
               />
               <DateInput
-                id="phoneNumber"
+                id="saleDate"
                 label="시술일"
                 useBlur={false}
-                value={values.phoneNumber}
-                onChangePhoneNumber={handleChange("phoneNumber")}
-                onBlur={handleBlur("phoneNumber")}
-                errorText={touched.phoneNumber && errors.phoneNumber}
+                value={values.saleDate}
+                onChangePhoneNumber={handleChange("saleDate")}
+                onBlur={handleBlur("saleDate")}
+                errorText={touched.saleDate && errors.saleDate}
               />
               <TreatmentInput
                 id="treatments"
@@ -92,12 +98,13 @@ const SaleForm = () => {
                   setFieldValue("extraPrices", extraPrices);
                 }}
               />
-              <BaseInput
+              <TypeInput
                 id="paymentType"
                 label="결제 유형"
                 useBlur={false}
                 value={values.paymentType}
-                onChangeText={handleChange("paymentType")}
+                options={["현금", "카드"]}
+                onChange={(val) => setFieldValue("paymentType", val)}
                 onBlur={handleBlur("paymentType")}
                 errorText={touched.paymentType && errors.paymentType}
               />

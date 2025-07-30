@@ -70,7 +70,7 @@ const DailySalesScreen = (props) => {
             <Text style={styles.emptyText}>매출이 등록되지 않았습니다.</Text>
           </View>
 
-          <FloatingExpandButton style={styles.plusButton} />
+          <FloatingExpandButton style={styles.plusButton} date={date} />
         </View>
 
         <View style={styles.totalContainer}>
