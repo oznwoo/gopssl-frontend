@@ -17,34 +17,22 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 const formattedDate = (date) =>
   `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
 
-const DateInput = ({ value, onChangeText, ...rest }) => {
-  const [date, setDate] = useState(() => {
-    if (!value) return new Date();
-    // value는 "2025년 7월 30일" 같은 포맷이라고 가정하고 Date 객체로 변환
-    const [year, month, day] = value.match(/\d+/g).map(Number);
-    return new Date(year, month - 1, day);
-  });
+const DateInput = ({ value, onChangeDate, ...rest }) => {
+  const [date, setDate] = useState(value || new Date());
   const [show, setShow] = useState(false);
 
-  // value가 바뀔 때 date state도 업데이트
   useEffect(() => {
-    if (value) {
-      const [year, month, day] = value.match(/\d+/g).map(Number);
-      const newDate = new Date(year, month - 1, day);
-      if (newDate.getTime() !== date.getTime()) {
-        setDate(newDate);
-      }
+    if (value && value.getTime() !== date.getTime()) {
+      setDate(value);
     }
   }, [value]);
 
   const onChange = (event, selectedDate) => {
     if (selectedDate) {
       setDate(selectedDate);
-      onChangeText?.(formattedDate(selectedDate));
+      onChangeDate?.(selectedDate); // Date 객체 그대로 전달
     }
-    if (Platform.OS === "android") {
-      setShow(false); // Android는 자동 닫힘
-    }
+    if (Platform.OS === "android") setShow(false);
   };
 
   return (

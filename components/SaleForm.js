@@ -20,6 +20,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
 import { SaleSchema } from "../schemas/SaleSchema";
+import { postSaleThunk } from "../actions/saleActions";
 
 const SaleForm = ({ saleDate }) => {
   const dispatch = useDispatch();
@@ -32,11 +33,51 @@ const SaleForm = ({ saleDate }) => {
     : "";
 
   const handleRegister = async (values, { setSubmitting, setErrors }) => {
-    console.log("💾 제출된 값:", values); // ← 여기서 전체 값 확인
     try {
+      const user_id = id; // Redux에서 가져온 로그인 유저 ID
+      const customer_id = 1;
+
+      // sale_date를 ISO 날짜 문자열로 변환 (DateInput에서 'yyyy-mm-dd' 형식으로 받는다고 가정)
+      const sale_date = new Date(values.saleDate).toISOString().split("T")[0]; // "2025-07-30"
+
+      // treatments 배열을 { treatment_id, price } 형태로 맞추기
+      const treatments = values.treatmentList.map(
+        ({ treatment_id, price }) => ({
+          treatment_id,
+          price,
+        })
+      );
+
+      // total_amount 계산 (optional)
+      // 예시: treatments 가격 합 + extra_prices 합 (필요하면 구현)
+      const total_amount =
+        treatments.reduce((acc, cur) => acc + cur.price, 0) +
+        Object.values(values.extraPrices || {}).reduce(
+          (acc, cur) => acc + cur,
+          0
+        );
+
+      const saleData = {
+        user_id,
+        customer_id,
+        sale_date,
+        detail: values.detail,
+        payment_type: values.paymentType,
+        total_amount,
+        treatments,
+        extra_prices: values.extraPrices,
+      };
+
+      // Redux thunk 호출 (포스트 요청)
+      await dispatch(postSaleThunk(saleData));
+
       alert("고객 등록이 완료되었습니다.");
+      navigation.goBack(); // 등록 후 이전 화면으로 이동 (필요에 따라)
     } catch (error) {
       console.log("에러 상태코드:", error?.response?.status || error.message);
+      setErrors({ submit: "등록 중 오류가 발생했습니다." });
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -44,7 +85,7 @@ const SaleForm = ({ saleDate }) => {
     <Formik
       initialValues={{
         name: "",
-        saleDate: formattedSaleDate,
+        saleDate: new Date(), // Date 객체 기본값
         paymentType: "",
         detail: "",
         treatmentList: [],
@@ -83,7 +124,7 @@ const SaleForm = ({ saleDate }) => {
                 label="시술일"
                 useBlur={false}
                 value={values.saleDate}
-                onChangePhoneNumber={handleChange("saleDate")}
+                onChangeDate={(date) => setFieldValue("saleDate", date)} // Date 객체 그대로 저장
                 onBlur={handleBlur("saleDate")}
                 errorText={touched.saleDate && errors.saleDate}
               />
