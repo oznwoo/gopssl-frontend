@@ -62,52 +62,54 @@ const FloatingExpandButton = (props) => {
   });
 
   return (
-    <TouchableWithoutFeedback onPress={() => expanded && setExpanded(false)}>
-      <View style={StyleSheet.absoluteFill}>
-        <Animated.View
-          style={[
-            styles.buttonContainer,
-            props.style,
-            {
-              width,
-              height,
-              borderRadius,
-            },
-          ]}
-        >
-          {/* 접힌 상태일 때 아이콘 */}
-          <TouchableOpacity onPress={toggle} style={styles.fullSize}>
-            <Animated.View
-              style={{ ...styles.centered, ...{ opacity: iconOpacity } }}
-            >
-              <FontAwesome5 name="plus" size={24} color="#fff" />
-            </Animated.View>
+    <>
+      {expanded && (
+        <TouchableWithoutFeedback onPress={() => setExpanded(false)}>
+          <View style={StyleSheet.absoluteFill} />
+        </TouchableWithoutFeedback>
+      )}
 
-            {/* 펼쳐진 상태일 때 텍스트 메뉴 */}
-            <Animated.View
-              style={[
-                { position: "relative", top: -8 },
-                { opacity: contentOpacity },
-              ]}
+      <Animated.View
+        style={[
+          styles.buttonContainer,
+          props.style,
+          {
+            width,
+            height,
+            borderRadius,
+          },
+        ]}
+      >
+        {/* 접힌 상태일 때 아이콘 */}
+        <TouchableOpacity onPress={toggle} style={styles.fullSize}>
+          <Animated.View style={{ ...styles.centered, opacity: iconOpacity }}>
+            <FontAwesome5 name="plus" size={24} color="#fff" />
+          </Animated.View>
+
+          {/* 펼쳐진 상태일 때 텍스트 메뉴 */}
+          <Animated.View
+            style={[
+              { position: "relative", top: -8 },
+              { opacity: contentOpacity },
+            ]}
+          >
+            <TouchableOpacity
+              onPress={transitionSale}
+              style={styles.registerButton}
             >
-              <TouchableOpacity
-                onPress={transitionSale}
-                style={styles.registerButton}
-              >
-                <Text style={styles.registerText}>매출 등록</Text>
-              </TouchableOpacity>
-              <View style={styles.separator} />
-              <TouchableOpacity
-                onPress={transitionCustomer}
-                style={styles.registerButton}
-              >
-                <Text style={styles.registerText}>고객 등록</Text>
-              </TouchableOpacity>
-            </Animated.View>
-          </TouchableOpacity>
-        </Animated.View>
-      </View>
-    </TouchableWithoutFeedback>
+              <Text style={styles.registerText}>매출 등록</Text>
+            </TouchableOpacity>
+            <View style={styles.separator} />
+            <TouchableOpacity
+              onPress={transitionCustomer}
+              style={styles.registerButton}
+            >
+              <Text style={styles.registerText}>고객 등록</Text>
+            </TouchableOpacity>
+          </Animated.View>
+        </TouchableOpacity>
+      </Animated.View>
+    </>
   );
 };
 
