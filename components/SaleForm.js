@@ -11,7 +11,6 @@ import colors from "../styles/color";
 import { Formik } from "formik";
 import {
   AddressInput,
-  BaseInput,
   DetailInput,
   DateInput,
   TreatmentInput,
@@ -21,20 +20,33 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
 import { SaleSchema } from "../schemas/SaleSchema";
 import { postSaleThunk } from "../actions/saleActions";
+import { commonStyles } from "../styles/commonStyles";
+
+// 💡 총액 계산 함수 분리
+const calculateTotalAmount = (treatmentList, extraPrices) => {
+  const treatmentTotal = treatmentList.reduce(
+    (acc, cur) => acc + (cur.price || 0),
+    0
+  );
+  const extraTotal = Object.values(extraPrices || {}).reduce(
+    (acc, cur) => acc + (cur || 0),
+    0
+  );
+  return treatmentTotal + extraTotal;
+};
 
 const SaleForm = ({ saleDate }) => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const { id } = useSelector((state) => state.auth.user);
+
   const handleRegister = async (values, { setSubmitting, setErrors }) => {
     try {
-      const user_id = id; // Redux에서 가져온 로그인 유저 ID
+      const user_id = id;
       const customer_id = 4;
 
-      // sale_date를 ISO 날짜 문자열로 변환 (DateInput에서 'yyyy-mm-dd' 형식으로 받는다고 가정)
-      const sale_date = new Date(values.saleDate).toISOString().split("T")[0]; // "2025-07-30"
+      const sale_date = new Date(values.saleDate).toISOString().split("T")[0];
 
-      // treatments 배열을 { treatment_id, price } 형태로 맞추기
       const treatments = values.treatmentList.map(
         ({ treatment_id, price }) => ({
           treatment_id,
@@ -42,14 +54,7 @@ const SaleForm = ({ saleDate }) => {
         })
       );
 
-      // total_amount 계산 (optional)
-      // 예시: treatments 가격 합 + extra_prices 합 (필요하면 구현)
-      const total_amount =
-        treatments.reduce((acc, cur) => acc + cur.price, 0) +
-        Object.values(values.extraPrices || {}).reduce(
-          (acc, cur) => acc + cur,
-          0
-        );
+      const total_amount = calculateTotalAmount(treatments, values.extraPrices);
 
       const saleData = {
         user_id,
@@ -62,11 +67,9 @@ const SaleForm = ({ saleDate }) => {
         extra_prices: values.extraPrices,
       };
 
-      // Redux thunk 호출 (포스트 요청)
       await dispatch(postSaleThunk(saleData));
-
       alert("고객 등록이 완료되었습니다.");
-      navigation.goBack(); // 등록 후 이전 화면으로 이동 (필요에 따라)
+      navigation.goBack();
     } catch (error) {
       console.log("에러 상태코드:", error?.response?.status || error.message);
       setErrors({ submit: "등록 중 오류가 발생했습니다." });
@@ -79,7 +82,7 @@ const SaleForm = ({ saleDate }) => {
     <Formik
       initialValues={{
         name: "",
-        saleDate: new Date(), // Date 객체 기본값
+        saleDate: new Date(),
         paymentType: "",
         detail: "",
         treatmentList: [],
@@ -99,78 +102,90 @@ const SaleForm = ({ saleDate }) => {
         isSubmitting,
         isValid,
         dirty,
-      }) => (
-        <View style={styles.formContainer}>
-          <ScrollView>
-            <View style={styles.inputContainer}>
-              <AddressInput
-                id="name"
-                label="고객명"
-                useBlur={false}
-                value={values.name}
-                onChangeText={handleChange("name")}
-                onBlur={handleBlur("name")}
-                errorText={touched.name && errors.name}
-                onPressIcon={() => {}}
-              />
-              <DateInput
-                id="saleDate"
-                label="시술일"
-                useBlur={false}
-                value={values.saleDate}
-                onChangeDate={(date) => setFieldValue("saleDate", date)} // Date 객체 그대로 저장
-                onBlur={handleBlur("saleDate")}
-                errorText={touched.saleDate && errors.saleDate}
-              />
-              <TreatmentInput
-                id="treatments"
-                label="시술"
-                useBlur={false}
-                onBlur={handleBlur("treatmentList")}
-                errorText={touched.treatmentList && errors.treatmentList}
-                onTreatmentDataChange={({ treatments, extraPrices }) => {
-                  setFieldValue("treatmentList", treatments);
-                  setFieldValue("extraPrices", extraPrices);
-                }}
-              />
-              <TypeInput
-                id="paymentType"
-                label="결제 유형"
-                useBlur={false}
-                value={values.paymentType}
-                options={["현금", "카드"]}
-                onChange={(val) => setFieldValue("paymentType", val)}
-                onBlur={handleBlur("paymentType")}
-                errorText={touched.paymentType && errors.paymentType}
-              />
-              <DetailInput
-                id="detail"
-                label="시술 내용"
-                useBlur={false}
-                value={values.detail}
-                onChangeText={handleChange("detail")}
-                onBlur={handleBlur("detail")}
-                errorText={touched.detail && errors.detail}
-              />
+      }) => {
+        const totalAmount = calculateTotalAmount(
+          values.treatmentList,
+          values.extraPrices
+        );
+
+        return (
+          <View style={styles.formContainer}>
+            <ScrollView>
+              <View style={styles.inputContainer}>
+                <AddressInput
+                  id="name"
+                  label="고객명"
+                  useBlur={false}
+                  value={values.name}
+                  onChangeText={handleChange("name")}
+                  onBlur={handleBlur("name")}
+                  errorText={touched.name && errors.name}
+                  onPressIcon={() => {}}
+                />
+                <DateInput
+                  id="saleDate"
+                  label="시술일"
+                  useBlur={false}
+                  value={values.saleDate}
+                  onChangeDate={(date) => setFieldValue("saleDate", date)}
+                  onBlur={handleBlur("saleDate")}
+                  errorText={touched.saleDate && errors.saleDate}
+                />
+                <TreatmentInput
+                  id="treatments"
+                  label="시술"
+                  useBlur={false}
+                  onBlur={handleBlur("treatmentList")}
+                  errorText={touched.treatmentList && errors.treatmentList}
+                  onTreatmentDataChange={({ treatments, extraPrices }) => {
+                    setFieldValue("treatmentList", treatments);
+                    setFieldValue("extraPrices", extraPrices);
+                  }}
+                />
+                <TypeInput
+                  id="paymentType"
+                  label="결제 유형"
+                  useBlur={false}
+                  value={values.paymentType}
+                  options={["현금", "카드"]}
+                  onChange={(val) => setFieldValue("paymentType", val)}
+                  onBlur={handleBlur("paymentType")}
+                  errorText={touched.paymentType && errors.paymentType}
+                />
+                <DetailInput
+                  id="detail"
+                  label="시술 내용"
+                  useBlur={false}
+                  value={values.detail}
+                  onChangeText={handleChange("detail")}
+                  onBlur={handleBlur("detail")}
+                  errorText={touched.detail && errors.detail}
+                />
+              </View>
+            </ScrollView>
+            <View style={styles.totalContainer}>
+              <Text style={styles.totalText}>
+                금액: {totalAmount.toLocaleString()}원
+              </Text>
             </View>
-          </ScrollView>
-          <View style={styles.submitContainer}>
-            {isSubmitting ? (
-              <ActivityIndicator
-                size="small"
-                color={colors.purple}
-                style={{ marginTop: 10 }}
-              />
-            ) : (
-              <SubmitButton
-                title={"등록"}
-                onPress={handleSubmit}
-                disable={!isValid || !dirty}
-              />
-            )}
+            <View style={styles.submitContainer}>
+              {isSubmitting ? (
+                <ActivityIndicator
+                  size="small"
+                  color={colors.purple}
+                  style={{ marginTop: 10 }}
+                />
+              ) : (
+                <SubmitButton
+                  title={"등록"}
+                  onPress={handleSubmit}
+                  disable={!isValid || !dirty}
+                />
+              )}
+            </View>
           </View>
-        </View>
-      )}
+        );
+      }}
     </Formik>
   );
 };
@@ -188,9 +203,23 @@ const styles = StyleSheet.create({
     paddingHorizontal: 40,
     paddingVertical: 24,
   },
-
   submitContainer: {
     paddingVertical: 10,
     paddingHorizontal: 20,
+  },
+  totalContainer: {
+    paddingHorizontal: 24,
+    paddingVertical: 16,
+    backgroundColor: "#fff",
+    ...commonStyles.dropShadow,
+    shadowOffset: { width: 0, height: -1 },
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+  },
+  totalText: {
+    fontFamily: "gamtanBatangB",
+    fontSize: 24,
+    letterSpacing: "-0.5",
+    color: colors.purple,
   },
 });

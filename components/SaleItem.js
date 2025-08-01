@@ -10,6 +10,7 @@ import colors from "../styles/color";
 import { commonStyles } from "../styles/commonStyles";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+import { formatNumber } from "../utils/format";
 
 const SaleItem = ({ saleData }) => {
   const isFirstVisit = saleData.num_of_visits === 1;
@@ -81,7 +82,7 @@ const SaleItem = ({ saleData }) => {
         )}
 
         <Text style={[styles.detailTitle, { color: textColor }]}>
-          매출: {saleData.total_amount}원
+          매출: {formatNumber(saleData.total_amount)}원
         </Text>
       </View>
 

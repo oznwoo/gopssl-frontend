@@ -13,6 +13,7 @@ import { commonStyles } from "../styles/commonStyles";
 import FloatingExpandButton from "../components/FloatingExpandedButton";
 import { getSalesByDate } from "../actions/saleActions";
 import SaleItem from "../components/SaleItem";
+import { formatNumber } from "../utils/format";
 
 const DailySalesScreen = () => {
   const [date, setDate] = useState(new Date());
@@ -131,7 +132,15 @@ const DailySalesScreen = () => {
         </View>
 
         <View style={styles.totalContainer}>
-          <Text style={styles.totalText}>총 매출: 0원</Text>
+          <Text style={styles.totalText}>
+            총 매출:{" "}
+            {salesData
+              ? formatNumber(
+                  salesData.reduce((acc, curr) => acc + curr.total_amount, 0)
+                )
+              : 0}
+            원
+          </Text>
         </View>
       </View>
     </TouchableWithoutFeedback>

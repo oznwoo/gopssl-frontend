@@ -12,6 +12,7 @@ import colors from "../../styles/color";
 
 import { useDispatch, useSelector } from "react-redux";
 import { fetchTreatmentsThunk } from "../../actions/treatmentActions";
+import { formatNumber } from "../../utils/format";
 
 const CATEGORY_KR_MAP = {
   cut: "커트",
@@ -125,7 +126,7 @@ const TreatmentInput = ({ onTreatmentDataChange, ...rest }) => {
                         isSelected && styles.treatmentTextSelected,
                       ]}
                     >
-                      {treatment.default_price}원
+                      {formatNumber(treatment.default_price)}원
                     </Text>
                   </TouchableOpacity>
                 );
