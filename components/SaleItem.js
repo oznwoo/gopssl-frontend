@@ -12,7 +12,12 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 
 const SaleItem = ({ saleData }) => {
-  console.log(saleData);
+  const isFirstVisit = saleData.num_of_visits === 1;
+  const textColor = isFirstVisit ? "#fff" : colors.purple;
+  const cardBgColor = isFirstVisit ? colors.purple : "#fff";
+  const numOfVisitColor = isFirstVisit
+    ? { color: "#76B4A0", fontFamily: "nanumSquareEB" }
+    : { color: colors.purple, fontFamily: "nanumSquareR" };
 
   const [expanded, setExpanded] = useState(false);
   const rotateAnim = useRef(new Animated.Value(0)).current;
@@ -21,9 +26,13 @@ const SaleItem = ({ saleData }) => {
     .map((item) => `${item.treatment_name}: ${item.price}원`)
     .join(", ");
 
+  const extraPriceText = Object.keys(saleData.extra_prices)
+    .map((key) => `기장추가(${key}): ${saleData.extra_prices[key]}원`)
+    .join(", ");
+
   const toggleExpand = () => {
     Animated.timing(rotateAnim, {
-      toValue: expanded ? 0 : 1, // 0: 오른쪽 ▶️, 1: 아래 🔽
+      toValue: expanded ? 0 : 1,
       duration: 200,
       useNativeDriver: true,
     }).start();
@@ -32,30 +41,37 @@ const SaleItem = ({ saleData }) => {
 
   const rotate = rotateAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: ["90deg", "180deg"], // ▶️ → 🔽
+    outputRange: ["90deg", "180deg"],
   });
 
   return (
-    <View style={styles.itemContainer}>
+    <View style={[styles.itemContainer, { backgroundColor: cardBgColor }]}>
       <View style={styles.contentContainer}>
         <View style={styles.customerInfoContainer}>
-          <Text style={styles.customerName}>
+          <Text style={[styles.customerName, { color: textColor }]}>
             <Text style={{ fontFamily: "gamtanDotumB" }}>
               {saleData.customer_name}
             </Text>
             {` 고객님`}
           </Text>
-          <Text style={styles.numOfVisit}>{saleData.num_of_visits}회 방문</Text>
+          <Text style={[styles.numOfVisit, numOfVisitColor]}>
+            {saleData.num_of_visits}회 방문
+          </Text>
         </View>
+
         <TouchableOpacity onPress={toggleExpand} style={styles.detailToggle}>
-          <Text style={styles.detailTitle}>상세 정보</Text>
+          <Text style={[styles.detailTitle, { color: textColor }]}>
+            상세 정보
+          </Text>
           <Animated.View style={{ transform: [{ rotate }] }}>
-            <Ionicons name="triangle" size={12} color={colors.purple} />
+            <Ionicons name="triangle" size={12} color={textColor} />
           </Animated.View>
         </TouchableOpacity>
+
         {expanded && (
           <View style={styles.detailBox}>
             <Text style={styles.detailText}>{treatmentText}</Text>
+            <Text style={styles.detailText}>{extraPriceText}</Text>
             <Text style={styles.detailText}>이전 방문일: {}</Text>
             <Text style={styles.detailText}>최초 방문일: {}</Text>
             <Text style={styles.detailText}>
@@ -63,10 +79,14 @@ const SaleItem = ({ saleData }) => {
             </Text>
           </View>
         )}
-        <Text style={styles.detailTitle}>매출: {saleData.total_amount}원</Text>
+
+        <Text style={[styles.detailTitle, { color: textColor }]}>
+          매출: {saleData.total_amount}원
+        </Text>
       </View>
+
       <TouchableOpacity style={styles.saleInfoButton}>
-        <FontAwesome5 name="chevron-right" size={24} color={colors.purple} />
+        <FontAwesome5 name="chevron-right" size={24} color={textColor} />
       </TouchableOpacity>
     </View>
   );
@@ -80,14 +100,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-
     borderWidth: 1,
     borderColor: colors.lightPurple,
     borderRadius: 12,
     padding: 16,
-
     ...commonStyles.dropShadow,
-    backgroundColor: "#fff",
   },
   contentContainer: {
     gap: 4,
@@ -98,13 +115,11 @@ const styles = StyleSheet.create({
     fontSize: 20,
     letterSpacing: "-0.5",
     lineHeight: 26,
-    color: colors.purple,
   },
   numOfVisit: {
     fontFamily: "nanumSquareR",
     fontSize: 8,
     letterSpacing: "-0.5",
-    color: colors.purple,
   },
   detailToggle: {
     flexDirection: "row",
@@ -116,7 +131,6 @@ const styles = StyleSheet.create({
     fontFamily: "nanumSquareB",
     fontSize: 12,
     letterSpacing: "-0.5",
-    color: colors.purple,
   },
   detailBox: {
     padding: 8,
@@ -128,5 +142,8 @@ const styles = StyleSheet.create({
     fontFamily: "nanumSquareB",
     fontSize: 8,
     color: colors.purple,
+  },
+  saleInfoButton: {
+    paddingLeft: 8,
   },
 });
