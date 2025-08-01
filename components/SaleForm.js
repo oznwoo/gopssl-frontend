@@ -26,16 +26,10 @@ const SaleForm = ({ saleDate }) => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const { id } = useSelector((state) => state.auth.user);
-  const formattedSaleDate = saleDate
-    ? `${new Date(saleDate).getFullYear()}년 ${
-        new Date(saleDate).getMonth() + 1
-      }월 ${new Date(saleDate).getDate()}일`
-    : "";
-
   const handleRegister = async (values, { setSubmitting, setErrors }) => {
     try {
       const user_id = id; // Redux에서 가져온 로그인 유저 ID
-      const customer_id = 1;
+      const customer_id = 4;
 
       // sale_date를 ISO 날짜 문자열로 변환 (DateInput에서 'yyyy-mm-dd' 형식으로 받는다고 가정)
       const sale_date = new Date(values.saleDate).toISOString().split("T")[0]; // "2025-07-30"
