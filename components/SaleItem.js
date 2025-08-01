@@ -27,9 +27,12 @@ const SaleItem = ({ saleData }) => {
     .map((item) => `${item.treatment_name}: ${item.price}원`)
     .join(", ");
 
-  const extraPriceText = Object.keys(saleData.extra_prices)
-    .map((key) => `기장추가(${key}): ${saleData.extra_prices[key]}원`)
-    .join(", ");
+  const extraPriceText =
+    Object.keys(saleData.extra_prices).length !== 0
+      ? Object.keys(saleData.extra_prices)
+          .map((key) => `기장추가(${key}): ${saleData.extra_prices[key]}원`)
+          .join(", ")
+      : "기장추가: 없음";
 
   const toggleExpand = () => {
     Animated.timing(rotateAnim, {
@@ -73,8 +76,14 @@ const SaleItem = ({ saleData }) => {
           <View style={styles.detailBox}>
             <Text style={styles.detailText}>{treatmentText}</Text>
             <Text style={styles.detailText}>{extraPriceText}</Text>
-            <Text style={styles.detailText}>이전 방문일: {}</Text>
-            <Text style={styles.detailText}>최초 방문일: {}</Text>
+            {saleData.previous_visit && (
+              <Text style={styles.detailText}>
+                {`이전 방문일: ${saleData.previous_visit}`}
+              </Text>
+            )}
+            <Text style={styles.detailText}>
+              최초 방문일: {saleData.first_visit}
+            </Text>
             <Text style={styles.detailText}>
               결제 방식: {saleData.payment_type}
             </Text>
