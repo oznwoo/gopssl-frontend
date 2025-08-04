@@ -14,6 +14,8 @@ import { getSalesByDate } from "../actions/saleActions";
 import SaleItem from "../components/SaleItem";
 import { formatNumber } from "../utils/format";
 import DateHeader from "../components/DateHeader";
+import { useNavigation } from "@react-navigation/native";
+import { isAllOf } from "@reduxjs/toolkit";
 
 const salesByDate = {
   "2025-08-01": 123000,
@@ -26,26 +28,33 @@ const salesByDate = {
 };
 
 const DailySalesScreen = () => {
+  const navigation = useNavigation();
   const [date, setDate] = useState(new Date());
   const [salesCache, setSalesCache] = useState({});
   const [salesData, setSalesData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
 
+  const transitionCustomer = (mode, itemId = undefined) => {
+    const baseParams = { mode };
+    if (mode === "register") {
+      navigation.navigate("Customer", baseParams);
+    } else if (mode === "view") {
+      navigation.navigate("Customer", { ...baseParams, itemId });
+    }
+  };
+
+  const transitionSale = (mode, itemId = undefined) => {
+    const baseParams = { saleDate: date.toISOString(), mode };
+    if (mode === "register") {
+      navigation.navigate("Sale", baseParams);
+    } else if (mode === "view") {
+      navigation.navigate("Sale", { ...baseParams, itemId });
+    }
+  };
+
   const hideExpanded = () => {
     if (isExpanded) setIsExpanded(false);
-  };
-
-  const plusDate = () => {
-    const nextDate = new Date(date);
-    nextDate.setDate(date.getDate() + 1);
-    setDate(nextDate);
-  };
-
-  const minusDate = () => {
-    const prevDate = new Date(date);
-    prevDate.setDate(date.getDate() - 1);
-    setDate(prevDate);
   };
 
   useEffect(() => {
@@ -102,7 +111,12 @@ const DailySalesScreen = () => {
             >
               {salesData ? (
                 salesData.map((item) => (
-                  <SaleItem key={item.id} saleData={item} />
+                  <SaleItem
+                    key={item.id}
+                    saleData={item}
+                    transitionCustomer={transitionCustomer}
+                    transitionSale={transitionSale}
+                  />
                 ))
               ) : (
                 <Text style={styles.emptyText}>
@@ -112,7 +126,12 @@ const DailySalesScreen = () => {
             </ScrollView>
           </View>
 
-          <FloatingExpandButton style={styles.plusButton} date={date} />
+          <FloatingExpandButton
+            style={styles.plusButton}
+            date={date}
+            transitionCustomer={transitionCustomer}
+            transitionSale={transitionSale}
+          />
         </View>
 
         <View style={styles.totalContainer}>

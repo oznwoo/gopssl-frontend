@@ -11,7 +11,6 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import colors from "../styles/color";
 import { StyleSheet } from "react-native";
-import { commonStyles } from "../styles/commonStyles";
 import CustomerScreen from "../screens/CustomerScreen";
 import SaleScreen from "../screens/SaleScreen";
 
@@ -94,7 +93,7 @@ const MainNavigator = () => {
 export default MainNavigator;
 
 const styles = StyleSheet.create({
-  tabBar: { flex: 1, maxHeight: 64 },
+  tabBar: { flex: 1, maxHeight: 56 },
 
   tabBarItem: {
     flex: 1,

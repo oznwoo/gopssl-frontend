@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -13,11 +13,23 @@ import colors from "../../styles/color";
 
 const prefixes = ["010", "031", "02"];
 
-const PhoneNumberInput = ({ onChangePhoneNumber, ...rest }) => {
+const PhoneNumberInput = ({ onChangePhoneNumber, value, ...rest }) => {
   const [prefix, setPrefix] = useState("010");
   const [middle, setMiddle] = useState("");
   const [last, setLast] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
+
+  // value prop이 바뀔 때마다 상태 업데이트
+  useEffect(() => {
+    if (value) {
+      const parts = value.split("-");
+      if (parts.length === 3) {
+        setPrefix(parts[0]);
+        setMiddle(parts[1]);
+        setLast(parts[2]);
+      }
+    }
+  }, [value]);
 
   const handleChange = (part, value) => {
     if (part === "middle") setMiddle(value);
@@ -27,12 +39,6 @@ const PhoneNumberInput = ({ onChangePhoneNumber, ...rest }) => {
       part === "last" ? value : last
     }`;
     onChangePhoneNumber?.(full);
-  };
-
-  const handlePrefixChange = (selected) => {
-    setPrefix(selected);
-    // 현재 상태 기준 전체 번호 업데이트
-    onChangePhoneNumber?.(`${selected}-${middle}-${last}`);
   };
 
   return (

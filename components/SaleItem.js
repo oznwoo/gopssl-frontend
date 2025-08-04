@@ -12,7 +12,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { formatNumber } from "../utils/format";
 
-const SaleItem = ({ saleData }) => {
+const SaleItem = ({ saleData, transitionSale, transitionCustomer }) => {
   const isFirstVisit = saleData.num_of_visits === 1;
   const textColor = isFirstVisit ? "#fff" : colors.purple;
   const cardBgColor = isFirstVisit ? colors.purple : "#fff";
@@ -52,12 +52,16 @@ const SaleItem = ({ saleData }) => {
     <View style={[styles.itemContainer, { backgroundColor: cardBgColor }]}>
       <View style={styles.contentContainer}>
         <View style={styles.customerInfoContainer}>
-          <Text style={[styles.customerName, { color: textColor }]}>
-            <Text style={{ fontFamily: "gamtanDotumB" }}>
-              {saleData.customer_name}
+          <TouchableOpacity
+            onPress={() => transitionCustomer("view", saleData.customer_id)}
+          >
+            <Text style={[styles.customerName, { color: textColor }]}>
+              <Text style={{ fontFamily: "gamtanDotumB" }}>
+                {saleData.customer_name}
+              </Text>
+              {` 고객님`}
             </Text>
-            {` 고객님`}
-          </Text>
+          </TouchableOpacity>
           <Text style={[styles.numOfVisit, numOfVisitColor]}>
             {saleData.num_of_visits}회 방문
           </Text>
@@ -95,7 +99,10 @@ const SaleItem = ({ saleData }) => {
         </Text>
       </View>
 
-      <TouchableOpacity style={styles.saleInfoButton}>
+      <TouchableOpacity
+        style={styles.saleInfoButton}
+        onPress={() => transitionSale("view", saleData.id)}
+      >
         <FontAwesome5 name="chevron-right" size={24} color={textColor} />
       </TouchableOpacity>
     </View>
@@ -110,8 +117,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    borderWidth: 1,
-    borderColor: colors.lightPurple,
     borderRadius: 12,
     padding: 16,
     ...commonStyles.dropShadow,
