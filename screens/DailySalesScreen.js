@@ -3,17 +3,27 @@ import {
   Text,
   StyleSheet,
   View,
-  TouchableOpacity,
   ScrollView,
   TouchableWithoutFeedback,
 } from "react-native";
-import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+
 import colors from "../styles/color";
 import { commonStyles } from "../styles/commonStyles";
 import FloatingExpandButton from "../components/FloatingExpandedButton";
 import { getSalesByDate } from "../actions/saleActions";
 import SaleItem from "../components/SaleItem";
 import { formatNumber } from "../utils/format";
+import DateHeader from "../components/DateHeader";
+
+const salesByDate = {
+  "2025-08-01": 123000,
+  "2025-08-02": 98000,
+  "2025-08-03": 76000,
+  "2025-08-04": 145000,
+  "2025-08-05": 0,
+  "2025-08-06": 220000,
+  "2025-08-07": 198000,
+};
 
 const DailySalesScreen = () => {
   const [date, setDate] = useState(new Date());
@@ -21,10 +31,6 @@ const DailySalesScreen = () => {
   const [salesData, setSalesData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
-
-  const formattedDate = `${date.getFullYear()}년 ${
-    date.getMonth() + 1
-  }월 ${date.getDate()}일`;
 
   const hideExpanded = () => {
     if (isExpanded) setIsExpanded(false);
@@ -76,57 +82,35 @@ const DailySalesScreen = () => {
   return (
     <TouchableWithoutFeedback onPress={hideExpanded}>
       <View style={styles.pageContainer}>
-        <View style={styles.headerContainer}>
-          <View style={styles.horizontalHeader}>
-            <TouchableOpacity
-              onPress={minusDate}
-              style={{
-                ...styles.arrowButton,
-                ...styles.horizontalArrowButton,
-              }}
-            >
-              <FontAwesome5 name="chevron-left" size={24} color="#fff" />
-            </TouchableOpacity>
-            <View style={styles.dateContainer}>
-              <Text style={styles.dateText}>{formattedDate}</Text>
-            </View>
-            <TouchableOpacity
-              onPress={plusDate}
-              style={{
-                ...styles.arrowButton,
-                ...styles.horizontalArrowButton,
-              }}
-            >
-              <FontAwesome5 name="chevron-right" size={24} color="#fff" />
-            </TouchableOpacity>
-          </View>
-          <TouchableOpacity
-            style={{ ...styles.arrowButton, ...styles.verticalArrowButton }}
-            onPress={() => setIsExpanded(!isExpanded)}
-          >
-            <FontAwesome5 name="chevron-down" size={24} color="#fff" />
-          </TouchableOpacity>
-        </View>
+        <DateHeader
+          currentDate={date}
+          onChangeDate={(newDateStr) => setDate(new Date(newDateStr))}
+          salesByDate={salesByDate}
+        />
 
         <View style={styles.contentContainer}>
           <Text style={styles.contentTitle}>일일 매출</Text>
 
-          <ScrollView
-            keyboardShouldPersistTaps="handled"
-            style={{ flex: 1 }}
-            contentContainerStyle={[
-              styles.salesContainer,
-              { justifyContent: salesData ? "flex-start" : "center" },
-            ]}
-          >
-            {salesData ? (
-              salesData.map((item) => (
-                <SaleItem key={item.id} saleData={item} />
-              ))
-            ) : (
-              <Text style={styles.emptyText}>매출이 등록되지 않았습니다.</Text>
-            )}
-          </ScrollView>
+          <View style={{ flex: 1 }}>
+            <ScrollView
+              keyboardShouldPersistTaps="handled"
+              style={{ flex: 1 }}
+              contentContainerStyle={[
+                styles.salesContainer,
+                { justifyContent: salesData ? "flex-start" : "center" },
+              ]}
+            >
+              {salesData ? (
+                salesData.map((item) => (
+                  <SaleItem key={item.id} saleData={item} />
+                ))
+              ) : (
+                <Text style={styles.emptyText}>
+                  매출이 등록되지 않았습니다.
+                </Text>
+              )}
+            </ScrollView>
+          </View>
 
           <FloatingExpandButton style={styles.plusButton} date={date} />
         </View>
@@ -193,6 +177,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: colors.purple,
   },
+  calendarContainer: { paddingHorizontal: 16 },
   contentContainer: {
     flex: 1,
     paddingHorizontal: 40,
