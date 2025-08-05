@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import colors from "../styles/color";
 import { FORM_TYPES } from "../constants/formTypes";
-import Input from "./Input";
+import { BaseInput, PasswordInput } from "./Input";
 import { Formik } from "formik";
 import { SignInSchema } from "../schemas/signInSchema";
 import SubmitButton from "./SubmitButton";
@@ -60,7 +60,7 @@ const SignInForm = ({ setFormType }) => {
       }) => (
         <View style={styles.formContainer}>
           <View style={styles.contentContainer}>
-            <Input
+            <BaseInput
               id="email"
               label={"이메일"}
               autoCapitalize="none"
@@ -69,7 +69,7 @@ const SignInForm = ({ setFormType }) => {
               onBlur={handleBlur("email")}
               errorText={touched.email && errors.email}
             />
-            <Input
+            <PasswordInput
               id="password"
               label={"비밀번호"}
               secureTextEntry
@@ -121,7 +121,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   contentContainer: {
-    gap: 12,
+    gap: 16,
   },
   inputContainer: {
     flexDirection: "row",

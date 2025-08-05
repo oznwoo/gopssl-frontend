@@ -1,13 +1,13 @@
 import React, { useEffect } from "react";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
 import colors from "../styles/color";
-import Input from "./Input";
 import SubmitButton from "./SubmitButton";
 import { Formik } from "formik";
 import { InfoSchema } from "../schemas/InfoSchema";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
 import { registerUserInfo } from "../actions/userActions";
+import { AddressInput, BaseInput, DetailInput } from "./Input";
 
 const InfoForm = ({ setFormType }) => {
   const dispatch = useDispatch();
@@ -75,7 +75,7 @@ const InfoForm = ({ setFormType }) => {
         return (
           <View style={styles.formContainer}>
             <View style={styles.contentContainer}>
-              <Input
+              <BaseInput
                 id="store_name"
                 label={"매장명"}
                 autoCapitalize="none"
@@ -84,7 +84,7 @@ const InfoForm = ({ setFormType }) => {
                 onBlur={handleBlur("storeName")}
                 errorText={touched.storeName && errors.storeName}
               />
-              <Input
+              <AddressInput
                 id="address"
                 label={"주소"}
                 autoCapitalize="none"
@@ -98,7 +98,7 @@ const InfoForm = ({ setFormType }) => {
                 readOnly
               />
 
-              <Input
+              <BaseInput
                 id="zip_code"
                 label={"우편번호"}
                 autoCapitalize="none"
@@ -106,7 +106,7 @@ const InfoForm = ({ setFormType }) => {
                 readOnly
               />
 
-              <Input
+              <BaseInput
                 id="address_detail"
                 label={"상세주소"}
                 autoCapitalize="none"

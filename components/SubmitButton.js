@@ -4,13 +4,21 @@ import { commonStyles } from "../styles/commonStyles";
 import colors from "../styles/color";
 
 const SubmitButton = (props) => {
+  const buttonColor = props.onDelete
+    ? { backgroundColor: colors.alert }
+    : { backgroundColor: colors.purple };
+  const buttonWidth =
+    props.size === "small" ? { width: "50%" } : { width: "100%" };
+
   return (
     <TouchableOpacity
-      onPress={props.onPress}
+      onPress={props.onDelete ? props.onDelete : props.onPress}
       style={{
         ...styles.button,
         ...styles.purpleButton,
         ...commonStyles.dropShadow,
+        ...buttonColor,
+        ...buttonWidth,
         opacity: props.disable ? 0.5 : 1,
       }}
     >
@@ -23,7 +31,6 @@ export default SubmitButton;
 
 const styles = StyleSheet.create({
   purpleButton: {
-    backgroundColor: colors.purple,
     borderColor: "rgba(216, 29, 223, 0.5)",
     paddingVertical: 12,
     paddingHorizontal: 24,
