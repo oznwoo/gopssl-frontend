@@ -23,3 +23,16 @@ export const getSalesByDate = async (dateString) => {
     console.log(error);
   }
 };
+
+export const getSaleById = (saleId) => {
+  return async (dispatch) => {
+    try {
+      const response = await axios.get(`${BASE_URL}/sales/${saleId}`);
+
+      return response.data; // 결과 반환 (optional)
+    } catch (e) {
+      console.log("Error:", e.response?.data || e.message);
+      throw e; // ⬅️ 호출한 곳에서 catch 가능하게
+    }
+  };
+};

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo, useRef } from "react";
 import {
   ActivityIndicator,
   ScrollView,
@@ -19,31 +19,48 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
 import { SaleSchema } from "../schemas/SaleSchema";
-import { postSaleThunk } from "../actions/saleActions";
+import { postSaleThunk, updateSaleThunk } from "../actions/saleActions";
 import { commonStyles } from "../styles/commonStyles";
 
-// 💡 총액 계산 함수 분리
-const calculateTotalAmount = (treatmentList, extraPrices) => {
-  const treatmentTotal = treatmentList.reduce(
-    (acc, cur) => acc + (cur.price || 0),
-    0
-  );
-  const extraTotal = Object.values(extraPrices || {}).reduce(
-    (acc, cur) => acc + (cur || 0),
-    0
-  );
-  return treatmentTotal + extraTotal;
-};
-
-const SaleForm = ({ saleDate }) => {
+const SaleForm = ({ saleDate, data, mode }) => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const { id } = useSelector((state) => state.auth.user);
 
+  const reshapedTreatments = data?.treatments?.map((item) => {
+    const newItem = {
+      treatment_id: item.treatment_id,
+      price: item.price,
+    };
+
+    return newItem;
+  });
+
+  const initialValues =
+    mode === "view" && data
+      ? {
+          name: data.customer_name || "",
+          saleDate: new Date(data.sale_date) || new Date(),
+          paymentType: data.payment_type || "",
+          detail: data.detail || "",
+          treatmentList: reshapedTreatments || [],
+          extraPrices: data.extra_prices || {},
+          totalAmount: data.total_amount,
+        }
+      : {
+          name: "",
+          saleDate: saleDate || new Date(),
+          paymentType: "",
+          detail: "",
+          treatmentList: [],
+          extraPrices: {},
+          totalAmount: 0,
+        };
+
   const handleRegister = async (values, { setSubmitting, setErrors }) => {
     try {
       const user_id = id;
-      const customer_id = 3;
+      const customer_id = data?.customer_id || 3;
 
       const sale_date = new Date(values.saleDate).toISOString().split("T")[0];
 
@@ -53,8 +70,6 @@ const SaleForm = ({ saleDate }) => {
           price,
         })
       );
-
-      const total_amount = calculateTotalAmount(treatments, values.extraPrices);
 
       const saleData = {
         user_id,
@@ -78,18 +93,52 @@ const SaleForm = ({ saleDate }) => {
     }
   };
 
+  const handleUpdate = async (values, { setSubmitting, setErrors }) => {
+    try {
+      const user_id = id;
+      const customer_id = data?.customer_id || 3;
+      const sale_id = data?.id;
+
+      const sale_date = new Date(values.saleDate).toISOString().split("T")[0];
+
+      const treatments = values.treatmentList.map(
+        ({ treatment_id, price }) => ({
+          treatment_id,
+          price,
+        })
+      );
+
+      const total_amount = calculateTotalAmount(treatments, values.extraPrices);
+
+      const saleData = {
+        sale_id,
+        user_id,
+        customer_id,
+        sale_date,
+        detail: values.detail,
+        payment_type: values.paymentType,
+        total_amount,
+        treatments,
+        extra_prices: values.extraPrices,
+      };
+
+      await dispatch(updateSaleThunk(saleData));
+      alert("고객 정보 수정이 완료되었습니다.");
+      navigation.goBack();
+    } catch (error) {
+      console.log("에러 상태코드:", error?.response?.status || error.message);
+      setErrors({ submit: "수정 중 오류가 발생했습니다." });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   return (
     <Formik
-      initialValues={{
-        name: "",
-        saleDate: new Date(),
-        paymentType: "",
-        detail: "",
-        treatmentList: [],
-        extraPrices: {},
-      }}
+      initialValues={initialValues}
       validationSchema={SaleSchema}
-      onSubmit={handleRegister}
+      onSubmit={mode === "view" ? handleUpdate : handleRegister}
+      enableReinitialize
     >
       {({
         handleChange,
@@ -103,10 +152,13 @@ const SaleForm = ({ saleDate }) => {
         isValid,
         dirty,
       }) => {
-        const totalAmount = calculateTotalAmount(
-          values.treatmentList,
-          values.extraPrices
+        // 핵심: useMemo로 value를 감싸줍니다!
+        const treatmentInputValue = useMemo(
+          () => [values.treatmentList, values.extraPrices],
+          [values.treatmentList, values.extraPrices]
         );
+
+        // console.log("외부:", values.treatmentList);
 
         return (
           <View style={styles.formContainer}>
@@ -120,7 +172,7 @@ const SaleForm = ({ saleDate }) => {
                   onChangeText={handleChange("name")}
                   onBlur={handleBlur("name")}
                   errorText={touched.name && errors.name}
-                  onPressIcon={() => {}}
+                  editable={true}
                 />
                 <DateInput
                   id="saleDate"
@@ -130,17 +182,22 @@ const SaleForm = ({ saleDate }) => {
                   onChangeDate={(date) => setFieldValue("saleDate", date)}
                   onBlur={handleBlur("saleDate")}
                   errorText={touched.saleDate && errors.saleDate}
+                  editable={true}
                 />
                 <TreatmentInput
                   id="treatments"
                   label="시술"
                   useBlur={false}
+                  value={treatmentInputValue}
                   onBlur={handleBlur("treatmentList")}
                   errorText={touched.treatmentList && errors.treatmentList}
                   onTreatmentDataChange={({ treatments, extraPrices }) => {
                     setFieldValue("treatmentList", treatments);
                     setFieldValue("extraPrices", extraPrices);
                   }}
+                  onTotalAmountChange={(amount) =>
+                    setFieldValue("totalAmount", amount)
+                  }
                 />
                 <TypeInput
                   id="paymentType"
@@ -151,6 +208,7 @@ const SaleForm = ({ saleDate }) => {
                   onChange={(val) => setFieldValue("paymentType", val)}
                   onBlur={handleBlur("paymentType")}
                   errorText={touched.paymentType && errors.paymentType}
+                  editable={true}
                 />
                 <DetailInput
                   id="detail"
@@ -160,12 +218,13 @@ const SaleForm = ({ saleDate }) => {
                   onChangeText={handleChange("detail")}
                   onBlur={handleBlur("detail")}
                   errorText={touched.detail && errors.detail}
+                  editable={true}
                 />
               </View>
             </ScrollView>
             <View style={styles.totalContainer}>
               <Text style={styles.totalText}>
-                금액: {totalAmount.toLocaleString()}원
+                금액: {values.totalAmount.toLocaleString()}원
               </Text>
             </View>
             <View style={styles.submitContainer}>
@@ -177,7 +236,7 @@ const SaleForm = ({ saleDate }) => {
                 />
               ) : (
                 <SubmitButton
-                  title={"등록"}
+                  title={mode === "view" ? "수정" : "등록"}
                   onPress={handleSubmit}
                   disable={!isValid || !dirty}
                 />

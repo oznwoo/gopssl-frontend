@@ -14,6 +14,7 @@ const CustomerScreen = ({ route }) => {
   const customerId = route.params?.itemId;
   const [customerData, setCustomerData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const headerTitle = customerId ? "고객 정보" : "고객 등록";
 
   useEffect(() => {
     if (!customerId) return;
@@ -32,8 +33,6 @@ const CustomerScreen = ({ route }) => {
 
     fetchCustomerData();
   }, [customerId]);
-
-  const headerTitle = customerId ? "고객 정보" : "고객 등록";
 
   const handleGoBack = () => {
     navigation.goBack();
