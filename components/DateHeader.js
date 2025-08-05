@@ -1,18 +1,20 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { Calendar } from "react-native-calendars";
 import colors from "../styles/color";
 import { formatKoreanDate } from "../utils/format";
 import { commonStyles } from "../styles/commonStyles";
+import { getDailySalesSummary } from "../actions/saleStatistics";
 
 const dayNames = ["일", "월", "화", "수", "목", "금", "토"];
 
-const DateHeader = ({ currentDate, onChangeDate, salesByDate = {} }) => {
+const DateHeader = ({ currentDate, onChangeDate }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [monthDate, setMonthDate] = useState(
     currentDate ? new Date(currentDate) : new Date()
   );
+  const [salesByDate, setSalesByDate] = useState({});
 
   const formatDate = (date) => date.toISOString().split("T")[0];
   const parsedDate = new Date(currentDate);
@@ -20,6 +22,19 @@ const DateHeader = ({ currentDate, onChangeDate, salesByDate = {} }) => {
   const formattedDate = formatKoreanDate(isExpanded ? monthDate : currentDate, {
     monthOnly: isExpanded,
   });
+
+  // 월 변경 시마다 API 호출해서 매출 데이터 가져오기
+  useEffect(() => {
+    const year = monthDate.getFullYear();
+    const month = monthDate.getMonth() + 1; // 0 기반이라 +1
+
+    getDailySalesSummary(year, month)
+      .then((data) => setSalesByDate(data))
+      .catch((e) => {
+        console.error("매출 요약 조회 실패:", e);
+        setSalesByDate({});
+      });
+  }, [monthDate]);
 
   const handleArrowPress = (direction) => {
     const newDate = new Date(isExpanded ? monthDate : parsedDate);
@@ -186,7 +201,7 @@ const DateHeader = ({ currentDate, onChangeDate, salesByDate = {} }) => {
                         },
                       ]}
                     >
-                      0원
+                      미등록
                     </Text>
                   )}
                 </TouchableOpacity>

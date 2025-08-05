@@ -15,17 +15,6 @@ import SaleItem from "../components/SaleItem";
 import { formatNumber } from "../utils/format";
 import DateHeader from "../components/DateHeader";
 import { useNavigation } from "@react-navigation/native";
-import { isAllOf } from "@reduxjs/toolkit";
-
-const salesByDate = {
-  "2025-08-01": 123000,
-  "2025-08-02": 98000,
-  "2025-08-03": 76000,
-  "2025-08-04": 145000,
-  "2025-08-05": 0,
-  "2025-08-06": 220000,
-  "2025-08-07": 198000,
-};
 
 const DailySalesScreen = () => {
   const navigation = useNavigation();
@@ -94,7 +83,6 @@ const DailySalesScreen = () => {
         <DateHeader
           currentDate={date}
           onChangeDate={(newDateStr) => setDate(new Date(newDateStr))}
-          salesByDate={salesByDate}
         />
 
         <View style={styles.contentContainer}>
@@ -102,7 +90,6 @@ const DailySalesScreen = () => {
 
           <View style={{ flex: 1 }}>
             <ScrollView
-              keyboardShouldPersistTaps="handled"
               style={{ flex: 1 }}
               contentContainerStyle={[
                 styles.salesContainer,
