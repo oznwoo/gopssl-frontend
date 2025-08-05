@@ -57,3 +57,18 @@ export const getCustomer = (customerId) => {
     }
   };
 };
+
+export const deleteCustomerById = (customerId) => {
+  return async (dispatch) => {
+    try {
+      const response = await axios.delete(
+        `${BASE_URL}/customers/${customerId}`
+      );
+
+      return response.data; // 결과 반환 (optional)
+    } catch (e) {
+      console.log("Error:", e.response?.data || e.message);
+      throw e; // ⬅️ 호출한 곳에서 catch 가능하게
+    }
+  };
+};

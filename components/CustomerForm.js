@@ -6,7 +6,11 @@ import { Formik } from "formik";
 import { CustomerSchema } from "../schemas/CustomerSchema";
 import { BaseInput, DetailInput, PhoneNumberInput } from "./Input";
 import { useDispatch, useSelector } from "react-redux";
-import { registerCustomer, updateCustomer } from "../actions/customerActions";
+import {
+  deleteCustomerById,
+  registerCustomer,
+  updateCustomer,
+} from "../actions/customerActions";
 import { useNavigation } from "@react-navigation/native";
 
 const CustomerForm = ({ data, mode }) => {
@@ -56,6 +60,21 @@ const CustomerForm = ({ data, mode }) => {
       navigation.navigate("Home");
     } catch (error) {
       console.log("에러 상태코드:", error?.response?.status || error.message);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleDelete = async ({ setSubmitting, setErrors }) => {
+    try {
+      const customerId = data?.id;
+
+      await dispatch(deleteCustomerById(customerId));
+      alert("고객이 삭제되었습니다.");
+      navigation.goBack();
+    } catch (error) {
+      console.log("에러 상태코드:", error?.response?.status || error.message);
+      setErrors({ submit: "삭제 중 오류가 발생했습니다." });
     } finally {
       setSubmitting(false);
     }
@@ -121,11 +140,25 @@ const CustomerForm = ({ data, mode }) => {
                 color={colors.purple}
                 style={{ marginTop: 10 }}
               />
+            ) : mode === "view" ? (
+              <View style={styles.submitButtons}>
+                <SubmitButton
+                  title={"수정"}
+                  onPress={handleSubmit}
+                  size={"small"}
+                  disable={!isValid || !dirty}
+                />
+                <SubmitButton
+                  title={"삭제"}
+                  size={"small"}
+                  onDelete={handleDelete}
+                />
+              </View>
             ) : (
               <SubmitButton
-                title={mode === "view" ? "수정" : "등록"} // 항상 수정으로 표시
+                title={"등록"}
                 onPress={handleSubmit}
-                disable={!isValid || !dirty} // 입력 변경 전까지 비활성화
+                disable={!isValid || !dirty}
               />
             )}
           </View>
@@ -151,5 +184,11 @@ const styles = StyleSheet.create({
   submitContainer: {
     paddingVertical: 10,
     paddingHorizontal: 20,
+  },
+  submitButtons: {
+    flexDirection: "row",
+    gap: 12,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

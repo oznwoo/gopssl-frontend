@@ -19,7 +19,11 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
 import { SaleSchema } from "../schemas/SaleSchema";
-import { postSaleThunk, updateSaleThunk } from "../actions/saleActions";
+import {
+  deleteSaleById,
+  postSaleThunk,
+  updateSaleThunk,
+} from "../actions/saleActions";
 import { commonStyles } from "../styles/commonStyles";
 
 const SaleForm = ({ saleDate, data, mode }) => {
@@ -60,7 +64,7 @@ const SaleForm = ({ saleDate, data, mode }) => {
   const handleRegister = async (values, { setSubmitting, setErrors }) => {
     try {
       const user_id = id;
-      const customer_id = data?.customer_id || 3;
+      const customer_id = data?.customer_id || 7;
 
       const sale_date = new Date(values.saleDate).toISOString().split("T")[0];
 
@@ -70,6 +74,7 @@ const SaleForm = ({ saleDate, data, mode }) => {
           price,
         })
       );
+      console.log(treatments);
 
       const saleData = {
         user_id,
@@ -77,13 +82,13 @@ const SaleForm = ({ saleDate, data, mode }) => {
         sale_date,
         detail: values.detail,
         payment_type: values.paymentType,
-        total_amount,
+        total_amount: values.totalAmount,
         treatments,
         extra_prices: values.extraPrices,
       };
 
       await dispatch(postSaleThunk(saleData));
-      alert("고객 등록이 완료되었습니다.");
+      alert("매출 등록이 완료되었습니다.");
       navigation.goBack();
     } catch (error) {
       console.log("에러 상태코드:", error?.response?.status || error.message);
@@ -96,7 +101,7 @@ const SaleForm = ({ saleDate, data, mode }) => {
   const handleUpdate = async (values, { setSubmitting, setErrors }) => {
     try {
       const user_id = id;
-      const customer_id = data?.customer_id || 3;
+      const customer_id = data?.customer_id;
       const sale_id = data?.id;
 
       const sale_date = new Date(values.saleDate).toISOString().split("T")[0];
@@ -131,6 +136,21 @@ const SaleForm = ({ saleDate, data, mode }) => {
     }
   };
 
+  const handleDelete = async ({ setSubmitting, setErrors }) => {
+    try {
+      const sale_id = data?.id;
+
+      await dispatch(deleteSaleById(sale_id));
+      alert("매출이 삭제되었습니다.");
+      navigation.goBack();
+    } catch (error) {
+      console.log("에러 상태코드:", error?.response?.status || error.message);
+      setErrors({ submit: "삭제 중 오류가 발생했습니다." });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   return (
     <Formik
       initialValues={initialValues}
@@ -155,8 +175,6 @@ const SaleForm = ({ saleDate, data, mode }) => {
           () => [values.treatmentList, values.extraPrices],
           [values.treatmentList, values.extraPrices]
         );
-
-        // console.log("외부:", values.treatmentList);
 
         return (
           <View style={styles.formContainer}>
@@ -232,9 +250,23 @@ const SaleForm = ({ saleDate, data, mode }) => {
                   color={colors.purple}
                   style={{ marginTop: 10 }}
                 />
+              ) : mode === "view" ? (
+                <View style={styles.submitButtons}>
+                  <SubmitButton
+                    title={"수정"}
+                    onPress={handleSubmit}
+                    size={"small"}
+                    disable={!isValid || !dirty}
+                  />
+                  <SubmitButton
+                    title={"삭제"}
+                    size={"small"}
+                    onDelete={handleDelete}
+                  />
+                </View>
               ) : (
                 <SubmitButton
-                  title={mode === "view" ? "수정" : "등록"}
+                  title={"등록"}
                   onPress={handleSubmit}
                   disable={!isValid || !dirty}
                 />
@@ -278,5 +310,11 @@ const styles = StyleSheet.create({
     fontSize: 24,
     letterSpacing: "-0.5",
     color: colors.purple,
+  },
+  submitButtons: {
+    flexDirection: "row",
+    gap: 12,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
