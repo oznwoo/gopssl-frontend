@@ -108,16 +108,14 @@ const SaleForm = ({ saleDate, data, mode }) => {
         })
       );
 
-      const total_amount = calculateTotalAmount(treatments, values.extraPrices);
-
       const saleData = {
-        sale_id,
+        id: sale_id,
         user_id,
         customer_id,
         sale_date,
         detail: values.detail,
         payment_type: values.paymentType,
-        total_amount,
+        total_amount: values.totalAmount,
         treatments,
         extra_prices: values.extraPrices,
       };

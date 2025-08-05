@@ -12,6 +12,16 @@ export const postSaleThunk = (saleData) => async (dispatch) => {
   }
 };
 
+export const updateSaleThunk = (saleData) => async (dispatch) => {
+  try {
+    const response = await axios.put(`${BASE_URL}/sales/`, saleData);
+    return response.data;
+  } catch (error) {
+    console.error("Sale post error:", error);
+    throw error;
+  }
+};
+
 export const getSalesByDate = async (dateString) => {
   try {
     console.log("getSalesByDate 호출됨", dateString); // ✅ 확인용

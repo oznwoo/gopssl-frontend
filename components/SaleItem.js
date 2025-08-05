@@ -148,6 +148,7 @@ const styles = StyleSheet.create({
     letterSpacing: "-0.5",
   },
   detailBox: {
+    maxWidth: "90%",
     padding: 8,
     backgroundColor: colors.backgroundPurple,
     borderRadius: 8,
