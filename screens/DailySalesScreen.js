@@ -24,22 +24,18 @@ const DailySalesScreen = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const transitionCustomer = (mode, itemId = undefined) => {
-    const baseParams = { mode };
-    if (mode === "register") {
-      navigation.navigate("Customer", baseParams);
-    } else if (mode === "view") {
-      navigation.navigate("Customer", { ...baseParams, itemId });
-    }
+  const transitionCustomer = (itemId = undefined) => {
+    const baseParams = { mode: "view" };
+    navigation.navigate("Customer", { ...baseParams, itemId });
   };
 
-  const transitionSale = (mode, itemId = undefined) => {
-    const baseParams = { saleDate: date.toISOString(), mode };
-    if (mode === "register") {
-      navigation.navigate("Sale", baseParams);
-    } else if (mode === "view") {
-      navigation.navigate("Sale", { ...baseParams, itemId });
-    }
+  const transitionSale = (itemId = undefined) => {
+    const baseParams = {
+      saleDate: date.toISOString(),
+      mode: "view",
+    };
+
+    navigation.navigate("Sale", { ...baseParams, itemId });
   };
 
   const hideExpanded = () => {
@@ -113,12 +109,7 @@ const DailySalesScreen = () => {
             </ScrollView>
           </View>
 
-          <FloatingExpandButton
-            style={styles.plusButton}
-            date={date}
-            transitionCustomer={transitionCustomer}
-            transitionSale={transitionSale}
-          />
+          <FloatingExpandButton style={styles.plusButton} date={date} />
         </View>
 
         <View style={styles.totalContainer}>
