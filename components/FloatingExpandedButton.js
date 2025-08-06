@@ -9,10 +9,26 @@ import {
 } from "react-native";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import colors from "../styles/color";
+import { useNavigation } from "@react-navigation/native";
 
 const FloatingExpandButton = (props) => {
+  const navigation = useNavigation();
   const [expanded, setExpanded] = useState(false);
   const animation = useRef(new Animated.Value(0)).current;
+
+  const transitionCustomer = () => {
+    const baseParams = { mode: "register" };
+
+    navigation.navigate("Customer", baseParams);
+  };
+
+  const transitionSale = () => {
+    const baseParams = {
+      saleDate: props.date ? props.date.toISOString() : undefined,
+      mode: "register",
+    };
+    navigation.navigate("Sale", baseParams);
+  };
 
   const toggle = () => {
     setExpanded((prev) => !prev);
@@ -84,14 +100,14 @@ const FloatingExpandButton = (props) => {
             ]}
           >
             <TouchableOpacity
-              onPress={() => props.transitionSale("register")}
+              onPress={() => transitionSale()}
               style={styles.registerButton}
             >
               <Text style={styles.registerText}>매출 등록</Text>
             </TouchableOpacity>
             <View style={styles.separator} />
             <TouchableOpacity
-              onPress={() => props.transitionCustomer("register")}
+              onPress={() => transitionCustomer()}
               style={styles.registerButton}
             >
               <Text style={styles.registerText}>고객 등록</Text>

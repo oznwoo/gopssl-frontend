@@ -53,7 +53,7 @@ const SaleItem = ({ saleData, transitionSale, transitionCustomer }) => {
       <View style={styles.contentContainer}>
         <View style={styles.customerInfoContainer}>
           <TouchableOpacity
-            onPress={() => transitionCustomer("view", saleData.customer_id)}
+            onPress={() => transitionCustomer(saleData.customer_id)}
           >
             <Text style={[styles.customerName, { color: textColor }]}>
               <Text style={{ fontFamily: "gamtanDotumB" }}>
@@ -101,7 +101,7 @@ const SaleItem = ({ saleData, transitionSale, transitionCustomer }) => {
 
       <TouchableOpacity
         style={styles.saleInfoButton}
-        onPress={() => transitionSale("view", saleData.id)}
+        onPress={() => transitionSale(saleData.id)}
       >
         <FontAwesome5 name="chevron-right" size={24} color={textColor} />
       </TouchableOpacity>

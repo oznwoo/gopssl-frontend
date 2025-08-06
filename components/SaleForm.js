@@ -10,7 +10,7 @@ import SubmitButton from "./SubmitButton";
 import colors from "../styles/color";
 import { Formik } from "formik";
 import {
-  AddressInput,
+  SearchInput,
   DetailInput,
   DateInput,
   TreatmentInput,
@@ -180,7 +180,7 @@ const SaleForm = ({ saleDate, data, mode }) => {
           <View style={styles.formContainer}>
             <ScrollView>
               <View style={styles.inputContainer}>
-                <AddressInput
+                <SearchInput
                   id="name"
                   label="고객명"
                   useBlur={false}

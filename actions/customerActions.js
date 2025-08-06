@@ -58,6 +58,23 @@ export const getCustomer = (customerId) => {
   };
 };
 
+export const searchCustomer = (customerName) => {
+  return async (dispatch) => {
+    try {
+      const response = await axios.get(`${BASE_URL}/customers/search`, {
+        params: {
+          name: customerName,
+        },
+      });
+
+      return response.data;
+    } catch (e) {
+      console.log("Error:", e.response?.data || e.message);
+      throw e;
+    }
+  };
+};
+
 export const deleteCustomerById = (customerId) => {
   return async (dispatch) => {
     try {
