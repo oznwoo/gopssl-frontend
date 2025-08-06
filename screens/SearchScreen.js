@@ -12,7 +12,7 @@ import { commonStyles } from "../styles/commonStyles";
 import colors from "../styles/color";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import debounce from "lodash.debounce";
-import { getCustomerByName } from "../actions/customerActions";
+import { searchCustomer } from "../actions/customerActions";
 import { useDispatch } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
 
@@ -50,7 +50,7 @@ const SearchScreen = () => {
         }
 
         try {
-          const res = await dispatch(getCustomerByName(name.trim()));
+          const res = await dispatch(searchCustomer(name.trim()));
           setResults(res);
           console.log(res);
         } catch (e) {
@@ -63,6 +63,25 @@ const SearchScreen = () => {
       }, 500),
     [dispatch]
   );
+
+  const getSnippetWithKeyword = (text, keyword, contextLength = 10) => {
+    if (!text || !keyword) return text;
+
+    const lowerText = text.toLowerCase();
+    const lowerKeyword = keyword.toLowerCase();
+    const index = lowerText.indexOf(lowerKeyword);
+
+    if (index === -1)
+      return text.length > 40 ? text.slice(0, 40) + "..." : text;
+
+    const start = Math.max(index - contextLength, 0);
+    const end = Math.min(index + keyword.length + contextLength, text.length);
+
+    const prefix = start > 0 ? "..." : "";
+    const suffix = end < text.length ? "..." : "";
+
+    return prefix + text.slice(start, end) + suffix;
+  };
 
   useEffect(() => {
     return () => {
@@ -105,6 +124,7 @@ const SearchScreen = () => {
           <TextInput
             ref={inputRef}
             placeholder="검색어를 입력해주세요"
+            placeholderTextColor={colors.purple} // 색상만 변경 가능
             style={styles.searchInput}
             value={searchText}
             onFocus={() => setIsFocused(true)}
@@ -157,8 +177,12 @@ const SearchScreen = () => {
                       numberOfLines={1}
                       ellipsizeMode="tail"
                     >
-                      {highlightMatchedText(item.detail || "", searchText)}
+                      {highlightMatchedText(
+                        getSnippetWithKeyword(item.detail || "", searchText),
+                        searchText
+                      )}
                     </Text>
+
                     <Text style={styles.detail}>
                       {highlightMatchedText(
                         item.phone_number || "",

@@ -58,10 +58,10 @@ export const getCustomer = (customerId) => {
   };
 };
 
-export const getCustomerByName = (customerName) => {
+export const searchCustomer = (customerName) => {
   return async (dispatch) => {
     try {
-      const response = await axios.get(`${BASE_URL}/customers/by_name`, {
+      const response = await axios.get(`${BASE_URL}/customers/search`, {
         params: {
           name: customerName,
         },
