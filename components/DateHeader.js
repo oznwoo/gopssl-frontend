@@ -5,16 +5,17 @@ import { Calendar } from "react-native-calendars";
 import colors from "../styles/color";
 import { formatKoreanDate } from "../utils/format";
 import { commonStyles } from "../styles/commonStyles";
-import { getDailySalesSummary } from "../actions/saleStatistics";
+import { getDailySalesSummary } from "../actions/saleStatisticsActions";
 
 const dayNames = ["일", "월", "화", "수", "목", "금", "토"];
 
-const DateHeader = ({ currentDate, onChangeDate }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
+const DateHeader = ({ currentDate, onChangeDate, onlyCalendar }) => {
+  const [isExpanded, setIsExpanded] = useState(onlyCalendar);
   const [monthDate, setMonthDate] = useState(
     currentDate ? new Date(currentDate) : new Date()
   );
   const [salesByDate, setSalesByDate] = useState({});
+  const DayComponent = onlyCalendar ? View : TouchableOpacity;
 
   const formatDate = (date) => date.toISOString().split("T")[0];
   const parsedDate = new Date(currentDate);
@@ -52,6 +53,7 @@ const DateHeader = ({ currentDate, onChangeDate }) => {
   };
 
   const handleDayPress = (dayObj) => {
+    if (dayObj.dateString === formatDate(currentDate)) return;
     onChangeDate(dayObj.dateString);
   };
 
@@ -78,16 +80,20 @@ const DateHeader = ({ currentDate, onChangeDate }) => {
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity
-          onPress={() => setIsExpanded(!isExpanded)}
-          style={[styles.arrowButton, styles.verticalArrowButton]}
-        >
-          <FontAwesome5
-            name={isExpanded ? "chevron-up" : "chevron-down"}
-            size={24}
-            color="#fff"
-          />
-        </TouchableOpacity>
+        {onlyCalendar ? (
+          <View style={styles.horizontalLine}></View>
+        ) : (
+          <TouchableOpacity
+            onPress={() => setIsExpanded(!isExpanded)}
+            style={[styles.arrowButton, styles.verticalArrowButton]}
+          >
+            <FontAwesome5
+              name={isExpanded ? "chevron-up" : "chevron-down"}
+              size={24}
+              color="#fff"
+            />
+          </TouchableOpacity>
+        )}
       </View>
 
       {isExpanded && (
@@ -124,7 +130,6 @@ const DateHeader = ({ currentDate, onChangeDate }) => {
             renderHeader={() => null} // 기본 헤더 제거
             hideDayNames={true}
             hideExtraDays={false}
-            enableSwipeMonths={true}
             hideArrows={true}
             theme={{
               calendarBackground: "#f1ebf1",
@@ -141,7 +146,7 @@ const DateHeader = ({ currentDate, onChangeDate }) => {
               const salesAmount = salesByDate[date.dateString]; // 매출 가져오기
 
               return (
-                <TouchableOpacity
+                <DayComponent
                   style={[
                     styles.dayContainer,
                     {
@@ -204,7 +209,7 @@ const DateHeader = ({ currentDate, onChangeDate }) => {
                       미등록
                     </Text>
                   )}
-                </TouchableOpacity>
+                </DayComponent>
               );
             }}
           />
@@ -218,7 +223,7 @@ export default DateHeader;
 
 const styles = StyleSheet.create({
   wrapper: {
-    backgroundColor: "#fff",
+    backgroundColor: "tranparent",
     paddingHorizontal: 20,
     borderRadius: 12,
     marginBottom: 12,
@@ -229,11 +234,21 @@ const styles = StyleSheet.create({
     paddingTop: 8,
     paddingBottom: 4,
     marginBottom: 28,
+    width: "100%",
   },
   horizontalHeader: {
     flexDirection: "row",
     gap: 16,
     alignItems: "center",
+  },
+  horizontalLine: {
+    width: "120%",
+    position: "absolute",
+    top: 60,
+    zIndex: 20,
+    height: 2,
+    backgroundColor: "#fff",
+    ...commonStyles.dropShadow,
   },
   arrowButton: {
     backgroundColor: colors.purple,
