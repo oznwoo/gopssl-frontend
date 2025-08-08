@@ -55,7 +55,8 @@ const SalesComparisionScreen = (props) => {
         statisticsData.monthly_comparison.length - 2
       ];
     const difference = thisMonthData.total - lastMonthData.total;
-    const comparisionTextColor = difference > 0 ? colors.green : colors.alert;
+    const comparisionTextColor =
+      difference === 0 ? "#fff" : difference > 0 ? colors.green : "#EB6051";
 
     const cashRatio = statisticsData?.payment_type_ratio?.["현금"] ?? 0;
     const cardRatio = statisticsData?.payment_type_ratio?.["카드"] ?? 0;
@@ -75,15 +76,18 @@ const SalesComparisionScreen = (props) => {
                 {thisMonthData ? (thisMonthData.total / 10000).toFixed(1) : 0}
                 만원
               </Text>
+
               <Text
                 style={[
                   styles.comparisionText,
                   { color: comparisionTextColor },
                 ]}
               >
-                {`(지난 달 대비 ${(difference / 10000).toFixed(1)}만원${
-                  difference > 0 ? "↑" : "↓"
-                })`}
+                {difference === 0
+                  ? "(지난달과 동일한 매출)"
+                  : `(지난 달 대비 ${(Math.abs(difference) / 10000).toFixed(
+                      1
+                    )}만원${difference > 0 ? "↑" : "↓"})`}
               </Text>
             </View>
           </View>
@@ -148,7 +152,9 @@ const SalesComparisionScreen = (props) => {
               지표입니다.
             </Text>
           </View>
-          <SalesBarChart data={statisticsData.monthly_comparison} />
+          <View style={styles.chartContainer}>
+            <SalesBarChart data={statisticsData.monthly_comparison} />
+          </View>
           <View style={{ gap: 12 }}>
             <Text style={styles.boxTitle}>분석</Text>
             <Text style={styles.boxDetail}>
@@ -250,6 +256,11 @@ const styles = StyleSheet.create({
     letterSpacing: "-0.5",
     color: "#656d72",
   },
+  chartContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 10,
+  },
   monthTotal: {
     fontFamily: "gamtanDotumB",
     fontSize: 18,
@@ -260,7 +271,7 @@ const styles = StyleSheet.create({
     fontFamily: "gamtanDotumB",
     fontSize: 12,
     letterSpacing: "-0.5",
-    color: "#EB6051",
+    color: "#fff",
   },
   comparisionBox: {
     backgroundColor: colors.backgroundPurple,
