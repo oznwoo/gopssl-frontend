@@ -3,11 +3,6 @@ import { Text, StyleSheet } from "react-native";
 import { BarChart } from "react-native-gifted-charts";
 import colors from "../styles/color";
 
-function toManWon(amount) {
-  const man = amount / 10000;
-  return Number.isInteger(man) ? man : Number(man.toFixed(1));
-}
-
 const SalesBarChart = ({ data }) => {
   const values = data?.map((item) => item.total / 10000) || [];
 
@@ -48,20 +43,20 @@ const SalesBarChart = ({ data }) => {
   return (
     <BarChart
       data={datas}
-      width={280}
       height={200}
       barWidth={30}
       barBorderTopRightRadius={8}
       barBorderTopLeftRadius={8}
       spacing={28}
-      initialSpacing={60}
+      initialSpacing={64}
       endSpacing={30}
       adjustToWidth
       isAnimated
       maxValue={maxValue} // 데이터 최대값 기준 10단위 올림
       noOfSections={5} // 10 단위 눈금 수
       yAxisThickness={0}
-      xAxisThickness={0}
+      xAxisThickness={1}
+      xAxisColor={"#e9e3e9"}
       xAxisLabelTextStyle={styles.xAxisText}
       yAxisTextStyle={styles.yAxisText}
       formatYLabel={(label) => `${label}만원`}

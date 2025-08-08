@@ -19,22 +19,22 @@ const SalesComparisionScreen = (props) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const year = date.getFullYear();
-    const month = date.getMonth() + 1;
-
-    setIsLoading(true);
-    getMonthlySalesSummary(year, month)
-      .then((data) => {
-        setStatisticsData(data); // shallow copy로 강제 변경 유도
-        setIsLoading(false);
-      })
-      .catch((e) => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        const year = date.getFullYear();
+        const month = date.getMonth() + 1;
+        const data = await getMonthlySalesSummary(year, month);
+        setStatisticsData({ ...data }); // 새 객체로 변경
+      } catch (e) {
         console.error("매출 요약 조회 실패:", e);
         setStatisticsData(null);
+      } finally {
         setIsLoading(false);
-      });
+      }
+    };
 
-    console.log(statisticsData);
+    fetchData();
   }, [date]);
 
   const renderContent = () => {
@@ -145,7 +145,7 @@ const SalesComparisionScreen = (props) => {
         </View>
 
         <View style={styles.comparisionBox}>
-          <View style={{ gap: 12 }}>
+          <View style={{ gap: 12, margin: 8 }}>
             <Text style={styles.boxTitle}>매출 비교</Text>
             <Text style={styles.boxDetail}>
               아래의 지표는 곱슬머리가 매달 1일부터 현재일까지를 비교한
@@ -153,24 +153,32 @@ const SalesComparisionScreen = (props) => {
             </Text>
           </View>
           <View style={styles.chartContainer}>
-            <SalesBarChart data={statisticsData.monthly_comparison} />
-          </View>
-          <View style={{ gap: 12 }}>
-            <Text style={styles.boxTitle}>분석</Text>
-            <Text style={styles.boxDetail}>
-              지난 4개월 동안의 1일부터 현재일까지의 매출을 비교한 결과, 저번
-              달에 비해서는 95만원이 적지만 평균에 매우 가까운 결과를 보여주고
-              있습니다.
-            </Text>
+            {statisticsData.monthly_comparison &&
+              statisticsData.monthly_comparison.length > 0 && (
+                <SalesBarChart
+                  key={`bar-${date.toISOString()}`}
+                  data={statisticsData.monthly_comparison}
+                />
+              )}
           </View>
         </View>
 
         <View style={styles.comparisionBox}>
-          <Text style={styles.boxTitle}>연도별 비교</Text>
-          <Text style={styles.boxDetail}>
-            연도별 매출 추이를 확인할 수 있습니다.
-          </Text>
-          <YearlyComparisonChart data={statisticsData.yearly_comparison} />
+          <View style={{ gap: 12, margin: 4 }}>
+            <Text style={styles.boxTitle}>연도별 비교</Text>
+            <Text style={styles.boxDetail}>
+              연도별 매출 추이를 확인할 수 있습니다.
+            </Text>
+          </View>
+          <View style={styles.chartContainer}>
+            {statisticsData?.yearly_comparison &&
+              Object.keys(statisticsData.yearly_comparison).length > 0 && (
+                <YearlyComparisonChart
+                  key={`line-${date.toISOString()}`}
+                  data={{ ...statisticsData.yearly_comparison }}
+                />
+              )}
+          </View>
         </View>
       </ScrollView>
     );
@@ -259,7 +267,7 @@ const styles = StyleSheet.create({
   chartContainer: {
     justifyContent: "center",
     alignItems: "center",
-    padding: 10,
+    padding: 4,
   },
   monthTotal: {
     fontFamily: "gamtanDotumB",

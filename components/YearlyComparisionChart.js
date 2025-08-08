@@ -1,12 +1,22 @@
-import React from "react";
-import { View, Text } from "react-native";
+import React, { useState } from "react";
+import { View, Text, StyleSheet } from "react-native";
 import { LineChart } from "react-native-gifted-charts";
+import colors from "../styles/color";
 
 const YearlyComparisonChart = ({ data }) => {
-  // data가 객체인지 확인하고, 없으면 빈 객체 할당
+  const [focusedPoint, setFocusedPoint] = useState(null);
+
   const years = data ? Object.keys(data).sort() : [];
 
-  // 월 레이블 (1~12월)
+  const convertedData = {};
+  years.forEach((year) => {
+    convertedData[year] = (data[year] || []).map((val) => val / 10000);
+  });
+
+  const allValues = years.flatMap((year) => convertedData[year] || []);
+  const maxRaw = allValues.length > 0 ? Math.max(...allValues) * 1.05 : 100;
+  const maxValue = Math.ceil(maxRaw * 10) / 10;
+
   const labels = [
     "1월",
     "2월",
@@ -22,48 +32,113 @@ const YearlyComparisonChart = ({ data }) => {
     "12월",
   ];
 
-  // 각 연도별 데이터를 line chart 형식에 맞게 가공
-  const formattedData = years.map((year, index) => ({
+  const formattedData = years.map((year, yearIdx) => ({
     id: year,
-    data: (data[year] || []).map((value, idx) => ({
+    data: (convertedData[year] || []).map((value, idx) => ({
       value,
       label: labels[idx],
-      hideDataPoint: true,
-      // 예시 색상, 배열 순서에 따라 다르게 설정 가능
-      dataPointColor: index === 0 ? "#8D4BE5" : "#C12B7D",
     })),
-    color: index === 0 ? "#8D4BE5" : "#C12B7D",
+    color: yearIdx === 0 ? colors.purple : colors.secondPurple,
   }));
 
+  const renderCustomTooltip = () => {
+    if (!focusedPoint) return null;
+
+    return (
+      <View style={styles.tooltip}>
+        <Text style={styles.tooltipText}>{focusedPoint.value}만원</Text>
+      </View>
+    );
+  };
+
   return (
-    <View>
+    <View style={styles.container}>
+      {renderCustomTooltip()}
+
       {formattedData.length > 0 && (
         <LineChart
           data={formattedData[0].data}
           data2={formattedData[1]?.data}
           width={300}
-          height={200}
-          spacing={40}
-          xAxisLabelTextStyle={{ fontSize: 10, color: "grey" }}
-          yAxisTextStyle={{ fontSize: 10, color: "grey" }}
-          initialSpacing={0}
-          showXAxisIndices
-          xAxisIndicesHeight={10}
-          xAxisIndicesWidth={1}
-          xAxisIndicesColor={"#ccc"}
-          xAxisLabelTexts={labels}
+          height={220}
+          adjustToWidth
+          noOfSections={5}
+          initialSpacing={24}
+          endSpacing={20}
+          spacing={24}
           thickness={2}
           thickness2={2}
-          color1="#8D4BE5"
-          color2="#C12B7D"
           curved
-          hideDataPoints
-          yAxisColor="#ccc"
-          yAxisLabelWidth={40}
+          color1={colors.purple}
+          color2={colors.secondPurple}
+          xAxisLabelTexts={labels}
+          xAxisLabelTextStyle={styles.xAxisText}
+          yAxisTextStyle={styles.yAxisText}
+          yAxisThickness={0}
+          xAxisThickness={1}
+          xAxisColor={"#e9e3e9"}
+          formatYLabel={(label) => `${label}만원`}
+          hideDataPoints={false}
+          dataPointsColor1={colors.purple}
+          dataPointsColor2={colors.secondPurple}
+          maxValue={maxValue}
+          startFillColor1={colors.purple}
+          startFillColor2={colors.secondPurple}
+          startOpacity={0.8}
+          endOpacity={0.3}
+          areaChart1
+          areaChart2
+          // 포커스
+          focusEnabled
+          showStripOnFocus
+          focusedDataPointRadius={8}
+          focusedDataPointColor={colors.alert}
+          // 커스텀 포커스 처리
+          onFocus={(item) => {
+            setFocusedPoint(item);
+          }}
+          onPressOut={() => {
+            setFocusedPoint(null);
+          }}
         />
       )}
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    width: "100%",
+    alignItems: "center",
+    paddingVertical: 8,
+    borderRadius: 12,
+    overflow: "visible",
+  },
+  tooltip: {
+    position: "absolute",
+    top: 10,
+    backgroundColor: colors.purple,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 8,
+    zIndex: 10,
+  },
+  tooltipText: {
+    fontSize: 12,
+    fontWeight: "bold",
+    color: "#fff",
+  },
+  yAxisText: {
+    fontSize: 10,
+    fontFamily: "nanumSquareB",
+    color: colors.purple,
+  },
+  xAxisText: {
+    fontSize: 8,
+    fontFamily: "nanumSquareB",
+    letterSpacing: -0.5,
+    color: "#000",
+  },
+});
 
 export default YearlyComparisonChart;
