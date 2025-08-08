@@ -34,7 +34,7 @@ const SalesBarChart = ({ data }) => {
         barBorderRadius={8}
         frontColor="#c9b7e5"
         data={datas}
-        maxValue={50}
+        maxValue={70}
         noOfSections={5}
         spacing={30}
         showValuesOnTopOfBars

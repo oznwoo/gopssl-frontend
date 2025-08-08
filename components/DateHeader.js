@@ -41,12 +41,12 @@ const DateHeader = ({ currentDate, onChangeDate, onlyCalendar }) => {
     const newDate = new Date(isExpanded ? monthDate : parsedDate);
 
     if (isExpanded) {
-      // 월 단위 이동 (onChangeDate 호출 X)
+      // 월 단위 이동 시에도 반드시 상위로 알린다
       newDate.setMonth(newDate.getMonth() + direction);
-      newDate.setDate(1); // 안전하게 1일로 고정
+      newDate.setDate(1);
       setMonthDate(newDate);
+      onChangeDate(formatDate(newDate)); // ✅ 반드시 상태 공유
     } else {
-      // 일 단위 이동 (onChangeDate 호출 O)
       newDate.setDate(newDate.getDate() + direction);
       onChangeDate(formatDate(newDate));
     }

@@ -9,7 +9,7 @@ export const getDailySalesSummary = async (year, month) => {
         params: { year, month },
       }
     );
-    return response.data; // { "2025-08-01": 120000, ... }
+    return response.data;
   } catch (error) {
     console.error("getDailySalesSummary error:", error);
     throw error;
@@ -24,7 +24,7 @@ export const getMonthlySalesSummary = async (year, month) => {
         params: { year, month },
       }
     );
-    return response.data; // { "2025-08-01": 120000, ... }
+    return response.data;
   } catch (error) {
     console.error("getMonthlySalesSummary error:", error);
     throw error;

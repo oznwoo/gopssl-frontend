@@ -15,7 +15,7 @@ import { getMonthlySalesSummary } from "../actions/saleStatisticsActions";
 
 const SalesComparisionScreen = (props) => {
   const [date, setDate] = useState(new Date());
-  const [statisticsData, setStatisticsData] = useState(null);
+  const [statisticsData, setStatisticsData] = useState({});
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -25,7 +25,7 @@ const SalesComparisionScreen = (props) => {
     setIsLoading(true);
     getMonthlySalesSummary(year, month)
       .then((data) => {
-        setStatisticsData(data);
+        setStatisticsData(data); // shallow copy로 강제 변경 유도
         setIsLoading(false);
       })
       .catch((e) => {
@@ -33,11 +33,17 @@ const SalesComparisionScreen = (props) => {
         setStatisticsData(null);
         setIsLoading(false);
       });
+
+    console.log(statisticsData);
   }, [date]);
 
   const renderContent = () => {
     if (isLoading || !statisticsData) {
-      return <ActivityIndicator size="large" color={colors.purple} />;
+      return (
+        <View style={styles.pageContainer}>
+          <ActivityIndicator size="large" color={colors.purple} />
+        </View>
+      );
     }
 
     const thisMonthData =
@@ -49,6 +55,7 @@ const SalesComparisionScreen = (props) => {
         statisticsData.monthly_comparison.length - 2
       ];
     const difference = thisMonthData.total - lastMonthData.total;
+    const comparisionTextColor = difference > 0 ? colors.green : colors.alert;
 
     const cashRatio = statisticsData?.payment_type_ratio?.["현금"] ?? 0;
     const cardRatio = statisticsData?.payment_type_ratio?.["카드"] ?? 0;
@@ -68,8 +75,15 @@ const SalesComparisionScreen = (props) => {
                 {thisMonthData ? (thisMonthData.total / 10000).toFixed(1) : 0}
                 만원
               </Text>
-              <Text style={styles.comparisionText}>
-                {`(지난 달 대비 ${(difference / 10000).toFixed(1)}만원 ↓)`}
+              <Text
+                style={[
+                  styles.comparisionText,
+                  { color: comparisionTextColor },
+                ]}
+              >
+                {`(지난 달 대비 ${(difference / 10000).toFixed(1)}만원${
+                  difference > 0 ? "↑" : "↓"
+                })`}
               </Text>
             </View>
           </View>
@@ -150,7 +164,7 @@ const SalesComparisionScreen = (props) => {
           <Text style={styles.boxDetail}>
             연도별 매출 추이를 확인할 수 있습니다.
           </Text>
-          <YearlyComparisonChart />
+          <YearlyComparisonChart data={statisticsData.yearly_comparison} />
         </View>
       </ScrollView>
     );
@@ -163,7 +177,7 @@ const SalesComparisionScreen = (props) => {
           onlyCalendar={true}
           currentDate={date}
           onChangeDate={(newDateStr) => {
-            setDate(newDateStr);
+            setDate(new Date(newDateStr));
           }}
         />
       </View>
