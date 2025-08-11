@@ -64,7 +64,7 @@ const SaleForm = ({ saleDate, data, mode }) => {
   const handleRegister = async (values, { setSubmitting, setErrors }) => {
     try {
       const user_id = id;
-      const customer_id = data?.customer_id || 7;
+      const customer_id = data?.customer_id || 10;
 
       const sale_date = new Date(values.saleDate).toISOString().split("T")[0];
 

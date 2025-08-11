@@ -36,7 +36,6 @@ const SignUpForm = ({ setFormType }) => {
       } else {
         setErrors({ password: error.message });
       }
-      setIsLoading(false);
     } finally {
       setSubmitting(false);
     }
