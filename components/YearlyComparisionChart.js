@@ -113,7 +113,6 @@ const YearlyComparisonChart = ({ data }) => {
     <View style={styles.container}>
       {renderCustomTooltip()}
 
-      {/* 범례 부분에도 변수 사용 */}
       <View style={{ flexDirection: "row", justifyContent: "center" }}>
         <View
           style={{

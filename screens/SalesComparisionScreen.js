@@ -109,37 +109,54 @@ const SalesComparisionScreen = (props) => {
                 <Text style={styles.typeText}>현금</Text>
                 <Text style={styles.typeText}>카드</Text>
               </View>
-              <View style={styles.typeChart}>
-                <View
-                  style={[
-                    styles.typeRatio,
-                    {
-                      flex: cashRatio,
-                      backgroundColor: colors.purple,
-                    },
-                  ]}
-                >
-                  <Text style={[styles.typeRatioText, { color: "#fff" }]}>
-                    {(cashRatio * 100).toFixed(0)}%
-                  </Text>
-                </View>
-                <View
-                  style={[
-                    styles.typeRatio,
-                    {
-                      flex: cardRatio,
-                      backgroundColor: "#fff",
-                      alignItems: "flex-end",
-                    },
-                  ]}
-                >
-                  <Text
-                    style={[styles.typeRatioText, { color: colors.purple }]}
+              {cardRatio || cashRatio ? (
+                <View style={styles.typeChart}>
+                  <View
+                    style={[
+                      styles.typeRatio,
+                      {
+                        flex: cashRatio,
+                        backgroundColor: colors.purple,
+                      },
+                    ]}
                   >
-                    {(cardRatio * 100).toFixed(0)}%
+                    <Text style={[styles.typeRatioText, { color: "#fff" }]}>
+                      {(cashRatio * 100).toFixed(0)}%
+                    </Text>
+                  </View>
+                  <View
+                    style={[
+                      styles.typeRatio,
+                      {
+                        flex: cardRatio,
+                        backgroundColor: "#fff",
+                        alignItems: "flex-end",
+                      },
+                    ]}
+                  >
+                    <Text
+                      style={[styles.typeRatioText, { color: colors.purple }]}
+                    >
+                      {(cardRatio * 100).toFixed(0)}%
+                    </Text>
+                  </View>
+                </View>
+              ) : (
+                <View
+                  style={
+                    ([styles.typeChart],
+                    {
+                      justifyContent: "center",
+                      alignItems: "center",
+                      padding: 8,
+                    })
+                  }
+                >
+                  <Text style={styles.boxDetail}>
+                    아직 매출이 등록되지 않았습니다.
                   </Text>
                 </View>
-              </View>
+              )}
             </View>
           </View>
         </View>
