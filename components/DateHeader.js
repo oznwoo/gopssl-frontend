@@ -20,6 +20,10 @@ const DateHeader = ({ currentDate, onChangeDate, onlyCalendar }) => {
   const formatDate = (date) => date.toISOString().split("T")[0];
   const parsedDate = new Date(currentDate);
 
+  // 오늘 날짜 고정
+  const todayDate = new Date();
+  const todayString = formatDate(todayDate);
+
   const formattedDate = formatKoreanDate(isExpanded ? monthDate : currentDate, {
     monthOnly: isExpanded,
   });
@@ -38,23 +42,48 @@ const DateHeader = ({ currentDate, onChangeDate, onlyCalendar }) => {
   }, [monthDate]);
 
   const handleArrowPress = (direction) => {
-    const newDate = new Date(isExpanded ? monthDate : parsedDate);
+    const newDate = new Date(monthDate);
+    newDate.setMonth(newDate.getMonth() + direction);
+    newDate.setDate(1);
+    setMonthDate(newDate);
 
-    if (isExpanded) {
-      // 월 단위 이동 시에도 반드시 상위로 알린다
-      newDate.setMonth(newDate.getMonth() + direction);
-      newDate.setDate(1);
-      setMonthDate(newDate);
-      onChangeDate(formatDate(newDate)); // ✅ 반드시 상태 공유
-    } else {
-      newDate.setDate(newDate.getDate() + direction);
+    // onlyCalendar 모드가 아닐 때만 상위로 날짜 변경 알림
+    if (!onlyCalendar) {
       onChangeDate(formatDate(newDate));
     }
+    // 모드에 관계없이 항상 상위에 알림
+    onChangeDate(formatDate(newDate));
   };
 
   const handleDayPress = (dayObj) => {
+    // onlyCalendar 모드에서는 날짜 변경하지 않음
+    if (onlyCalendar) return;
+
     if (dayObj.dateString === formatDate(currentDate)) return;
     onChangeDate(dayObj.dateString);
+  };
+
+  // markedDates 설정 - onlyCalendar 모드에서는 오늘 날짜만, 일반 모드에서는 currentDate
+  const getMarkedDates = () => {
+    if (onlyCalendar) {
+      // onlyCalendar 모드: 오늘 날짜만 하이라이트
+      return {
+        [todayString]: {
+          selected: true,
+          selectedColor: colors.purple,
+          selectedTextColor: "#fff",
+        },
+      };
+    } else {
+      // 일반 모드: 상위에서 받은 currentDate 날짜 하이라이트
+      return {
+        [formatDate(currentDate)]: {
+          selected: true,
+          selectedColor: colors.purple,
+          selectedTextColor: "#fff",
+        },
+      };
+    }
   };
 
   return (
@@ -119,14 +148,7 @@ const DateHeader = ({ currentDate, onChangeDate, onlyCalendar }) => {
             key={formatDate(monthDate)} // 리렌더 트리거
             current={formatDate(monthDate)}
             onDayPress={handleDayPress}
-            markedDates={{
-              [formatDate(currentDate)]: {
-                selected: true,
-                // 여기 색상들은 dayComponent 커스텀 시 무시됨
-                selectedColor: colors.purple,
-                selectedTextColor: "#fff",
-              },
-            }}
+            markedDates={getMarkedDates()} // 수정된 부분
             renderHeader={() => null} // 기본 헤더 제거
             hideDayNames={true}
             hideExtraDays={false}
