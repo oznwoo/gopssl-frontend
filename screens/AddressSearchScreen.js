@@ -12,8 +12,10 @@ import { searchAddress } from "../actions/addressActions";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import colors from "../styles/color";
 import { commonStyles } from "../styles/commonStyles";
+import { useRoute } from "@react-navigation/native";
 
 const AddressSearchScreen = ({ navigation }) => {
+  const route = useRoute();
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
 
@@ -40,7 +42,7 @@ const AddressSearchScreen = ({ navigation }) => {
       addressName: item.road_address ? item.road_address : item.jibun_address,
       zipCode: item.zone_no,
     };
-    navigation.navigate("StartScreen", {
+    navigation.navigate(route?.params?.backScreen, {
       selectedAddress: selected,
       formType: "info",
     });

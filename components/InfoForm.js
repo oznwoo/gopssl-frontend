@@ -93,7 +93,9 @@ const InfoForm = ({ setFormType }) => {
                 onBlur={handleBlur("address")}
                 errorText={touched.address && errors.address}
                 onPressIcon={() => {
-                  navigation.navigate("AddressSearchScreen");
+                  navigation.navigate("AddressSearchScreen", {
+                    backScreen: "StartScreen",
+                  });
                 }}
                 readOnly
               />

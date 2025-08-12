@@ -13,6 +13,9 @@ import colors from "../styles/color";
 import { StyleSheet } from "react-native";
 import CustomerScreen from "../screens/CustomerScreen";
 import SaleScreen from "../screens/SaleScreen";
+import ProfileScreen from "../screens/ProfileScreen";
+import AddressSearchScreen from "../screens/AddressSearchScreen";
+import DetailScreen from "../screens/DetailScreen";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -81,6 +84,21 @@ const StackNavigator = () => (
     <Stack.Screen
       name="Sale"
       component={SaleScreen}
+      options={{ headerShown: false }}
+    />
+    <Stack.Screen
+      name="Profile"
+      component={ProfileScreen}
+      options={{ headerShown: false }}
+    />
+    <Stack.Screen
+      name="Detail"
+      component={DetailScreen}
+      options={{ headerShown: false }}
+    />
+    <Stack.Screen
+      name="AddressSearchScreen"
+      component={AddressSearchScreen}
       options={{ headerShown: false }}
     />
   </Stack.Navigator>

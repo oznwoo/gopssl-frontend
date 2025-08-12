@@ -1,5 +1,9 @@
 import axios from "axios";
-import { signUpSuccess, signInSuccess } from "../store/authSlice";
+import {
+  signUpSuccess,
+  signInSuccess,
+  logout as logoutAction,
+} from "../store/authSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { BASE_URL } from "../constants/baseURL";
 
@@ -98,6 +102,22 @@ export const signIn = ({ email, password }) => {
       const customError = new Error(errorMessage);
       customError.status = statusCode; // ✅ 상태코드 추가
       throw customError;
+    }
+  };
+};
+
+export const logout = () => {
+  return async (dispatch) => {
+    try {
+      // AsyncStorage에서 토큰과 유저 정보 삭제
+      await AsyncStorage.removeItem("token");
+      await AsyncStorage.removeItem("user");
+
+      // Redux 상태 초기화
+      dispatch(logoutAction());
+    } catch (e) {
+      console.error("로그아웃 중 오류 발생:", e);
+      // 필요시 에러 처리 추가
     }
   };
 };
