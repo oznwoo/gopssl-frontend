@@ -14,10 +14,16 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { useDispatch } from "react-redux";
 import { logout } from "../actions/authActions";
+import { useNavigation } from "@react-navigation/native";
 
 const SettingScreen = (props) => {
   const dispatch = useDispatch();
+  const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
+
+  const handleProfile = () => {
+    navigation.navigate("Profile");
+  };
 
   const handleLogout = () => {
     try {
@@ -45,7 +51,7 @@ const SettingScreen = (props) => {
         </View>
 
         <View style={styles.settingContainer}>
-          <TouchableOpacity style={styles.settingItem}>
+          <TouchableOpacity style={styles.settingItem} onPress={handleProfile}>
             <Ionicons name="person" size={20} color={colors.purple} />
             <Text style={styles.settingText}>계정</Text>
             <FontAwesome5

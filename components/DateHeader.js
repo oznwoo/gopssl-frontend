@@ -42,17 +42,19 @@ const DateHeader = ({ currentDate, onChangeDate, onlyCalendar }) => {
   }, [monthDate]);
 
   const handleArrowPress = (direction) => {
-    const newDate = new Date(monthDate);
-    newDate.setMonth(newDate.getMonth() + direction);
-    newDate.setDate(1);
-    setMonthDate(newDate);
-
-    // onlyCalendar 모드가 아닐 때만 상위로 날짜 변경 알림
-    if (!onlyCalendar) {
+    if (isExpanded) {
+      // 캘린더(expanded) 모드: 월 단위 이동
+      const newMonthDate = new Date(monthDate);
+      newMonthDate.setMonth(newMonthDate.getMonth() + direction);
+      newMonthDate.setDate(1);
+      setMonthDate(newMonthDate);
+      onChangeDate(formatDate(newMonthDate));
+    } else {
+      // 일반(축소) 모드: 일 단위 이동
+      const newDate = new Date(currentDate);
+      newDate.setDate(newDate.getDate() + direction);
       onChangeDate(formatDate(newDate));
     }
-    // 모드에 관계없이 항상 상위에 알림
-    onChangeDate(formatDate(newDate));
   };
 
   const handleDayPress = (dayObj) => {
