@@ -7,7 +7,7 @@ import { InfoSchema } from "../schemas/InfoSchema";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
 import { registerUserInfo } from "../actions/userActions";
-import { SearchInput, BaseInput, DetailInput } from "./Input";
+import { AddressSearchInput, BaseInput, DetailInput } from "./Input";
 
 const InfoForm = ({ setFormType }) => {
   const dispatch = useDispatch();
@@ -84,7 +84,7 @@ const InfoForm = ({ setFormType }) => {
                 onBlur={handleBlur("storeName")}
                 errorText={touched.storeName && errors.storeName}
               />
-              <SearchInput
+              <AddressSearchInput
                 id="address"
                 label={"주소"}
                 autoCapitalize="none"
