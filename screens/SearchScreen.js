@@ -52,7 +52,6 @@ const SearchScreen = () => {
         try {
           const res = await dispatch(searchCustomer(name.trim()));
           setResults(res);
-          console.log(res);
         } catch (e) {
           if (e.response?.status === 404) {
             setResults([]);

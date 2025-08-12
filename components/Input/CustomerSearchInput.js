@@ -23,11 +23,13 @@ const CustomerSearchInput = ({
   onChangeText,
   minLength = 1,
   errorText,
+  mode,
 }) => {
   const dispatch = useDispatch();
   const [searchText, setSearchText] = useState(value);
   const [results, setResults] = useState([]);
   const [isActive, setIsActive] = useState(false); // ✅ 검색 활성화 여부
+  const [isNew, setIsNew] = useState(false);
   const inputRef = useRef(null);
 
   // API 호출 디바운스
@@ -43,8 +45,11 @@ const CustomerSearchInput = ({
           const items = await dispatch(searchCustomer(text.trim()));
           setResults(items);
         } catch (e) {
-          console.error("검색 실패", e);
-          setResults([]);
+          if (e.response?.status === 404) {
+            setResults([]);
+          } else {
+            console.error("고객 검색 실패", e.message);
+          }
         }
       }, 300),
     [dispatch, minLength, isActive]
@@ -102,29 +107,66 @@ const CustomerSearchInput = ({
     inputRef.current?.blur();
   };
 
+  const handleNewCustomer = () => {
+    setIsNew(!isNew);
+    setIsActive(false); // ✅ 검색 비활성화
+    const newCustomerName = !isNew ? "신규고객님" : "";
+    setSearchText(newCustomerName);
+    onChangeText(-1, newCustomerName);
+    inputRef.current?.blur();
+  };
+
   return (
     <View style={styles.container}>
-      <BaseInput
-        label={label}
-        errorText={errorText}
-        useBlur={false}
-        inputProps={{
-          ref: inputRef,
-          value: searchText,
-          onChangeText: setSearchText,
-          onFocus: () => setIsActive(true), // ✅ 포커스 시 검색 활성화
-          placeholder,
-          style: styles.input,
-        }}
-        rightIcon={
-          searchText.length > 0 && (
-            <TouchableOpacity onPress={() => setSearchText("")}>
-              <Ionicons name="close" size={20} color={colors.purple} />
-            </TouchableOpacity>
-          )
-        }
-      />
-
+      <View style={{ flexDirection: "row" }}>
+        <BaseInput
+          label={label}
+          errorText={errorText}
+          useBlur={false}
+          readOnly={isNew}
+          inputProps={{
+            ref: inputRef,
+            value: searchText,
+            onChangeText: setSearchText,
+            onFocus: () => setIsActive(true), // ✅ 포커스 시 검색 활성화
+            placeholder,
+            style: styles.input,
+          }}
+          rightIcon={
+            searchText.length > 0 && (
+              <TouchableOpacity onPress={() => setSearchText("")}>
+                <Ionicons name="close" size={20} color={colors.purple} />
+              </TouchableOpacity>
+            )
+          }
+          specialButton={
+            mode !== "view" && ( // ✅ view 모드에서는 버튼 숨김
+              <View
+                style={[
+                  styles.specialButtonContainer,
+                  isNew
+                    ? { backgroundColor: colors.purple }
+                    : { backgroundColor: "#fff" },
+                ]}
+              >
+                <TouchableOpacity
+                  style={styles.specialButton}
+                  onPress={handleNewCustomer}
+                >
+                  <Text
+                    style={[
+                      styles.specialButtonText,
+                      isNew ? { color: "#fff" } : { color: colors.purple },
+                    ]}
+                  >
+                    신규고객
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            )
+          }
+        />
+      </View>
       {isActive &&
         results.length > 0 && ( // ✅ 활성화 상태에서만 목록 표시
           <FlatList
@@ -199,6 +241,32 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: "#fff",
     ...commonStyles.dropShadow,
+  },
+  specialButtonContainer: {
+    height: "180%",
+    width: 50,
+    position: "absolute",
+    right: 0,
+    borderTopRightRadius: 8,
+    borderBottomRightRadius: 8,
+    borderWidth: 1,
+    borderColor: colors.backgroundPurple,
+    borderLeftWidth: 1,
+    borderLeftColor: colors.purple,
+  },
+  specialButton: {
+    height: "100%",
+    width: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  specialButtonText: {
+    fontFamily: "nanumSquareEB",
+    width: 24,
+    textAlign: "center",
+    fontSize: 10,
+    color: colors.purple,
+    numberOfLines: 2,
   },
   customerItem: {
     width: "100%",

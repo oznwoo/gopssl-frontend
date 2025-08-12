@@ -26,6 +26,7 @@ import {
   updateSaleThunk,
 } from "../actions/saleActions";
 import { commonStyles } from "../styles/commonStyles";
+import { registerCustomer } from "../actions/customerActions";
 
 const SaleForm = ({ saleDate, data, mode }) => {
   const dispatch = useDispatch();
@@ -67,7 +68,16 @@ const SaleForm = ({ saleDate, data, mode }) => {
   const handleRegister = async (values, { setSubmitting, setErrors }) => {
     try {
       const user_id = id;
-      const customer_id = values.customerId;
+      let customer_id = values.customerId;
+
+      if (values.customerId < 0) {
+        const res = await dispatch(
+          registerCustomer({
+            user_id: id,
+          })
+        );
+        customer_id = res.id;
+      }
 
       const sale_date = new Date(values.saleDate).toISOString().split("T")[0];
 
@@ -194,6 +204,7 @@ const SaleForm = ({ saleDate, data, mode }) => {
                   onBlur={handleBlur("name")}
                   errorText={touched.name && errors.name}
                   editable={true}
+                  mode={mode}
                 />
                 <DateInput
                   id="saleDate"
