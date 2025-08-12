@@ -25,6 +25,10 @@ const SettingScreen = (props) => {
     navigation.navigate("Profile");
   };
 
+  const handleDetail = () => {
+    navigation.navigate("Detail");
+  };
+
   const handleLogout = () => {
     try {
       setIsLoading(true);
@@ -60,7 +64,7 @@ const SettingScreen = (props) => {
               color={colors.purple}
             />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.settingItem}>
+          <TouchableOpacity style={styles.settingItem} onPress={handleDetail}>
             <FontAwesome6
               name="circle-exclamation"
               size={20}

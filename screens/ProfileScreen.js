@@ -12,7 +12,6 @@ const ProfileScreen = () => {
   const navigation = useNavigation();
   const userData = useSelector((state) => state.auth.user);
   const route = useRoute();
-  console.log(route?.params?.selectedAddress);
 
   const handleGoBack = () => {
     navigation.goBack();

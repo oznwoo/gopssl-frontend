@@ -15,6 +15,7 @@ import CustomerScreen from "../screens/CustomerScreen";
 import SaleScreen from "../screens/SaleScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 import AddressSearchScreen from "../screens/AddressSearchScreen";
+import DetailScreen from "../screens/DetailScreen";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -88,6 +89,11 @@ const StackNavigator = () => (
     <Stack.Screen
       name="Profile"
       component={ProfileScreen}
+      options={{ headerShown: false }}
+    />
+    <Stack.Screen
+      name="Detail"
+      component={DetailScreen}
       options={{ headerShown: false }}
     />
     <Stack.Screen
