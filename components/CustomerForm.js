@@ -21,8 +21,13 @@ const CustomerForm = ({ data, mode }) => {
   // 초깃값 설정: view 모드든 edit/등록 모드든 기본적으로 수정 가능한 값으로 세팅
   const initialValues =
     mode === "view" && data
-      ? { name: data.name, phoneNumber: data.phone_number, detail: data.detail }
+      ? {
+          name: data.name,
+          phoneNumber: data.phone_number ? data.phone_number : "",
+          detail: data.detail ? data.detail : "",
+        }
       : { name: "", phoneNumber: "", detail: "" };
+  console.log(initialValues);
 
   // 등록 핸들러
   const handleRegister = async (values, { setSubmitting, setErrors }) => {

@@ -63,7 +63,9 @@ const SaleItem = ({ saleData, transitionSale, transitionCustomer }) => {
             </Text>
           </TouchableOpacity>
           <Text style={[styles.numOfVisit, numOfVisitColor]}>
-            {saleData.num_of_visits}회 방문
+            {saleData.num_of_visits === 1
+              ? "첫 방문"
+              : `${saleData.num_of_visits}회 방문`}
           </Text>
         </View>
 

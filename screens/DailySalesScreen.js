@@ -22,7 +22,6 @@ const DailySalesScreen = () => {
   const [salesCache, setSalesCache] = useState({});
   const [salesData, setSalesData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(false);
 
   const transitionCustomer = (itemId = undefined) => {
     const baseParams = { mode: "view" };
@@ -36,10 +35,6 @@ const DailySalesScreen = () => {
     };
 
     navigation.navigate("Sale", { ...baseParams, itemId });
-  };
-
-  const hideExpanded = () => {
-    if (isExpanded) setIsExpanded(false);
   };
 
   useEffect(() => {
@@ -74,57 +69,53 @@ const DailySalesScreen = () => {
   }, [date]);
 
   return (
-    <TouchableWithoutFeedback onPress={hideExpanded}>
-      <View style={styles.pageContainer}>
-        <DateHeader
-          currentDate={date}
-          onChangeDate={(newDateStr) => setDate(new Date(newDateStr))}
-        />
+    <View style={styles.pageContainer}>
+      <DateHeader
+        currentDate={date}
+        onChangeDate={(newDateStr) => setDate(new Date(newDateStr))}
+      />
 
-        <View style={styles.contentContainer}>
-          <Text style={styles.contentTitle}>일일 매출</Text>
+      <View style={styles.contentContainer}>
+        <Text style={styles.contentTitle}>일일 매출</Text>
 
-          <View style={{ flex: 1 }}>
-            <ScrollView
-              style={{ flex: 1 }}
-              contentContainerStyle={[
-                styles.salesContainer,
-                { justifyContent: salesData ? "flex-start" : "center" },
-              ]}
-            >
-              {salesData ? (
-                salesData.map((item) => (
-                  <SaleItem
-                    key={item.id}
-                    saleData={item}
-                    transitionCustomer={transitionCustomer}
-                    transitionSale={transitionSale}
-                  />
-                ))
-              ) : (
-                <Text style={styles.emptyText}>
-                  매출이 등록되지 않았습니다.
-                </Text>
-              )}
-            </ScrollView>
-          </View>
-
-          <FloatingExpandButton style={styles.plusButton} date={date} />
+        <View style={{ flex: 1 }}>
+          <ScrollView
+            style={{ flex: 1 }}
+            contentContainerStyle={[
+              styles.salesContainer,
+              { justifyContent: salesData ? "flex-start" : "center" },
+            ]}
+          >
+            {salesData ? (
+              salesData.map((item) => (
+                <SaleItem
+                  key={item.id}
+                  saleData={item}
+                  transitionCustomer={transitionCustomer}
+                  transitionSale={transitionSale}
+                />
+              ))
+            ) : (
+              <Text style={styles.emptyText}>매출이 등록되지 않았습니다.</Text>
+            )}
+          </ScrollView>
         </View>
 
-        <View style={styles.totalContainer}>
-          <Text style={styles.totalText}>
-            총 매출:{" "}
-            {salesData
-              ? formatNumber(
-                  salesData.reduce((acc, curr) => acc + curr.total_amount, 0)
-                )
-              : 0}
-            원
-          </Text>
-        </View>
+        <FloatingExpandButton style={styles.plusButton} date={date} />
       </View>
-    </TouchableWithoutFeedback>
+
+      <View style={styles.totalContainer}>
+        <Text style={styles.totalText}>
+          총 매출:{" "}
+          {salesData
+            ? formatNumber(
+                salesData.reduce((acc, curr) => acc + curr.total_amount, 0)
+              )
+            : 0}
+          원
+        </Text>
+      </View>
+    </View>
   );
 };
 
@@ -177,10 +168,11 @@ const styles = StyleSheet.create({
   calendarContainer: { paddingHorizontal: 16 },
   contentContainer: {
     flex: 1,
-    paddingHorizontal: 40,
+    paddingHorizontal: 28,
     paddingVertical: 12,
   },
   contentTitle: {
+    marginLeft: 12,
     fontFamily: "gamtanDotumB",
     color: colors.purple,
     letterSpacing: "-0.5",
@@ -190,6 +182,7 @@ const styles = StyleSheet.create({
   salesContainer: {
     flexGrow: 1,
     alignItems: "center",
+    paddingHorizontal: 12,
     gap: 16,
   },
   emptyText: {
