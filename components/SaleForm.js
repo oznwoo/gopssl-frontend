@@ -324,7 +324,7 @@ const styles = StyleSheet.create({
   totalText: {
     fontFamily: "gamtanBatangB",
     fontSize: 24,
-    letterSpacing: "-0.5",
+    letterSpacing: -0.5,
     color: colors.purple,
   },
   submitButtons: {

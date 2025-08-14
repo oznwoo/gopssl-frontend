@@ -167,7 +167,7 @@ const styles = StyleSheet.create({
   },
   dateText: {
     fontFamily: "gamtanDotumB",
-    letterSpacing: "-0.5",
+    letterSpacing: -0.5,
     fontSize: 20,
     color: colors.purple,
   },
@@ -181,7 +181,7 @@ const styles = StyleSheet.create({
     marginLeft: 12,
     fontFamily: "gamtanDotumB",
     color: colors.purple,
-    letterSpacing: "-0.5",
+    letterSpacing: -0.5,
     fontSize: 24,
     marginBottom: 16,
   },
@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
   emptyText: {
     fontFamily: "gamtanDotumB",
     fontSize: 16,
-    letterSpacing: "-0.5",
+    letterSpacing: -0.5,
     color: colors.lightPurple,
   },
   plusButton: {
@@ -215,7 +215,7 @@ const styles = StyleSheet.create({
   totalText: {
     fontFamily: "gamtanBatangB",
     fontSize: 24,
-    letterSpacing: "-0.5",
+    letterSpacing: -0.5,
     color: colors.purple,
   },
 });

@@ -3,7 +3,7 @@ import { store } from "../store/store";
 import { signInSuccess, logout } from "../store/authSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export const BASE_URL = "http://localhost:8000";
+export const BASE_URL = "https://gopssl-backend.onrender.com";
 
 // JWT 토큰을 자동으로 포함하는 axios 인스턴스
 export const apiClient = axios.create({

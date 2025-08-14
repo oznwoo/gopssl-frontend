@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
   categoryTitle: {
     fontFamily: "nanumSquareB",
     fontSize: 16,
-    letterSpacing: "-0.5",
+    letterSpacing: -0.5,
     marginBottom: 8,
   },
   treatmentGrid: {
@@ -270,7 +270,7 @@ const styles = StyleSheet.create({
   optionInput: {
     flex: 1,
     fontFamily: "nanumSquareB",
-    letterSpacing: "-0.5",
+    letterSpacing: -0.5,
     fontSize: 8,
   },
 });

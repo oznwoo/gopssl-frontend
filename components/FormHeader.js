@@ -41,6 +41,6 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontFamily: "gamtanDotumB",
     fontSize: 20,
-    letterSpacing: "-0.5",
+    letterSpacing: -0.5,
   },
 });

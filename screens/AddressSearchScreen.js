@@ -45,6 +45,7 @@ const AddressSearchScreen = ({ navigation }) => {
     navigation.navigate(route?.params?.backScreen, {
       selectedAddress: selected,
       formType: "info",
+      formData: route?.params?.formData,
     });
   };
 

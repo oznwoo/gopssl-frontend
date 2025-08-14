@@ -130,13 +130,13 @@ const styles = StyleSheet.create({
   customerName: {
     fontFamily: "gamtanDotumR",
     fontSize: 20,
-    letterSpacing: "-0.5",
+    letterSpacing: -0.5,
     lineHeight: 26,
   },
   numOfVisit: {
     fontFamily: "nanumSquareR",
     fontSize: 8,
-    letterSpacing: "-0.5",
+    letterSpacing: -0.5,
   },
   detailToggle: {
     flexDirection: "row",
@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
   detailTitle: {
     fontFamily: "nanumSquareB",
     fontSize: 12,
-    letterSpacing: "-0.5",
+    letterSpacing: -0.5,
   },
   detailBox: {
     maxWidth: "90%",

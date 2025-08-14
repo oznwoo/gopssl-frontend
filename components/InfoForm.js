@@ -44,10 +44,10 @@ const InfoForm = ({ setFormType }) => {
   return (
     <Formik
       initialValues={{
-        storeName: "",
-        address: "",
-        zipCode: "",
-        addressDetail: "",
+        storeName: route?.params?.formData?.storeName || "",
+        address: route?.params?.formData?.address || "",
+        zipCode: route?.params?.formData?.zipCode || "",
+        addressDetail: route?.params?.formData?.addressDetail || "",
       }}
       validationSchema={InfoSchema}
       onSubmit={handleSubmit}
@@ -95,6 +95,7 @@ const InfoForm = ({ setFormType }) => {
                 onPressIcon={() => {
                   navigation.navigate("AddressSearchScreen", {
                     backScreen: "StartScreen",
+                    formData: values,
                   });
                 }}
                 readOnly
