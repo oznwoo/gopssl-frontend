@@ -72,6 +72,8 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   emptyText: {
     fontFamily: "gamtanDotumB",

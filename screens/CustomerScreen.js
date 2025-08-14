@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
   pageContainer: {
     flex: 1,
   },
-  contentContainer: { flex: 1 },
+  contentContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
   emptyText: {
     fontFamily: "gamtanDotumB",
     fontSize: 16,
