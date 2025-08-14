@@ -4,7 +4,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import BaseInput from "./BaseInput";
 import colors from "../../styles/color";
 
-const SearchInput = ({ onPressIcon, value, onChangeText, ...rest }) => {
+const AddressSearchInput = ({ onPressIcon, value, onChangeText, ...rest }) => {
   return (
     <BaseInput
       {...rest}
@@ -18,4 +18,4 @@ const SearchInput = ({ onPressIcon, value, onChangeText, ...rest }) => {
   );
 };
 
-export default SearchInput;
+export default AddressSearchInput;

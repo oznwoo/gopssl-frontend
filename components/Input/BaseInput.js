@@ -12,6 +12,7 @@ const BaseInput = ({
   rightIcon,
   children,
   inputProps = {},
+  specialButton,
   ...rest
 }) => {
   const Container = useBlur ? BlurView : View;
@@ -35,6 +36,8 @@ const BaseInput = ({
         )}
 
         {rightIcon}
+
+        {specialButton}
       </Container>
 
       {errorText && (

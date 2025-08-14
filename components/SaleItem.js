@@ -63,7 +63,9 @@ const SaleItem = ({ saleData, transitionSale, transitionCustomer }) => {
             </Text>
           </TouchableOpacity>
           <Text style={[styles.numOfVisit, numOfVisitColor]}>
-            {saleData.num_of_visits}회 방문
+            {saleData.num_of_visits === 1
+              ? "첫 방문"
+              : `${saleData.num_of_visits}회 방문`}
           </Text>
         </View>
 
@@ -128,13 +130,13 @@ const styles = StyleSheet.create({
   customerName: {
     fontFamily: "gamtanDotumR",
     fontSize: 20,
-    letterSpacing: "-0.5",
+    letterSpacing: -0.5,
     lineHeight: 26,
   },
   numOfVisit: {
     fontFamily: "nanumSquareR",
     fontSize: 8,
-    letterSpacing: "-0.5",
+    letterSpacing: -0.5,
   },
   detailToggle: {
     flexDirection: "row",
@@ -145,7 +147,7 @@ const styles = StyleSheet.create({
   detailTitle: {
     fontFamily: "nanumSquareB",
     fontSize: 12,
-    letterSpacing: "-0.5",
+    letterSpacing: -0.5,
   },
   detailBox: {
     maxWidth: "90%",

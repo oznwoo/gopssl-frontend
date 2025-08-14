@@ -52,7 +52,6 @@ const SearchScreen = () => {
         try {
           const res = await dispatch(searchCustomer(name.trim()));
           setResults(res);
-          console.log(res);
         } catch (e) {
           if (e.response?.status === 404) {
             setResults([]);
@@ -260,13 +259,13 @@ const styles = StyleSheet.create({
     color: colors.purple,
     fontFamily: "gamtanDotumR",
     fontSize: 16,
-    letterSpacing: "-0.5",
+    letterSpacing: -0.5,
   },
   numOfVisits: {
     color: colors.purple,
     fontFamily: "nanumSquareR",
     fontSize: 8,
-    letterSpacing: "-0.5",
+    letterSpacing: -0.5,
   },
   emptyText: {
     fontFamily: "gamtanDotumB",
@@ -279,7 +278,7 @@ const styles = StyleSheet.create({
     color: colors.lightPurple,
     fontFamily: "nanumSquareB",
     fontSize: 10,
-    letterSpacing: "-0.5",
+    letterSpacing: -0.5,
     alignSelf: "flex-end",
   },
   divideLine: { height: 1, backgroundColor: colors.purple, marginVertical: 8 },
