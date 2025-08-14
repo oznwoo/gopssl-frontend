@@ -1,6 +1,5 @@
 // src/actions/treatmentActions.js
-import axios from "axios";
-import { BASE_URL } from "../constants/baseURL";
+import { apiClient } from "../constants/baseURL";
 import {
   fetchTreatmentsStart,
   fetchTreatmentsSuccess,
@@ -11,7 +10,7 @@ export const fetchTreatmentsThunk = () => async (dispatch) => {
   dispatch(fetchTreatmentsStart());
 
   try {
-    const response = await axios.get(`${BASE_URL}/treatments/`);
+    const response = await apiClient.get(`/treatments/`);
     dispatch(fetchTreatmentsSuccess(response.data));
   } catch (error) {
     dispatch(fetchTreatmentsFailure(error.message));

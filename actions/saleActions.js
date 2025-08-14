@@ -1,10 +1,9 @@
-import axios from "axios";
-import { BASE_URL } from "../constants/baseURL";
+import { apiClient } from "../constants/baseURL";
 
 // thunk
 export const postSaleThunk = (saleData) => async (dispatch) => {
   try {
-    const response = await axios.post(`${BASE_URL}/sales/`, saleData);
+    const response = await apiClient.post(`/sales/`, saleData);
     return response.data;
   } catch (error) {
     console.error("Sale post error:", error);
@@ -14,7 +13,7 @@ export const postSaleThunk = (saleData) => async (dispatch) => {
 
 export const updateSaleThunk = (saleData) => async (dispatch) => {
   try {
-    const response = await axios.put(`${BASE_URL}/sales/`, saleData);
+    const response = await apiClient.put(`/sales/`, saleData);
     return response.data;
   } catch (error) {
     console.error("Sale post error:", error);
@@ -24,8 +23,7 @@ export const updateSaleThunk = (saleData) => async (dispatch) => {
 
 export const getSalesByDate = async (dateString) => {
   try {
-    console.log("getSalesByDate 호출됨", dateString); // ✅ 확인용
-    const response = await axios.get(`${BASE_URL}/sales/by_date`, {
+    const response = await apiClient.get(`/sales/by_date`, {
       params: { date: dateString },
     });
     return response.data;
@@ -37,7 +35,7 @@ export const getSalesByDate = async (dateString) => {
 export const getSaleById = (saleId) => {
   return async (dispatch) => {
     try {
-      const response = await axios.get(`${BASE_URL}/sales/${saleId}`);
+      const response = await apiClient.get(`/sales/${saleId}`);
 
       return response.data; // 결과 반환 (optional)
     } catch (e) {
@@ -50,7 +48,7 @@ export const getSaleById = (saleId) => {
 export const deleteSaleById = (saleId) => {
   return async (dispatch) => {
     try {
-      const response = await axios.delete(`${BASE_URL}/sales/${saleId}`);
+      const response = await apiClient.delete(`/sales/${saleId}`);
 
       return response.data; // 결과 반환 (optional)
     } catch (e) {

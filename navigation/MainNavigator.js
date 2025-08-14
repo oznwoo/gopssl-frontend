@@ -97,7 +97,7 @@ const StackNavigator = () => (
       options={{ headerShown: false }}
     />
     <Stack.Screen
-      name="AddressSearchScreen"
+      name="AddressSearch"
       component={AddressSearchScreen}
       options={{ headerShown: false }}
     />

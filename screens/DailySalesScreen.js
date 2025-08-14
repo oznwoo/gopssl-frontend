@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   Text,
   StyleSheet,
@@ -23,19 +23,25 @@ const DailySalesScreen = () => {
   const [salesData, setSalesData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const transitionCustomer = (itemId = undefined) => {
-    const baseParams = { mode: "view" };
-    navigation.navigate("Customer", { ...baseParams, itemId });
-  };
+  const transitionCustomer = useCallback(
+    (itemId = undefined) => {
+      const baseParams = { mode: "view" };
+      navigation.navigate("Customer", { ...baseParams, itemId });
+    },
+    [navigation]
+  );
 
-  const transitionSale = (itemId = undefined) => {
-    const baseParams = {
-      saleDate: date.toISOString(),
-      mode: "view",
-    };
+  const transitionSale = useCallback(
+    (itemId = undefined) => {
+      const baseParams = {
+        saleDate: date.toISOString(),
+        mode: "view",
+      };
 
-    navigation.navigate("Sale", { ...baseParams, itemId });
-  };
+      navigation.navigate("Sale", { ...baseParams, itemId });
+    },
+    [navigation, date]
+  );
 
   useEffect(() => {
     const isoDate = date.toISOString().split("T")[0];

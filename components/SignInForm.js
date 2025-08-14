@@ -43,7 +43,7 @@ const SignInForm = ({ setFormType }) => {
 
   return (
     <Formik
-      initialValues={{ email: "example@example.com", password: "1234" }}
+      initialValues={{ email: "", password: "" }}
       validationSchema={SignInSchema}
       onSubmit={handleSignIn}
     >

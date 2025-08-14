@@ -120,7 +120,7 @@ const UserForm = () => {
               onBlur={handleBlur("address")}
               errorText={touched.address && errors.address}
               onPressIcon={() => {
-                navigation.navigate("AddressSearchScreen", {
+                navigation.navigate("AddressSearch", {
                   backScreen: "Profile",
                 });
               }}
