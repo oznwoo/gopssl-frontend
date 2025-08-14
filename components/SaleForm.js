@@ -4,17 +4,18 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from "react-native";
 import SubmitButton from "./SubmitButton";
 import colors from "../styles/color";
 import { Formik } from "formik";
 import {
-  SearchInput,
   DetailInput,
   DateInput,
   TreatmentInput,
   TypeInput,
+  CustomerSearchInput,
 } from "./Input";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
@@ -25,6 +26,7 @@ import {
   updateSaleThunk,
 } from "../actions/saleActions";
 import { commonStyles } from "../styles/commonStyles";
+import { registerCustomer } from "../actions/customerActions";
 
 const SaleForm = ({ saleDate, data, mode }) => {
   const dispatch = useDispatch();
@@ -43,6 +45,7 @@ const SaleForm = ({ saleDate, data, mode }) => {
   const initialValues =
     mode === "view" && data
       ? {
+          customerId: data.customer_id || -1,
           name: data.customer_name || "",
           saleDate: new Date(data.sale_date) || new Date(),
           paymentType: data.payment_type || "",
@@ -52,6 +55,7 @@ const SaleForm = ({ saleDate, data, mode }) => {
           totalAmount: data.total_amount,
         }
       : {
+          customerId: -1,
           name: "",
           saleDate: saleDate || new Date(),
           paymentType: "",
@@ -64,7 +68,16 @@ const SaleForm = ({ saleDate, data, mode }) => {
   const handleRegister = async (values, { setSubmitting, setErrors }) => {
     try {
       const user_id = id;
-      const customer_id = data?.customer_id || 10;
+      let customer_id = values.customerId;
+
+      if (values.customerId < 0) {
+        const res = await dispatch(
+          registerCustomer({
+            user_id: id,
+          })
+        );
+        customer_id = res.id;
+      }
 
       const sale_date = new Date(values.saleDate).toISOString().split("T")[0];
 
@@ -74,7 +87,6 @@ const SaleForm = ({ saleDate, data, mode }) => {
           price,
         })
       );
-      console.log(treatments);
 
       const saleData = {
         user_id,
@@ -101,7 +113,7 @@ const SaleForm = ({ saleDate, data, mode }) => {
   const handleUpdate = async (values, { setSubmitting, setErrors }) => {
     try {
       const user_id = id;
-      const customer_id = data?.customer_id;
+      const customer_id = values.customerId;
       const sale_id = data?.id;
 
       const sale_date = new Date(values.saleDate).toISOString().split("T")[0];
@@ -180,15 +192,19 @@ const SaleForm = ({ saleDate, data, mode }) => {
           <View style={styles.formContainer}>
             <ScrollView>
               <View style={styles.inputContainer}>
-                <SearchInput
+                <CustomerSearchInput
                   id="name"
                   label="고객명"
                   useBlur={false}
                   value={values.name}
-                  onChangeText={handleChange("name")}
+                  onChangeText={(customerId, name) => {
+                    setFieldValue("customerId", customerId);
+                    setFieldValue("name", name);
+                  }}
                   onBlur={handleBlur("name")}
                   errorText={touched.name && errors.name}
                   editable={true}
+                  mode={mode}
                 />
                 <DateInput
                   id="saleDate"
@@ -308,7 +324,7 @@ const styles = StyleSheet.create({
   totalText: {
     fontFamily: "gamtanBatangB",
     fontSize: 24,
-    letterSpacing: "-0.5",
+    letterSpacing: -0.5,
     color: colors.purple,
   },
   submitButtons: {

@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigation, useRoute } from "@react-navigation/native";
 
 import SubmitButton from "./SubmitButton";
-import { BaseInput, SearchInput } from "./Input";
+import { BaseInput, AddressSearchInput } from "./Input";
 import colors from "../styles/color";
 import { commonStyles } from "../styles/commonStyles";
 import { UserSchema } from "../schemas/UserSchema";
@@ -111,7 +111,7 @@ const UserForm = () => {
               errorText={touched.storeName && errors.storeName}
             />
 
-            <SearchInput
+            <AddressSearchInput
               id="address"
               label={"주소"}
               autoCapitalize="none"
@@ -120,7 +120,7 @@ const UserForm = () => {
               onBlur={handleBlur("address")}
               errorText={touched.address && errors.address}
               onPressIcon={() => {
-                navigation.navigate("AddressSearchScreen", {
+                navigation.navigate("AddressSearch", {
                   backScreen: "Profile",
                 });
               }}

@@ -248,7 +248,7 @@ const styles = StyleSheet.create({
   typeText: {
     fontFamily: "gamtanDotumR",
     fontSize: 12,
-    letterSpacing: "1",
+    letterSpacing: 1,
     color: colors.purple,
   },
   typeChart: {
@@ -272,13 +272,13 @@ const styles = StyleSheet.create({
   boxTitle: {
     fontFamily: "gamtanDotumB",
     fontSize: 16,
-    letterSpacing: "-0.5",
+    letterSpacing: -0.5,
     color: colors.purple,
   },
   boxDetail: {
     fontFamily: "nanumSquareB",
     fontSize: 10,
-    letterSpacing: "-0.5",
+    letterSpacing: -0.5,
     color: "#656d72",
   },
   chartContainer: {
@@ -290,12 +290,12 @@ const styles = StyleSheet.create({
     fontFamily: "gamtanDotumB",
     fontSize: 18,
     color: "#fff",
-    letterSpacing: "-0.5",
+    letterSpacing: -0.5,
   },
   comparisionText: {
     fontFamily: "gamtanDotumB",
     fontSize: 12,
-    letterSpacing: "-0.5",
+    letterSpacing: -0.5,
     color: "#fff",
   },
   comparisionBox: {

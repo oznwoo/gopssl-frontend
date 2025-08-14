@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
   emptyText: {
     fontFamily: "gamtanDotumB",
     fontSize: 16,
-    letterSpacing: "-0.5",
+    letterSpacing: -0.5,
     color: colors.lightPurple,
   },
 });

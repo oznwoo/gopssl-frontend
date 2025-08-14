@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
   prefixText: {
     fontSize: 14,
     fontFamily: "nanumSquareR",
-    letterSpacing: "-0.5",
+    letterSpacing: -0.5,
     color: colors.purple,
   },
   input: {
@@ -143,7 +143,7 @@ const styles = StyleSheet.create({
   },
   dropdownText: {
     fontSize: 14,
-    letterSpacing: "-0.5",
+    letterSpacing: -0.5,
     fontFamily: "nanumSquareEB",
     color: "#fff",
   },

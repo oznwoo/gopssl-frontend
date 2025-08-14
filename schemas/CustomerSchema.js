@@ -3,7 +3,7 @@ import * as Yup from "yup";
 const phoneRegExp = /^010-\d{3,4}-\d{4}$/;
 
 export const CustomerSchema = Yup.object().shape({
-  name: Yup.string().required("매장명은 필수입니다."),
+  name: Yup.string().required("고객명은 필수입니다."),
   phoneNumber: Yup.string()
     .optional()
     .test(

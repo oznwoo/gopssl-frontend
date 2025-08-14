@@ -302,7 +302,7 @@ const styles = StyleSheet.create({
   },
   dateText: {
     fontFamily: "gamtanDotumB",
-    letterSpacing: "-0.5",
+    letterSpacing: -0.5,
     fontSize: 20,
     color: colors.purple,
   },

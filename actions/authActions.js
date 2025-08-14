@@ -1,39 +1,71 @@
-import axios from "axios";
+import { apiClient, BASE_URL } from "../constants/baseURL";
 import {
   signUpSuccess,
   signInSuccess,
   logout as logoutAction,
+  registerSuccess,
 } from "../store/authSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { BASE_URL } from "../constants/baseURL";
+import { store } from "../store/store";
+import axios from "axios";
 
-export const signUp = ({ name, email, password }) => {
+// 토큰 갱신 액션
+export const refreshToken = () => {
   return async (dispatch) => {
     try {
-      const response = await axios.post(`${BASE_URL}/auth/signup`, {
+      const response = await apiClient.post(`/auth/refresh`);
+      const newToken = response.data.access_token;
+
+      // Redux store 업데이트
+      dispatch(
+        signInSuccess({
+          token: newToken,
+          user: store.getState().auth.user,
+        })
+      );
+
+      // AsyncStorage 업데이트
+      await AsyncStorage.setItem("token", newToken);
+
+      return newToken;
+    } catch (error) {
+      console.error("토큰 갱신 실패:", error);
+      // 토큰 갱신 실패 시 로그아웃
+      dispatch(logoutAction());
+      throw error;
+    }
+  };
+};
+
+export const registerUserInfo = ({
+  id,
+  name,
+  email,
+  password,
+  store_name,
+  address,
+  zip_code,
+  address_detail,
+}) => {
+  return async (dispatch) => {
+    try {
+      const response = await apiClient.put(`/users/${id}`, {
         name,
         email,
         password,
+        store_name,
+        address,
+        zip_code,
+        address_detail,
       });
 
-      const token = response.data.access_token; // 백엔드 키 이름에 맞춤
+      const user = response.data;
 
-      await AsyncStorage.setItem("token", token);
-
-      // 토큰 받은 뒤, 유저 정보 요청 추가
-      const userRes = await axios.get(`${BASE_URL}/users/me`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const user = userRes.data;
-
-      dispatch(signUpSuccess({ token, user }));
+      dispatch(registerSuccess({ user }));
 
       await AsyncStorage.setItem("user", JSON.stringify(user));
     } catch (e) {
-      let errorMessage = "회원가입에 실패했습니다.";
+      let errorMessage = "회원 정보 입력에 실패했습니다.";
       let statusCode = null;
 
       if (e.response) {
@@ -54,6 +86,85 @@ export const signUp = ({ name, email, password }) => {
   };
 };
 
+// 회원가입 액션
+export const signUp = ({ name, email, password }) => {
+  return async (dispatch) => {
+    try {
+      // 회원가입은 인증이 필요하지 않으므로 일반 axios 사용
+      const response = await axios.post(`${BASE_URL}/auth/signup`, {
+        name,
+        email,
+        password,
+      });
+
+      const token = response.data.access_token;
+      console.log("받은 토큰:", token);
+      console.log("토큰 타입:", typeof token);
+      console.log("토큰 길이:", token ? token.length : 0);
+
+      // JWT 토큰 페이로드 확인
+      try {
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        console.log("토큰 페이로드:", payload);
+        console.log("만료 시간:", new Date(payload.exp * 1000));
+        console.log("현재 시간:", new Date());
+        console.log("토큰 만료 여부:", Date.now() > payload.exp * 1000);
+      } catch (e) {
+        console.log("토큰 디코딩 실패:", e);
+      }
+
+      // 먼저 토큰을 Redux store에 저장
+      dispatch(signUpSuccess({ token, user: null }));
+      await AsyncStorage.setItem("token", token);
+
+      // 토큰을 직접 헤더에 포함시켜서 사용자 정보 요청
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      };
+      console.log("전송할 헤더:", headers);
+      console.log("요청 URL:", `${BASE_URL}/users/me`);
+
+      const userRes = await axios.get(`${BASE_URL}/users/me`, { headers });
+      const user = userRes.data;
+
+      // 사용자 정보로 Redux store 업데이트
+      dispatch(signUpSuccess({ token, user }));
+      await AsyncStorage.setItem("user", JSON.stringify(user));
+    } catch (e) {
+      console.log("회원가입 에러 전체:", e);
+      console.log("에러 응답:", e.response);
+      if (e.response) {
+        console.log("에러 응답 헤더:", e.response.headers);
+        console.log("에러 응답 상태:", e.response.status);
+        console.log("에러 응답 상태 텍스트:", e.response.statusText);
+      }
+
+      let errorMessage = "회원가입에 실패했습니다.";
+      let statusCode = null;
+
+      if (e.response) {
+        const { status, data } = e.response;
+        console.log("에러 상태:", status);
+        console.log("에러 데이터:", data);
+
+        statusCode = status;
+
+        if (status === 400 && typeof data.detail === "string") {
+          errorMessage = data.detail;
+        } else if (status === 422 && Array.isArray(data.detail)) {
+          errorMessage = data.detail[0]?.msg || errorMessage;
+        } else if (data.detail) {
+          errorMessage = data.detail;
+        }
+      }
+
+      const customError = new Error(errorMessage);
+      customError.status = statusCode;
+      throw customError;
+    }
+  };
+};
+
 export const signIn = ({ email, password }) => {
   return async (dispatch) => {
     try {
@@ -61,6 +172,7 @@ export const signIn = ({ email, password }) => {
       params.append("username", email); // OAuth2PasswordRequestForm에서는 username으로 받음
       params.append("password", password);
 
+      // 로그인은 인증이 필요하지 않으므로 일반 axios 사용
       const response = await axios.post(`${BASE_URL}/auth/signin`, params, {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
@@ -69,19 +181,19 @@ export const signIn = ({ email, password }) => {
 
       const token = response.data.access_token;
 
+      // 먼저 토큰을 저장
       await AsyncStorage.setItem("token", token);
 
-      // 토큰 받은 뒤, 유저 정보 요청 추가
+      // 토큰을 직접 헤더에 포함시켜서 사용자 정보 요청
       const userRes = await axios.get(`${BASE_URL}/users/me`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-
       const user = userRes.data;
 
+      // 토큰과 사용자 정보를 한 번에 Redux store에 저장
       dispatch(signInSuccess({ token, user }));
-
       await AsyncStorage.setItem("user", JSON.stringify(user));
     } catch (e) {
       let errorMessage =
@@ -90,6 +202,8 @@ export const signIn = ({ email, password }) => {
 
       if (e.response) {
         const { status, data } = e.response;
+        console.log(data);
+
         statusCode = status;
 
         if (status === 400 && typeof data.detail === "string") {
@@ -100,7 +214,7 @@ export const signIn = ({ email, password }) => {
       }
 
       const customError = new Error(errorMessage);
-      customError.status = statusCode; // ✅ 상태코드 추가
+      customError.status = statusCode;
       throw customError;
     }
   };

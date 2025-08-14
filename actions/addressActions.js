@@ -1,10 +1,9 @@
 // src/actions/addressActions.js
-import axios from "axios";
-import { BASE_URL } from "../constants/baseURL";
+import { apiClient } from "../constants/baseURL";
 
 export const searchAddress = async (query) => {
   try {
-    const res = await axios.get(`${BASE_URL}/address/search`, {
+    const res = await apiClient.get(`/address/search`, {
       params: { query },
     });
     return res.data;

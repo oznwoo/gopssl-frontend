@@ -1,14 +1,10 @@
-import axios from "axios";
-import { BASE_URL } from "../constants/baseURL";
+import { apiClient } from "../constants/baseURL";
 
 export const getDailySalesSummary = async (year, month) => {
   try {
-    const response = await axios.get(
-      `${BASE_URL}/sales/statistics/summary/daily`,
-      {
-        params: { year, month },
-      }
-    );
+    const response = await apiClient.get(`/sales/statistics/summary/daily`, {
+      params: { year, month },
+    });
     return response.data;
   } catch (error) {
     console.error("getDailySalesSummary error:", error);
@@ -18,12 +14,9 @@ export const getDailySalesSummary = async (year, month) => {
 
 export const getMonthlySalesSummary = async (year, month) => {
   try {
-    const response = await axios.get(
-      `${BASE_URL}/sales/statistics/summary/monthly`,
-      {
-        params: { year, month },
-      }
-    );
+    const response = await apiClient.get(`/sales/statistics/summary/monthly`, {
+      params: { year, month },
+    });
     return response.data;
   } catch (error) {
     console.error("getMonthlySalesSummary error:", error);

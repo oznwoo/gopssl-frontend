@@ -1,12 +1,11 @@
-import axios from "axios";
+import { apiClient } from "../constants/baseURL";
 import { registerSuccess } from "../store/authSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { BASE_URL } from "../constants/baseURL";
 
 export const registerCustomer = ({ user_id, name, phone_number, detail }) => {
   return async (dispatch) => {
     try {
-      const response = await axios.post(`${BASE_URL}/customers/`, {
+      const response = await apiClient.post(`/customers/`, {
         user_id,
         name,
         phone_number,
@@ -30,7 +29,7 @@ export const updateCustomer = ({
 }) => {
   return async (dispatch) => {
     try {
-      const response = await axios.put(`${BASE_URL}/customers/${customer_id}`, {
+      const response = await apiClient.put(`/customers/${customer_id}`, {
         user_id,
         name,
         phone_number,
@@ -48,7 +47,7 @@ export const updateCustomer = ({
 export const getCustomer = (customerId) => {
   return async (dispatch) => {
     try {
-      const response = await axios.get(`${BASE_URL}/customers/${customerId}`);
+      const response = await apiClient.get(`/customers/${customerId}`);
 
       return response.data; // 결과 반환 (optional)
     } catch (e) {
@@ -61,7 +60,7 @@ export const getCustomer = (customerId) => {
 export const searchCustomer = (customerName) => {
   return async (dispatch) => {
     try {
-      const response = await axios.get(`${BASE_URL}/customers/search`, {
+      const response = await apiClient.get(`/customers/search`, {
         params: {
           name: customerName,
         },
@@ -78,9 +77,7 @@ export const searchCustomer = (customerName) => {
 export const deleteCustomerById = (customerId) => {
   return async (dispatch) => {
     try {
-      const response = await axios.delete(
-        `${BASE_URL}/customers/${customerId}`
-      );
+      const response = await apiClient.delete(`/customers/${customerId}`);
 
       return response.data; // 결과 반환 (optional)
     } catch (e) {

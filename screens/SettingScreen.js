@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
     color: colors.purple,
     fontFamily: "gamtanDotumB",
     fontSize: 20,
-    letterSpacing: "-0.5",
+    letterSpacing: -0.5,
   },
   horizontalLine: {
     width: "120%",
@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
   userName: {
     fontFamily: "gamtanDotumR",
     fontSize: 24,
-    letterSpacing: "-0.5",
+    letterSpacing: -0.5,
     lineHeight: 32,
     color: colors.purple,
   },
@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontFamily: "nanumSquareB",
     fontSize: 16,
-    letterSpacing: "-0.5",
+    letterSpacing: -0.5,
     color: colors.purple,
   },
 });
