@@ -248,7 +248,7 @@ const styles = StyleSheet.create({
   },
   treatmentName: {
     fontFamily: "gamtanDotumB",
-    fontSize: 10,
+    fontSize: 9,
     letterSpacing: -0.5,
   },
   treatmentPrice: {

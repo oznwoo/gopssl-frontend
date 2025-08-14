@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Text,
   StyleSheet,
+  Platform,
 } from "react-native";
 import debounce from "lodash.debounce";
 import BaseInput from "./BaseInput";
@@ -243,14 +244,19 @@ const styles = StyleSheet.create({
     ...commonStyles.dropShadow,
   },
   specialButtonContainer: {
-    height: "180%",
-    width: 50,
+    ...Platform.select({
+      android: {
+        height: "150%",
+      },
+      ios: {
+        height: "180%",
+      },
+    }),
+    width: "16%",
     position: "absolute",
     right: 0,
     borderTopRightRadius: 8,
     borderBottomRightRadius: 8,
-    borderWidth: 1,
-    borderColor: colors.backgroundPurple,
     borderLeftWidth: 1,
     borderLeftColor: colors.purple,
   },

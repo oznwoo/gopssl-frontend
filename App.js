@@ -1,11 +1,12 @@
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
-import { SafeAreaView, StyleSheet, View } from "react-native";
+import { StyleSheet } from "react-native";
 import * as Font from "expo-font";
 import AppNavigator from "./navigation/AppNavigator";
 import { enableScreens } from "react-native-screens";
 import { Provider } from "react-redux";
 import { store } from "./store/store";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 enableScreens();
 
@@ -41,10 +42,12 @@ export default function App() {
 
   return (
     <Provider store={store}>
-      <SafeAreaView style={styles.container}>
-        <AppNavigator />
-        <StatusBar style="auto" />
-      </SafeAreaView>
+      <SafeAreaProvider>
+        <SafeAreaView style={styles.container}>
+          <AppNavigator />
+          <StatusBar style="auto" />
+        </SafeAreaView>
+      </SafeAreaProvider>
     </Provider>
   );
 }

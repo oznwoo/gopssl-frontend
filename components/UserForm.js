@@ -1,5 +1,11 @@
 import React, { useEffect } from "react";
-import { ActivityIndicator, StyleSheet, View, ScrollView } from "react-native";
+import {
+  ActivityIndicator,
+  StyleSheet,
+  View,
+  ScrollView,
+  Alert,
+} from "react-native";
 import { Formik } from "formik";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -42,7 +48,7 @@ const UserForm = () => {
           zip_code: values.zipCode,
         })
       );
-      alert("회원 정보가 수정되었습니다.");
+      Alert.alert("알림", "회원 정보가 수정되었습니다.");
       navigation.navigate("Home", {
         screen: "Setting",
       });

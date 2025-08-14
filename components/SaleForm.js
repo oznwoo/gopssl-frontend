@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
+  Alert,
   View,
 } from "react-native";
 import SubmitButton from "./SubmitButton";
@@ -100,7 +101,7 @@ const SaleForm = ({ saleDate, data, mode }) => {
       };
 
       await dispatch(postSaleThunk(saleData));
-      alert("매출 등록이 완료되었습니다.");
+      Alert.alert("알림", "매출 등록이 완료되었습니다.");
       navigation.goBack();
     } catch (error) {
       console.log("에러 상태코드:", error?.response?.status || error.message);
@@ -138,7 +139,7 @@ const SaleForm = ({ saleDate, data, mode }) => {
       };
 
       await dispatch(updateSaleThunk(saleData));
-      alert("고객 정보 수정이 완료되었습니다.");
+      Alert.alert("알림", "고객 정보 수정이 완료되었습니다.");
       navigation.goBack();
     } catch (error) {
       console.log("에러 상태코드:", error?.response?.status || error.message);
@@ -153,7 +154,7 @@ const SaleForm = ({ saleDate, data, mode }) => {
       const sale_id = data?.id;
 
       await dispatch(deleteSaleById(sale_id));
-      alert("매출이 삭제되었습니다.");
+      Alert.alert("알림", "매출이 삭제되었습니다.");
       navigation.goBack();
     } catch (error) {
       console.log("에러 상태코드:", error?.response?.status || error.message);
