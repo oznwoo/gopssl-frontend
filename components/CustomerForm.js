@@ -178,10 +178,11 @@ export default CustomerForm;
 const styles = StyleSheet.create({
   formContainer: {
     flex: 1,
+    width: "100%",
     backgroundColor: colors.backgroundPurple,
+    justifyContent: "space-between",
   },
   inputContainer: {
-    flex: 1,
     gap: 16,
     paddingHorizontal: 40,
     paddingVertical: 24,

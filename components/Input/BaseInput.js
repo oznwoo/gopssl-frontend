@@ -23,7 +23,7 @@ const BaseInput = ({
       <Container
         style={[
           styles.inputContainer,
-          Platform.OS === "ios"
+          Platform.OS === "ios" || portraitMode
             ? { paddingVertical: 10 }
             : { paddingVertical: 4 },
           useBlur && commonStyles.blurView,

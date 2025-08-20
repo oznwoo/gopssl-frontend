@@ -1,11 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import {
-  Text,
-  StyleSheet,
-  View,
-  ScrollView,
-  TouchableWithoutFeedback,
-} from "react-native";
+import { Text, StyleSheet, View, ScrollView } from "react-native";
 
 import colors from "../styles/color";
 import { commonStyles } from "../styles/commonStyles";
@@ -14,12 +8,11 @@ import { getSalesByDate } from "../actions/saleActions";
 import SaleItem from "../components/SaleItem";
 import { formatNumber } from "../utils/format";
 import DateHeader from "../components/DateHeader";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 
 const DailySalesScreen = () => {
   const navigation = useNavigation();
   const [date, setDate] = useState(new Date());
-  const [salesCache, setSalesCache] = useState({});
   const [salesData, setSalesData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -43,36 +36,31 @@ const DailySalesScreen = () => {
     [navigation, date]
   );
 
-  useEffect(() => {
+  const fetchSalesData = useCallback(async () => {
     const isoDate = date.toISOString().split("T")[0];
-    const isCached = Object.prototype.hasOwnProperty.call(salesCache, isoDate);
-
-    if (isCached) {
-      setSalesData(salesCache[isoDate]);
+    setIsLoading(true);
+    try {
+      const data = await getSalesByDate(isoDate);
+      setSalesData(data.length ? data : null);
+    } catch (e) {
+      console.log("🔴 API 호출 실패:", e);
+      setSalesData(null);
+    } finally {
       setIsLoading(false);
-      return;
     }
-
-    const fetchSalesData = async () => {
-      setIsLoading(true);
-
-      try {
-        const data = await getSalesByDate(isoDate);
-        setSalesData(data.length ? data : null);
-        setSalesCache((prev) => ({
-          ...prev,
-          [isoDate]: data.length ? data : null,
-        }));
-      } catch (e) {
-        console.log("🔴 API 호출 실패:", e);
-        setSalesData(null);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchSalesData();
   }, [date]);
+
+  // 날짜 바뀔 때 데이터 불러오기
+  useEffect(() => {
+    fetchSalesData();
+  }, [date, fetchSalesData]);
+
+  // 화면 다시 포커스될 때마다 데이터 새로 불러오기
+  useFocusEffect(
+    useCallback(() => {
+      fetchSalesData();
+    }, [fetchSalesData])
+  );
 
   return (
     <View style={styles.pageContainer}>
