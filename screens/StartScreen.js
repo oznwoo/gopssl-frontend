@@ -14,7 +14,8 @@ import SignInForm from "../components/SignInForm";
 import SignUpForm from "../components/SignUpForm";
 import InfoForm from "../components/InfoForm";
 import { FORM_TYPES } from "../constants/formTypes";
-import { useRoute, useFocusEffect } from "@react-navigation/native";
+import { useRoute } from "@react-navigation/native";
+import colors from "../styles/color";
 
 const screenHeight = Dimensions.get("window").height;
 
@@ -42,7 +43,14 @@ const StartScreen = (props) => {
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.pageContainer}>
           <View style={styles.logoContainer}>
-            <Text style={styles.logo}>Gopssl</Text>
+            <Text
+              style={[
+                styles.logo,
+                Platform.OS === "ios" ? {} : { width: "100%" },
+              ]}
+            >
+              Gopssl
+            </Text>
             <Text style={styles.phrase}>
               {"무질서함에서 질서를, \n복잡함 속에서 아름다움을"}
             </Text>
@@ -71,6 +79,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 16,
     marginBottom: 40,
+    flex: 1,
   },
   flexibleFormContainer: {
     flex: 1,
@@ -89,7 +98,8 @@ const styles = StyleSheet.create({
   logo: {
     fontFamily: "logo",
     fontSize: 80,
-    color: "#743D7B",
+    color: colors.purple,
+    height: 120,
   },
   formContainer: {
     width: "100%",

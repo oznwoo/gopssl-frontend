@@ -6,6 +6,7 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
+  Platform,
 } from "react-native";
 import debounce from "lodash.debounce";
 import { searchAddress } from "../actions/addressActions";
@@ -51,7 +52,14 @@ const AddressSearchScreen = ({ navigation }) => {
 
   return (
     <View style={styles.pageContainer}>
-      <View style={styles.inputContainer}>
+      <View
+        style={[
+          styles.inputContainer,
+          Platform.OS === "ios"
+            ? { paddingVertical: 8 }
+            : { paddingVertical: 0 },
+        ]}
+      >
         <TouchableOpacity
           style={styles.backButton}
           onPress={() => navigation.goBack()}
