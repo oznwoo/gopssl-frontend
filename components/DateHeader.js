@@ -155,6 +155,12 @@ const DateHeader = ({ currentDate, onChangeDate, onlyCalendar }) => {
             hideDayNames={true}
             hideExtraDays={false}
             hideArrows={true}
+            enableSwipeMonths={true}
+            onMonthChange={(month) => {
+              const newMonthDate = new Date(month.dateString);
+              setMonthDate(newMonthDate);
+              onChangeDate(formatDate(newMonthDate)); // 필요하면 상위로 전달
+            }}
             theme={{
               calendarBackground: "#f1ebf1",
               textDayFontSize: 12,
