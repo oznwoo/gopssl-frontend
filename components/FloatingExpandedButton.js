@@ -100,14 +100,18 @@ const FloatingExpandButton = (props) => {
             ]}
           >
             <TouchableOpacity
-              onPress={() => transitionSale()}
+              onPress={() => {
+                expanded ? transitionSale() : undefined;
+              }}
               style={styles.registerButton}
             >
               <Text style={styles.registerText}>매출 등록</Text>
             </TouchableOpacity>
             <View style={styles.separator} />
             <TouchableOpacity
-              onPress={() => transitionCustomer()}
+              onPress={() => {
+                expanded ? transitionCustomer() : undefined;
+              }}
               style={styles.registerButton}
             >
               <Text style={styles.registerText}>고객 등록</Text>

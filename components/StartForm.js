@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
   purpleButtonText: {
     color: "white",
     fontFamily: "tjM",
-    fontSize: 20,
+    fontSize: 16,
     letterSpacing: -1,
     textAlign: "center",
   },

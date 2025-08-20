@@ -20,7 +20,8 @@
         "foregroundImage": "./assets/Gopssl.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.oznwoo.Gopssl"
     },
     "web": {
       "favicon": "./assets/Gopssl.png"
