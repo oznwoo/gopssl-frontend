@@ -41,7 +41,13 @@ const StartScreen = () => {
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.pageContainer}>
           <View style={styles.logoContainer}>
-            <Text style={styles.logo} allowFontScaling={false}>
+            <Text
+              style={[
+                styles.logo,
+                Platform.OS === "ios" ? { width: "100%" } : {},
+              ]}
+              allowFontScaling={false}
+            >
               Gopssl
             </Text>
             <Text style={styles.phrase} allowFontScaling={false}>
@@ -89,9 +95,8 @@ const styles = StyleSheet.create({
     color: "#2C2E1F",
   },
   logo: {
-    width: "100%",
     fontFamily: "logo",
-    fontSize: normalizeFont(100),
+    fontSize: normalizeFont(88),
     color: colors.purple,
     height: normalizeFont(140),
     textAlign: "center",

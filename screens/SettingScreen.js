@@ -12,7 +12,7 @@ import { commonStyles } from "../styles/commonStyles";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../actions/authActions";
 import { useNavigation } from "@react-navigation/native";
 import { normalizeFont } from "../utils/responsive";
@@ -21,6 +21,7 @@ const SettingScreen = (props) => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
+  const { name } = useSelector((state) => state.auth.user);
 
   const handleProfile = () => {
     navigation.navigate("Profile");
@@ -51,7 +52,7 @@ const SettingScreen = (props) => {
         <View style={styles.logoContainer}>
           <Text style={styles.logo}>Gopssl</Text>
           <Text style={styles.userName}>
-            <Text style={{ fontFamily: "gamtanDotumB" }}>홍길동</Text> 원장님
+            <Text style={{ fontFamily: "gamtanDotumB" }}>{name}</Text> 원장님
           </Text>
         </View>
 
@@ -139,9 +140,12 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   logo: {
+    width: "100%",
     fontFamily: "logo",
     fontSize: normalizeFont(80),
     color: colors.purple,
+    height: normalizeFont(140),
+    textAlign: "center",
   },
   userName: {
     fontFamily: "gamtanDotumR",
