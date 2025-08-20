@@ -3,6 +3,7 @@ import { TextInput, View, Text, StyleSheet, Platform } from "react-native";
 import { BlurView } from "expo-blur";
 import colors from "../../styles/color";
 import { commonStyles } from "../../styles/commonStyles";
+import { normalizeFont } from "../../utils/responsive";
 
 const BaseInput = ({
   label,
@@ -74,7 +75,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   inputTitle: {
-    fontSize: 16,
+    fontSize: normalizeFont(16),
     fontFamily: "nanumSquareR",
     color: colors.purple,
     letterSpacing: -0.5,
@@ -83,7 +84,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontFamily: "nanumSquareR",
-    fontSize: 16,
+    fontSize: normalizeFont(16),
   },
   errorContainer: {
     alignItems: "flex-end",

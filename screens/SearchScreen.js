@@ -15,6 +15,7 @@ import debounce from "lodash.debounce";
 import { searchCustomer } from "../actions/customerActions";
 import { useDispatch } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
+import { normalizeFont } from "../utils/responsive";
 
 const SearchScreen = () => {
   const dispatch = useDispatch();
@@ -233,7 +234,7 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     fontFamily: "NanumSquareB",
-    fontSize: 16,
+    fontSize: normalizeFont(16),
     letterSpacing: -0.5,
     paddingVertical: 4,
   },
@@ -258,18 +259,18 @@ const styles = StyleSheet.create({
   customerName: {
     color: colors.purple,
     fontFamily: "gamtanDotumR",
-    fontSize: 16,
+    fontSize: normalizeFont(16),
     letterSpacing: -0.5,
   },
   numOfVisits: {
     color: colors.purple,
     fontFamily: "nanumSquareR",
-    fontSize: 8,
+    fontSize: normalizeFont(8),
     letterSpacing: -0.5,
   },
   emptyText: {
     fontFamily: "gamtanDotumB",
-    fontSize: 16,
+    fontSize: normalizeFont(16),
     letterSpacing: -0.5,
     color: colors.lightPurple,
   },
@@ -277,7 +278,7 @@ const styles = StyleSheet.create({
   detail: {
     color: colors.lightPurple,
     fontFamily: "nanumSquareB",
-    fontSize: 10,
+    fontSize: normalizeFont(10),
     letterSpacing: -0.5,
     alignSelf: "flex-end",
   },

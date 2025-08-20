@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import BaseInput from "./BaseInput";
 import colors from "../../styles/color";
+import { normalizeFont } from "../../utils/responsive";
 
 const prefixes = ["010", "031", "02"];
 
@@ -111,7 +112,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   prefixText: {
-    fontSize: 14,
+    fontSize: normalizeFont(14),
     fontFamily: "nanumSquareR",
     letterSpacing: -0.5,
     color: colors.purple,
@@ -123,11 +124,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     width: 60,
     fontFamily: "nanumSquareR",
-    fontSize: 16,
+    fontSize: normalizeFont(16),
     textAlign: "center",
   },
   hyphen: {
-    fontSize: 16,
+    fontSize: normalizeFont(16),
     color: colors.grayDark,
   },
   dropdown: {
@@ -142,7 +143,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   dropdownText: {
-    fontSize: 14,
+    fontSize: normalizeFont(14),
     letterSpacing: -0.5,
     fontFamily: "nanumSquareEB",
     color: "#fff",

@@ -11,6 +11,7 @@ import { commonStyles } from "../styles/commonStyles";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { formatNumber } from "../utils/format";
+import { normalizeFont } from "../utils/responsive";
 
 const SaleItem = ({ saleData, transitionSale, transitionCustomer }) => {
   const isFirstVisit = saleData.num_of_visits === 1;
@@ -129,13 +130,13 @@ const styles = StyleSheet.create({
   customerInfoContainer: {},
   customerName: {
     fontFamily: "gamtanDotumR",
-    fontSize: 20,
+    fontSize: normalizeFont(20),
     letterSpacing: -0.5,
     lineHeight: 26,
   },
   numOfVisit: {
     fontFamily: "nanumSquareR",
-    fontSize: 8,
+    fontSize: normalizeFont(8),
     letterSpacing: -0.5,
   },
   detailToggle: {
@@ -146,7 +147,7 @@ const styles = StyleSheet.create({
   },
   detailTitle: {
     fontFamily: "nanumSquareB",
-    fontSize: 12,
+    fontSize: normalizeFont(12),
     letterSpacing: -0.5,
   },
   detailBox: {
@@ -158,7 +159,7 @@ const styles = StyleSheet.create({
   },
   detailText: {
     fontFamily: "nanumSquareB",
-    fontSize: 8,
+    fontSize: normalizeFont(8),
     color: colors.purple,
   },
   saleInfoButton: {

@@ -10,6 +10,7 @@ import {
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import colors from "../styles/color";
 import { useNavigation } from "@react-navigation/native";
+import { normalizeFont } from "../utils/responsive";
 
 const FloatingExpandButton = (props) => {
   const navigation = useNavigation();
@@ -137,7 +138,7 @@ const styles = StyleSheet.create({
   registerButton: { padding: 2 },
   registerText: {
     color: "#fff",
-    fontSize: 16,
+    fontSize: normalizeFont(16),
     fontFamily: "gamtanDotumB",
     textAlign: "center",
   },

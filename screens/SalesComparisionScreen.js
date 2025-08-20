@@ -12,6 +12,7 @@ import DateHeader from "../components/DateHeader";
 import SalesBarChart from "../components/SalesBarChart";
 import YearlyComparisonChart from "../components/YearlyComparisionChart";
 import { getMonthlySalesSummary } from "../actions/saleStatisticsActions";
+import { normalizeFont } from "../utils/responsive";
 
 const SalesComparisionScreen = (props) => {
   const [date, setDate] = useState(new Date());
@@ -247,7 +248,7 @@ const styles = StyleSheet.create({
   boxContent: { flex: 1, gap: 4, justifyContent: "center" },
   typeText: {
     fontFamily: "gamtanDotumR",
-    fontSize: 12,
+    fontSize: normalizeFont(12),
     letterSpacing: 1,
     color: colors.purple,
   },
@@ -266,39 +267,42 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   typeRatioText: {
-    fontSize: 12,
+    fontSize: normalizeFont(12),
     fontFamily: "nanumSquareB",
   },
   boxTitle: {
     fontFamily: "gamtanDotumB",
-    fontSize: 16,
+    fontSize: normalizeFont(16),
     letterSpacing: -0.5,
     color: colors.purple,
   },
   boxDetail: {
     fontFamily: "nanumSquareB",
-    fontSize: 10,
+    fontSize: normalizeFont(10),
     letterSpacing: -0.5,
     color: "#656d72",
   },
   chartContainer: {
+    maxWidth: "100%",
+    overflow: "hidden",
     justifyContent: "center",
     alignItems: "center",
     padding: 4,
   },
   monthTotal: {
     fontFamily: "gamtanDotumB",
-    fontSize: 18,
+    fontSize: normalizeFont(18),
     color: "#fff",
     letterSpacing: -0.5,
   },
   comparisionText: {
     fontFamily: "gamtanDotumB",
-    fontSize: 12,
+    fontSize: normalizeFont(12),
     letterSpacing: -0.5,
     color: "#fff",
   },
   comparisionBox: {
+    maxWidth: "100%",
     backgroundColor: colors.backgroundPurple,
     borderWidth: 1,
     borderColor: colors.lightPurple,

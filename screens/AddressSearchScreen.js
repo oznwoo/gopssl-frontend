@@ -14,6 +14,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import colors from "../styles/color";
 import { commonStyles } from "../styles/commonStyles";
 import { useRoute } from "@react-navigation/native";
+import { normalizeFont } from "../utils/responsive";
 
 const AddressSearchScreen = ({ navigation }) => {
   const route = useRoute();
@@ -125,7 +126,7 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     fontFamily: "NanumSquareB",
-    fontSize: 16,
+    fontSize: normalizeFont(16),
     letterSpacing: -0.5,
   },
   separatorLine: {
@@ -149,14 +150,14 @@ const styles = StyleSheet.create({
   },
   addressName: {
     fontFamily: "gamtanDotumB",
-    fontSize: 16,
+    fontSize: normalizeFont(16),
     letterSpacing: -0.5,
     lineHeight: 26,
     color: colors.purple,
   },
   zipCode: {
     fontFamily: "nanumSquareR",
-    fontSize: 8,
+    fontSize: normalizeFont(8),
     color: colors.purple,
   },
 });

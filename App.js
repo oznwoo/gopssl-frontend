@@ -1,6 +1,6 @@
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
-import { StyleSheet } from "react-native";
+import { StyleSheet, Text } from "react-native";
 import * as Font from "expo-font";
 import AppNavigator from "./navigation/AppNavigator";
 import { enableScreens } from "react-native-screens";
@@ -8,6 +8,10 @@ import { Provider } from "react-redux";
 import { store } from "./store/store";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
+if (Text.defaultProps == null) {
+  Text.defaultProps = {};
+}
+Text.defaultProps.allowFontScaling = false; // ✅ 접근성 글꼴 배율 무시
 enableScreens();
 
 export default function App() {

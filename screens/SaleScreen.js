@@ -6,6 +6,7 @@ import SaleForm from "../components/SaleForm";
 import colors from "../styles/color";
 import { useDispatch } from "react-redux";
 import { getSaleById } from "../actions/saleActions";
+import { normalizeFont } from "../utils/responsive";
 
 const SaleScreen = ({ route }) => {
   const dispatch = useDispatch();
@@ -78,7 +79,7 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontFamily: "gamtanDotumB",
-    fontSize: 16,
+    fontSize: normalizeFont(16),
     letterSpacing: -0.5,
     color: colors.lightPurple,
   },

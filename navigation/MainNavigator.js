@@ -17,6 +17,7 @@ import SaleScreen from "../screens/SaleScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 import AddressSearchScreen from "../screens/AddressSearchScreen";
 import DetailScreen from "../screens/DetailScreen";
+import { normalizeFont } from "../utils/responsive";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -55,7 +56,7 @@ const TabNavigator = () => (
       },
       // 라벨 스타일
       tabBarLabelStyle: {
-        fontSize: 10,
+        fontSize: normalizeFont(10),
         fontFamily: "nanumSquareB",
         textTransform: "none", // 대문자 변환 방지
         marginTop: 0,

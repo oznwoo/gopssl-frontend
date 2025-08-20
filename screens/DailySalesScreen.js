@@ -9,6 +9,7 @@ import SaleItem from "../components/SaleItem";
 import { formatNumber } from "../utils/format";
 import DateHeader from "../components/DateHeader";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import { normalizeFont } from "../utils/responsive";
 
 const DailySalesScreen = () => {
   const navigation = useNavigation();
@@ -156,7 +157,7 @@ const styles = StyleSheet.create({
   dateText: {
     fontFamily: "gamtanDotumB",
     letterSpacing: -0.5,
-    fontSize: 20,
+    fontSize: normalizeFont(20),
     color: colors.purple,
   },
   calendarContainer: { paddingHorizontal: 16 },
@@ -170,7 +171,7 @@ const styles = StyleSheet.create({
     fontFamily: "gamtanDotumB",
     color: colors.purple,
     letterSpacing: -0.5,
-    fontSize: 24,
+    fontSize: normalizeFont(24),
     marginBottom: 16,
   },
   salesContainer: {
@@ -181,7 +182,7 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontFamily: "gamtanDotumB",
-    fontSize: 16,
+    fontSize: normalizeFont(16),
     letterSpacing: -0.5,
     color: colors.lightPurple,
   },
@@ -202,7 +203,7 @@ const styles = StyleSheet.create({
   },
   totalText: {
     fontFamily: "gamtanBatangB",
-    fontSize: 24,
+    fontSize: normalizeFont(24),
     letterSpacing: -0.5,
     color: colors.purple,
   },

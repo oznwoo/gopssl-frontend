@@ -2,6 +2,7 @@ import React from "react";
 import { StyleSheet, TextInput } from "react-native";
 import BaseInput from "./BaseInput";
 import colors from "../../styles/color";
+import { normalizeFont } from "../../utils/responsive";
 
 const DetailInput = ({ value, onChangeText, ...rest }) => {
   return (
@@ -28,7 +29,7 @@ const styles = StyleSheet.create({
     borderColor: colors.purple,
     borderRadius: 8,
     padding: 16,
-    fontSize: 12,
+    fontSize: normalizeFont(12),
     fontFamily: "nanumSquareR",
     alignSelf: "center",
   },

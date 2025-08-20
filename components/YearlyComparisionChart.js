@@ -3,6 +3,7 @@ import { View, Text, StyleSheet } from "react-native";
 import { LineChart } from "react-native-gifted-charts";
 import colors from "../styles/color";
 import { commonStyles } from "../styles/commonStyles";
+import { normalizeFont } from "../utils/responsive";
 
 const YearlyComparisonChart = ({ data }) => {
   // 색상 변수로 관리 - 이곳에서 쉽게 변경 가능
@@ -207,17 +208,17 @@ const styles = StyleSheet.create({
     ...commonStyles.dropShadow,
   },
   tooltipText: {
-    fontSize: 12,
+    fontSize: normalizeFont(12),
     fontFamily: "nanumSquareB",
     color: "#fff",
   },
   yAxisText: {
-    fontSize: 10,
+    fontSize: normalizeFont(10),
     fontFamily: "nanumSquareB",
     color: colors.purple,
   },
   xAxisText: {
-    fontSize: 8,
+    fontSize: normalizeFont(8),
     fontFamily: "nanumSquareB",
     letterSpacing: -0.5,
     color: "#000",
@@ -230,7 +231,7 @@ const styles = StyleSheet.create({
   },
   legendText: {
     fontFamily: "nanumSquareB",
-    fontSize: 12,
+    fontSize: normalizeFont(12),
   },
 });
 

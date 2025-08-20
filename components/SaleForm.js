@@ -27,6 +27,7 @@ import {
 } from "../actions/saleActions";
 import { commonStyles } from "../styles/commonStyles";
 import { registerCustomer } from "../actions/customerActions";
+import { normalizeFont } from "../utils/responsive";
 
 const SaleForm = ({ saleDate, data, mode }) => {
   const dispatch = useDispatch();
@@ -323,7 +324,7 @@ const styles = StyleSheet.create({
   },
   totalText: {
     fontFamily: "gamtanBatangB",
-    fontSize: 24,
+    fontSize: normalizeFont(24),
     letterSpacing: -0.5,
     color: colors.purple,
   },

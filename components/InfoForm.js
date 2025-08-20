@@ -8,6 +8,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
 import { registerUserInfo } from "../actions/userActions";
 import { AddressSearchInput, BaseInput, DetailInput } from "./Input";
+import { normalizeFont } from "../utils/responsive";
 
 const InfoForm = ({ setFormType }) => {
   const dispatch = useDispatch();
@@ -164,7 +165,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   inputTitle: {
-    fontSize: 16,
+    fontSize: normalizeFont(16),
     fontFamily: "nanumSquareR",
     color: colors.purple,
     letterSpacing: -0.5,
@@ -173,7 +174,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontFamily: "nanumSquareR",
-    fontSize: 16,
+    fontSize: normalizeFont(16),
   },
   purpleButton: {
     backgroundColor: colors.purple,
@@ -185,7 +186,7 @@ const styles = StyleSheet.create({
   purpleButtonText: {
     color: "white",
     fontFamily: "tjM",
-    fontSize: 16,
+    fontSize: normalizeFont(16),
     letterSpacing: -1,
     textAlign: "center",
   },
@@ -196,6 +197,6 @@ const styles = StyleSheet.create({
   transitionText: {
     color: "#2E2B1C",
     fontFamily: "nanumSquareR",
-    fontSize: 12,
+    fontSize: normalizeFont(12),
   },
 });

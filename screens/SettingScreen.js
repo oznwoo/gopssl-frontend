@@ -15,6 +15,7 @@ import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { useDispatch } from "react-redux";
 import { logout } from "../actions/authActions";
 import { useNavigation } from "@react-navigation/native";
+import { normalizeFont } from "../utils/responsive";
 
 const SettingScreen = (props) => {
   const dispatch = useDispatch();
@@ -113,7 +114,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: colors.purple,
     fontFamily: "gamtanDotumB",
-    fontSize: 20,
+    fontSize: normalizeFont(20),
     letterSpacing: -0.5,
   },
   horizontalLine: {
@@ -139,12 +140,12 @@ const styles = StyleSheet.create({
   },
   logo: {
     fontFamily: "logo",
-    fontSize: 80,
+    fontSize: normalizeFont(80),
     color: colors.purple,
   },
   userName: {
     fontFamily: "gamtanDotumR",
-    fontSize: 24,
+    fontSize: normalizeFont(24),
     letterSpacing: -0.5,
     lineHeight: 32,
     color: colors.purple,
@@ -168,7 +169,7 @@ const styles = StyleSheet.create({
   settingText: {
     flex: 1,
     fontFamily: "nanumSquareB",
-    fontSize: 16,
+    fontSize: normalizeFont(16),
     letterSpacing: -0.5,
     color: colors.purple,
   },

@@ -3,6 +3,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import colors from "../styles/color";
 import { commonStyles } from "../styles/commonStyles";
 import { FORM_TYPES } from "../constants/formTypes";
+import { normalizeFont } from "../utils/responsive";
 
 const StartForm = ({ setFormType }) => {
   const handleSignUp = () => {
@@ -66,7 +67,7 @@ const styles = StyleSheet.create({
   purpleButtonText: {
     color: "white",
     fontFamily: "tjM",
-    fontSize: 20,
+    fontSize: normalizeFont(20),
     letterSpacing: -1,
     textAlign: "center",
     width: "100%",
@@ -74,7 +75,7 @@ const styles = StyleSheet.create({
   whiteButtonText: {
     color: colors.purple,
     fontFamily: "tjM",
-    fontSize: 20,
+    fontSize: normalizeFont(20),
     letterSpacing: -1,
     textAlign: "center",
     width: "100%",

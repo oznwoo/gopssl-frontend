@@ -11,6 +11,7 @@ import colors from "../../styles/color";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchTreatmentsThunk } from "../../actions/treatmentActions";
 import { formatNumber } from "../../utils/format";
+import { normalizeFont } from "../../utils/responsive";
 
 const CATEGORY_KR_MAP = {
   cut: "커트",
@@ -208,7 +209,7 @@ const styles = StyleSheet.create({
   },
   textInput: {
     fontFamily: "nanumSquareR",
-    fontSize: 12,
+    fontSize: normalizeFont(12),
   },
   categoryGroup: {
     width: "100%",
@@ -216,7 +217,7 @@ const styles = StyleSheet.create({
   },
   categoryTitle: {
     fontFamily: "nanumSquareB",
-    fontSize: 16,
+    fontSize: normalizeFont(16),
     letterSpacing: -0.5,
     marginBottom: 8,
   },
@@ -248,12 +249,12 @@ const styles = StyleSheet.create({
   },
   treatmentName: {
     fontFamily: "gamtanDotumB",
-    fontSize: 9,
+    fontSize: normalizeFont(9),
     letterSpacing: -0.5,
   },
   treatmentPrice: {
     fontFamily: "nanumSquareB",
-    fontSize: 8,
+    fontSize: normalizeFont(8),
     letterSpacing: -0.5,
   },
   horizonalLine: {
@@ -271,6 +272,6 @@ const styles = StyleSheet.create({
     flex: 1,
     fontFamily: "nanumSquareB",
     letterSpacing: -0.5,
-    fontSize: 8,
+    fontSize: normalizeFont(8),
   },
 });
