@@ -15,6 +15,7 @@ const BaseInput = ({
   inputProps = {},
   specialButton,
   textStyle,
+  onFocus,
   ...rest
 }) => {
   const Container = useBlur ? BlurView : View;
@@ -41,6 +42,13 @@ const BaseInput = ({
             style={[styles.input, textStyle]}
             {...rest}
             {...inputProps}
+            onFocus={(e) => {
+              // 부모 컴포넌트에서 전달된 onFocus 먼저 호출
+              onFocus && onFocus(e);
+              // 기존에 inputProps나 rest에 있던 onFocus도 호출
+              inputProps.onFocus && inputProps.onFocus(e);
+              rest.onFocus && rest.onFocus(e);
+            }}
           />
         )}
 
@@ -91,6 +99,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   errorText: {
+    fontSize: normalizeFont(12),
     color: colors.alert,
     fontFamily: "nanumSquareR",
     letterSpacing: -0.5,

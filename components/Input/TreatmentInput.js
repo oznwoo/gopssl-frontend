@@ -233,7 +233,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#000",
     borderRadius: 8,
-    paddingVertical: 8,
     paddingHorizontal: 4,
     gap: 4,
     justifyContent: "center",

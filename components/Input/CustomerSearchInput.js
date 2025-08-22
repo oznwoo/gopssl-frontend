@@ -247,7 +247,7 @@ const styles = StyleSheet.create({
   specialButtonContainer: {
     ...Platform.select({
       android: {
-        height: "150%",
+        height: "120%",
       },
       ios: {
         height: "180%",

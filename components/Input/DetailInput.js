@@ -4,9 +4,15 @@ import BaseInput from "./BaseInput";
 import colors from "../../styles/color";
 import { normalizeFont } from "../../utils/responsive";
 
-const DetailInput = ({ value, onChangeText, ...rest }) => {
+const DetailInput = ({
+  value,
+  onChangeText,
+  onFocus,
+  inputProps = {},
+  ...rest
+}) => {
   return (
-    <BaseInput {...rest} portraitMode={true}>
+    <BaseInput {...rest} portraitMode={true} onFocus={onFocus}>
       <TextInput
         placeholder="고객님을 기억하기 위한 어떠한 것이든 입력해주세요."
         style={styles.detail}
@@ -15,6 +21,13 @@ const DetailInput = ({ value, onChangeText, ...rest }) => {
         textAlignVertical="top"
         value={value}
         onChangeText={onChangeText}
+        onFocus={(e) => {
+          onFocus && onFocus(e);
+          // 기존에 inputProps나 rest에 있던 onFocus도 호출
+          inputProps.onFocus && inputProps.onFocus(e);
+          rest.onFocus && rest.onFocus(e);
+        }}
+        {...inputProps}
       />
     </BaseInput>
   );
