@@ -176,6 +176,14 @@ const DateHeader = ({ currentDate, onChangeDate, onlyCalendar }) => {
               const isSunday = new Date(date.dateString).getDay() === 0;
               const salesAmount = salesByDate[date.dateString]; // 매출 가져오기
 
+              const isFuture = new Date(date.dateString) > todayDate;
+              let displayText;
+              if (salesAmount !== undefined) {
+                displayText = `${salesAmount.toLocaleString()}원`;
+              } else {
+                displayText = isFuture ? "미등록" : "0원";
+              }
+
               return (
                 <DayComponent
                   style={[
@@ -204,42 +212,22 @@ const DateHeader = ({ currentDate, onChangeDate, onlyCalendar }) => {
                   >
                     {date.day}
                   </Text>
-                  {/* 매출 표시 */}
-                  {salesAmount !== undefined ? (
-                    <Text
-                      style={[
-                        styles.salesText,
-                        {
-                          color: isSelected
-                            ? "#fff"
-                            : state === "disabled"
-                            ? colors.lightPurple
-                            : isSunday
-                            ? colors.alert // ✅ 일요일 숫자만 빨강
-                            : colors.purple,
-                        },
-                      ]}
-                    >
-                      {salesAmount.toLocaleString()}원
-                    </Text>
-                  ) : (
-                    <Text
-                      style={[
-                        styles.salesText,
-                        {
-                          color: isSelected
-                            ? "#fff"
-                            : state === "disabled"
-                            ? colors.lightPurple
-                            : isSunday
-                            ? colors.alert // ✅ 일요일 숫자만 빨강
-                            : colors.purple,
-                        },
-                      ]}
-                    >
-                      미등록
-                    </Text>
-                  )}
+                  <Text
+                    style={[
+                      styles.salesText,
+                      {
+                        color: isSelected
+                          ? "#fff"
+                          : state === "disabled"
+                          ? colors.lightPurple
+                          : isSunday
+                          ? colors.alert
+                          : colors.purple,
+                      },
+                    ]}
+                  >
+                    {displayText}
+                  </Text>
                 </DayComponent>
               );
             }}
@@ -347,6 +335,6 @@ const styles = StyleSheet.create({
   salesText: {
     fontSize: normalizeFont(6),
     color: colors.purple,
-    fontFamily: "nanumSquareR",
+    fontFamily: "nanumSquareB",
   },
 });
