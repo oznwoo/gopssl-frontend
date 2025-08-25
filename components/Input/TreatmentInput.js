@@ -134,9 +134,6 @@ const TreatmentInput = ({
   return (
     <BaseInput {...rest} portraitMode={true}>
       <View style={styles.treatmentInputContainer}>
-        {/* 빈 TextInput으로 UI 정렬용 */}
-        <TextInput style={styles.textInput} value={""} editable={false} />
-
         {Object.keys(grouped).map((category, index, array) => (
           <View key={category} style={styles.categoryGroup}>
             <Text style={styles.categoryTitle}>{category}</Text>
@@ -187,11 +184,21 @@ const TreatmentInput = ({
               />
             </View>
 
-            {index !== array.length - 1 && (
-              <View style={styles.horizonalLine} />
-            )}
+            <View style={styles.horizonalLine} />
           </View>
         ))}
+
+        <Text style={styles.categoryTitle}>제품</Text>
+        <View style={[styles.treatmentItem, styles.plusOption]}>
+          <Text style={styles.treatmentName}>가격</Text>
+          <TextInput
+            placeholder="가격 입력"
+            keyboardType="numeric"
+            style={styles.optionInput}
+            onChangeText={(text) => handleExtraPriceChange("제품", text)}
+            value={value[1]["제품"]?.toString() || ""}
+          />
+        </View>
       </View>
     </BaseInput>
   );
@@ -205,6 +212,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     paddingHorizontal: 16,
     paddingBottom: 8,
+    paddingTop: 16,
     backgroundColor: colors.backgroundPurple,
   },
   textInput: {
