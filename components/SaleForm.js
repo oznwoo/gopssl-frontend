@@ -234,7 +234,6 @@ const SaleForm = ({ saleDate, data, mode }) => {
             () => [values.treatmentList, values.extraPrices],
             [values.treatmentList, values.extraPrices]
           );
-          console.log(values);
 
           return (
             <View style={styles.formContainer}>

@@ -18,6 +18,7 @@ const CATEGORY_KR_MAP = {
   perm: "펌",
   color: "염색",
   elderly: "경로",
+  product: "제품",
 };
 
 const groupTreatmentsByCategory = (treatments) => {
@@ -121,6 +122,31 @@ const TreatmentInput = ({
     });
   };
 
+  const handleProductPriceChange = (treatment, text) => {
+    const price = parseInt(text, 10) || 0;
+
+    setSelectedTreatments((prev) => {
+      const exists = prev.some((t) => t.treatment_id === treatment.id);
+      let nextTreatments;
+      if (exists) {
+        // 이미 있으면 price 업데이트
+        nextTreatments = prev.map((t) =>
+          t.treatment_id === treatment.id ? { ...t, price } : t
+        );
+      } else {
+        // 없으면 새로 추가
+        nextTreatments = [...prev, { treatment_id: treatment.id, price }];
+      }
+      // 부모 콜백 호출
+      onTreatmentDataChange &&
+        onTreatmentDataChange({
+          nextTreatments,
+          extraPrices,
+        });
+      return nextTreatments;
+    });
+  };
+
   const handleExtraPriceChange = (category, text) => {
     const price = parseInt(text, 10) || 0;
     setExtraPrices((prev) => ({
@@ -143,7 +169,7 @@ const TreatmentInput = ({
                 const isSelected = selectedTreatments.some(
                   (t) => t.treatment_id === treatment.id
                 );
-                return (
+                return category !== "제품" ? (
                   <TouchableOpacity
                     key={treatment.id}
                     style={[
@@ -169,36 +195,50 @@ const TreatmentInput = ({
                       {formatNumber(treatment.default_price)}원
                     </Text>
                   </TouchableOpacity>
+                ) : (
+                  <View
+                    key={treatment.id}
+                    style={[styles.treatmentItem, styles.plusOption]}
+                  >
+                    <Text style={styles.treatmentName}>가격</Text>
+                    <TextInput
+                      placeholder="가격 입력"
+                      keyboardType="numeric"
+                      style={styles.optionInput}
+                      onChangeText={(text) => {
+                        handleProductPriceChange(treatment, text);
+                      }}
+                      value={
+                        selectedTreatments
+                          .find((t) => t.treatment_id === treatment.id)
+                          ?.price?.toString() || ""
+                      }
+                    />
+                  </View>
                 );
               })}
             </View>
 
-            <View style={[styles.treatmentItem, styles.plusOption]}>
-              <Text style={styles.treatmentName}>기장추가</Text>
-              <TextInput
-                placeholder="가격 입력"
-                keyboardType="numeric"
-                style={styles.optionInput}
-                onChangeText={(text) => handleExtraPriceChange(category, text)}
-                value={extraPrices[category]?.toString() || ""}
-              />
-            </View>
+            {category !== "제품" && (
+              <View style={[styles.treatmentItem, styles.plusOption]}>
+                <Text style={styles.treatmentName}>기장추가</Text>
+                <TextInput
+                  placeholder="가격 입력"
+                  keyboardType="numeric"
+                  style={styles.optionInput}
+                  onChangeText={(text) =>
+                    handleExtraPriceChange(category, text)
+                  }
+                  value={extraPrices[category]?.toString() || ""}
+                />
+              </View>
+            )}
 
-            <View style={styles.horizonalLine} />
+            {index !== array.length - 1 && (
+              <View style={styles.horizonalLine} />
+            )}
           </View>
         ))}
-
-        <Text style={styles.categoryTitle}>제품</Text>
-        <View style={[styles.treatmentItem, styles.plusOption]}>
-          <Text style={styles.treatmentName}>가격</Text>
-          <TextInput
-            placeholder="가격 입력"
-            keyboardType="numeric"
-            style={styles.optionInput}
-            onChangeText={(text) => handleExtraPriceChange("제품", text)}
-            value={value[1]["제품"]?.toString() || ""}
-          />
-        </View>
       </View>
     </BaseInput>
   );
