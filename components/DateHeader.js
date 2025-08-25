@@ -6,6 +6,7 @@ import colors from "../styles/color";
 import { formatKoreanDate } from "../utils/format";
 import { commonStyles } from "../styles/commonStyles";
 import { getDailySalesSummary } from "../actions/saleStatisticsActions";
+import { normalizeFont } from "../utils/responsive";
 
 const dayNames = ["일", "월", "화", "수", "목", "금", "토"];
 
@@ -155,9 +156,15 @@ const DateHeader = ({ currentDate, onChangeDate, onlyCalendar }) => {
             hideDayNames={true}
             hideExtraDays={false}
             hideArrows={true}
+            enableSwipeMonths={true}
+            onMonthChange={(month) => {
+              const newMonthDate = new Date(month.dateString);
+              setMonthDate(newMonthDate);
+              onChangeDate(formatDate(newMonthDate)); // 필요하면 상위로 전달
+            }}
             theme={{
               calendarBackground: "#f1ebf1",
-              textDayFontSize: 12,
+              textDayFontSize: normalizeFont(12),
               textDayFontFamily: "gamtanBatangB",
               dayTextColor: colors.purple,
               textDisabledColor: colors.lightPurple,
@@ -303,7 +310,7 @@ const styles = StyleSheet.create({
   dateText: {
     fontFamily: "gamtanDotumB",
     letterSpacing: -0.5,
-    fontSize: 20,
+    fontSize: normalizeFont(20),
     color: colors.purple,
   },
   calendarContainer: {
@@ -321,7 +328,7 @@ const styles = StyleSheet.create({
   dayNameText: {
     textAlign: "center",
     color: colors.purple,
-    fontSize: 16,
+    fontSize: normalizeFont(16),
     fontFamily: "gamtanBatangB",
   },
   calendar: {
@@ -336,9 +343,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 4,
   },
-  dayText: { fontFamily: "gamtanBatangB", fontSize: 14 },
+  dayText: { fontFamily: "gamtanBatangB", fontSize: normalizeFont(14) },
   salesText: {
-    fontSize: 6,
+    fontSize: normalizeFont(6),
     color: colors.purple,
     fontFamily: "nanumSquareR",
   },

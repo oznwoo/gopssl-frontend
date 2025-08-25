@@ -1,8 +1,9 @@
 import React from "react";
-import { TextInput, View, Text, StyleSheet } from "react-native";
+import { TextInput, View, Text, StyleSheet, Platform } from "react-native";
 import { BlurView } from "expo-blur";
 import colors from "../../styles/color";
 import { commonStyles } from "../../styles/commonStyles";
+import { normalizeFont } from "../../utils/responsive";
 
 const BaseInput = ({
   label,
@@ -13,6 +14,8 @@ const BaseInput = ({
   children,
   inputProps = {},
   specialButton,
+  textStyle,
+  onFocus,
   ...rest
 }) => {
   const Container = useBlur ? BlurView : View;
@@ -22,6 +25,9 @@ const BaseInput = ({
       <Container
         style={[
           styles.inputContainer,
+          Platform.OS === "ios" || portraitMode
+            ? { paddingVertical: 10 }
+            : { paddingVertical: 4 },
           useBlur && commonStyles.blurView,
           portraitMode && styles.portraitMode,
         ]}
@@ -32,7 +38,18 @@ const BaseInput = ({
         {children ? (
           children
         ) : (
-          <TextInput style={styles.input} {...rest} {...inputProps} />
+          <TextInput
+            style={[styles.input, textStyle]}
+            {...rest}
+            {...inputProps}
+            onFocus={(e) => {
+              // 부모 컴포넌트에서 전달된 onFocus 먼저 호출
+              onFocus && onFocus(e);
+              // 기존에 inputProps나 rest에 있던 onFocus도 호출
+              inputProps.onFocus && inputProps.onFocus(e);
+              rest.onFocus && rest.onFocus(e);
+            }}
+          />
         )}
 
         {rightIcon}
@@ -60,13 +77,13 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#EDECF4",
     borderRadius: 8,
-    paddingVertical: 10,
+
     paddingHorizontal: 20,
     gap: 12,
     backgroundColor: "#fff",
   },
   inputTitle: {
-    fontSize: 16,
+    fontSize: normalizeFont(16),
     fontFamily: "nanumSquareR",
     color: colors.purple,
     letterSpacing: -0.5,
@@ -75,13 +92,14 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontFamily: "nanumSquareR",
-    fontSize: 16,
+    fontSize: normalizeFont(16),
   },
   errorContainer: {
     alignItems: "flex-end",
     marginTop: 4,
   },
   errorText: {
+    fontSize: normalizeFont(12),
     color: colors.alert,
     fontFamily: "nanumSquareR",
     letterSpacing: -0.5,

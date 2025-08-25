@@ -1,5 +1,6 @@
 // styles/commonStyles.js
 import { StyleSheet } from "react-native";
+import { normalizeFont } from "../utils/responsive";
 
 export const commonStyles = StyleSheet.create({
   button: {
@@ -13,7 +14,7 @@ export const commonStyles = StyleSheet.create({
   },
   textBold: {
     fontWeight: "bold",
-    fontSize: 16,
+    fontSize: normalizeFont(16),
   },
   dropShadow: {
     // iOS 전용 shadow

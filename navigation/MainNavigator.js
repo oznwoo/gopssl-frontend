@@ -8,14 +8,16 @@ import SettingScreen from "../screens/SettingScreen";
 
 import { Ionicons } from "@expo/vector-icons";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import colors from "../styles/color";
-import { StyleSheet } from "react-native";
+import { Platform, StyleSheet } from "react-native";
 import CustomerScreen from "../screens/CustomerScreen";
 import SaleScreen from "../screens/SaleScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 import AddressSearchScreen from "../screens/AddressSearchScreen";
 import DetailScreen from "../screens/DetailScreen";
+import { normalizeFont } from "../utils/responsive";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -24,16 +26,17 @@ const TabNavigator = () => (
   <Tab.Navigator
     screenOptions={({ route }) => ({
       tabBarIcon: ({ color, size }) => {
+        // 아이콘 로직 유지
         const iconData = {
           iconFamily: null,
           iconName: null,
         };
 
         if (route.name === "DailySales") {
-          iconData.iconFamily = FontAwesome6;
-          iconData.iconName = "calendar";
+          iconData.iconFamily = MaterialIcons;
+          iconData.iconName = "home-filled";
         } else if (route.name === "Search") {
-          iconData.iconFamily = FontAwesome5;
+          iconData.iconFamily = FontAwesome;
           iconData.iconName = "search";
         } else if (route.name === "Comparision") {
           iconData.iconFamily = FontAwesome6;
@@ -51,21 +54,56 @@ const TabNavigator = () => (
           />
         );
       },
-      tabBarShowLabel: false,
-      tabBarActiveTintColor: "#fff",
+      // 라벨 스타일
+      tabBarLabelStyle: {
+        fontSize: normalizeFont(10),
+        fontFamily: "nanumSquareB",
+        textTransform: "none", // 대문자 변환 방지
+        marginTop: 0,
+      },
+      tabBarActiveTintColor: colors.purple,
       tabBarInactiveTintColor: colors.lightPurple,
-      tabBarInactiveBackgroundColor: "#fff",
-      tabBarStyle: styles.tabBar,
-      tabBarItemStyle: styles.tabBarItem,
-      tabBarIconStyle: styles.tabBarIcon,
 
-      headerShown: false, // 각 탭에서 헤더 숨김
+      // 개선된 스타일링
+      tabBarStyle: {
+        backgroundColor: "#fff", // 전체 탭바 배경
+        height: 56,
+        paddingHorizontal: 4, // 좌우 패딩
+        paddingVertical: 4, // 상하 패딩
+        borderTopWidth: 0,
+        elevation: 0,
+        shadowOpacity: 0,
+      },
+
+      tabBarItemStyle: {
+        borderRadius: 16,
+        marginHorizontal: Platform.OS === "android" ? 2 : 0,
+        marginVertical: Platform.OS === "android" ? 2 : 0,
+      },
+
+      headerShown: false,
     })}
   >
-    <Tab.Screen name="DailySales" component={DailySalesScreen} />
-    <Tab.Screen name="Search" component={SearchScreen} />
-    <Tab.Screen name="Comparision" component={SalesComparisionScreen} />
-    <Tab.Screen name="Setting" component={SettingScreen} />
+    <Tab.Screen
+      name="DailySales"
+      component={DailySalesScreen}
+      options={{ tabBarLabel: "홈" }}
+    />
+    <Tab.Screen
+      name="Search"
+      component={SearchScreen}
+      options={{ tabBarLabel: "검색" }}
+    />
+    <Tab.Screen
+      name="Comparision"
+      component={SalesComparisionScreen}
+      options={{ tabBarLabel: "통계" }}
+    />
+    <Tab.Screen
+      name="Setting"
+      component={SettingScreen}
+      options={{ tabBarLabel: "설정" }}
+    />
   </Tab.Navigator>
 );
 
@@ -111,12 +149,29 @@ const MainNavigator = () => {
 export default MainNavigator;
 
 const styles = StyleSheet.create({
-  tabBar: { flex: 1, maxHeight: 56 },
-
+  tabBar: {
+    flex: 1,
+    maxHeight: 56,
+    ...Platform.select({
+      android: {
+        elevation: 0, // Android 그림자 제거
+        borderTopWidth: 0,
+      },
+      ios: {
+        shadowOpacity: 0, // iOS 그림자 제거
+      },
+    }),
+  },
   tabBarItem: {
     flex: 1,
     borderRadius: 16,
     backgroundColor: colors.purple,
+    ...Platform.select({
+      android: {
+        marginHorizontal: 2, // Android에서 아이템 간격 조정
+        marginVertical: 4,
+      },
+    }),
   },
   tabBarIcon: {
     marginVertical: "auto",

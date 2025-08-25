@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { TouchableOpacity } from "react-native";
+import { Platform, TouchableOpacity } from "react-native";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import BaseInput from "./BaseInput";
 import colors from "../../styles/color";
@@ -24,6 +24,9 @@ const PasswordInput = ({ value, onChangeText, ...rest }) => {
           />
         </TouchableOpacity>
       }
+      textStyle={{
+        fontFamily: Platform.OS === "android" ? "monospace" : "nanumSquareB",
+      }}
     />
   );
 };

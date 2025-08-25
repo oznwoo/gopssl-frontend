@@ -2,6 +2,7 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import colors from "../styles/color";
+import { normalizeFont } from "../utils/responsive";
 
 const FormHeader = (props) => {
   return (
@@ -40,7 +41,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: "#fff",
     fontFamily: "gamtanDotumB",
-    fontSize: 20,
+    fontSize: normalizeFont(20),
     letterSpacing: -0.5,
   },
 });

@@ -10,6 +10,7 @@ import {
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import colors from "../styles/color";
 import { useNavigation } from "@react-navigation/native";
+import { normalizeFont } from "../utils/responsive";
 
 const FloatingExpandButton = (props) => {
   const navigation = useNavigation();
@@ -18,7 +19,6 @@ const FloatingExpandButton = (props) => {
 
   const transitionCustomer = () => {
     const baseParams = { mode: "register" };
-
     navigation.navigate("Customer", baseParams);
   };
 
@@ -86,34 +86,38 @@ const FloatingExpandButton = (props) => {
           },
         ]}
       >
-        {/* 접힌 상태일 때 아이콘 */}
-        <TouchableOpacity onPress={toggle} style={styles.fullSize}>
-          <Animated.View style={{ ...styles.centered, opacity: iconOpacity }}>
-            <FontAwesome5 name="plus" size={24} color="#fff" />
-          </Animated.View>
-
-          {/* 펼쳐진 상태일 때 텍스트 메뉴 */}
-          <Animated.View
-            style={[
-              { position: "relative", top: -8 },
-              { opacity: contentOpacity },
-            ]}
-          >
-            <TouchableOpacity
-              onPress={() => transitionSale()}
-              style={styles.registerButton}
+        {expanded ? (
+          // 펼쳐진 상태 → 개별 버튼만 터치 가능
+          <View style={styles.fullSize}>
+            <Animated.View
+              style={[
+                { position: "relative", top: 14 },
+                { opacity: contentOpacity },
+              ]}
             >
-              <Text style={styles.registerText}>매출 등록</Text>
-            </TouchableOpacity>
-            <View style={styles.separator} />
-            <TouchableOpacity
-              onPress={() => transitionCustomer()}
-              style={styles.registerButton}
-            >
-              <Text style={styles.registerText}>고객 등록</Text>
-            </TouchableOpacity>
-          </Animated.View>
-        </TouchableOpacity>
+              <TouchableOpacity
+                onPress={transitionSale}
+                style={styles.registerButton}
+              >
+                <Text style={styles.registerText}>매출 등록</Text>
+              </TouchableOpacity>
+              <View style={styles.separator} />
+              <TouchableOpacity
+                onPress={transitionCustomer}
+                style={styles.registerButton}
+              >
+                <Text style={styles.registerText}>고객 등록</Text>
+              </TouchableOpacity>
+            </Animated.View>
+          </View>
+        ) : (
+          // 접힌 상태 → 전체 보라색 영역이 터치 가능
+          <TouchableOpacity onPress={toggle} style={styles.fullSize}>
+            <Animated.View style={{ ...styles.centered, opacity: iconOpacity }}>
+              <FontAwesome5 name="plus" size={24} color="#fff" />
+            </Animated.View>
+          </TouchableOpacity>
+        )}
       </Animated.View>
     </>
   );
@@ -134,7 +138,7 @@ const styles = StyleSheet.create({
   registerButton: { padding: 2 },
   registerText: {
     color: "#fff",
-    fontSize: 16,
+    fontSize: normalizeFont(16),
     fontFamily: "gamtanDotumB",
     textAlign: "center",
   },

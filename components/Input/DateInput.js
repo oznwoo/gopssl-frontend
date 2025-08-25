@@ -13,6 +13,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import BaseInput from "./BaseInput";
 import colors from "../../styles/color";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import { normalizeFont } from "../../utils/responsive";
 
 const formattedDate = (date) =>
   `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
@@ -107,7 +108,7 @@ const styles = StyleSheet.create({
   },
   textInput: {
     fontFamily: "nanumSquareR",
-    fontSize: 12,
+    fontSize: normalizeFont(12),
   },
   datePickerButton: {},
   modalOverlay: {

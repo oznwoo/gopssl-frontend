@@ -1,5 +1,5 @@
 import React from "react";
-import { ActivityIndicator, StyleSheet, View } from "react-native";
+import { ActivityIndicator, StyleSheet, View, Alert } from "react-native";
 import SubmitButton from "./SubmitButton";
 import colors from "../styles/color";
 import { Formik } from "formik";
@@ -40,7 +40,7 @@ const CustomerForm = ({ data, mode }) => {
           detail: values.detail,
         })
       );
-      alert("고객 등록이 완료되었습니다.");
+      Alert.alert("알림", "고객 등록이 완료되었습니다.");
       navigation.navigate("Home");
     } catch (error) {
       console.log("에러 상태코드:", error?.response?.status || error.message);
@@ -61,7 +61,7 @@ const CustomerForm = ({ data, mode }) => {
           detail: values.detail,
         })
       );
-      alert("고객 정보 수정이 완료되었습니다.");
+      Alert.alert("알림", "고객 정보 수정이 완료되었습니다.");
       navigation.navigate("Home");
     } catch (error) {
       console.log("에러 상태코드:", error?.response?.status || error.message);
@@ -75,7 +75,7 @@ const CustomerForm = ({ data, mode }) => {
       const customerId = data?.id;
 
       await dispatch(deleteCustomerById(customerId));
-      alert("고객이 삭제되었습니다.");
+      Alert.alert("알림", "고객이 삭제되었습니다.");
       navigation.goBack();
     } catch (error) {
       console.log("에러 상태코드:", error?.response?.status || error.message);
@@ -178,10 +178,11 @@ export default CustomerForm;
 const styles = StyleSheet.create({
   formContainer: {
     flex: 1,
+    width: "100%",
     backgroundColor: colors.backgroundPurple,
+    justifyContent: "space-between",
   },
   inputContainer: {
-    flex: 1,
     gap: 16,
     paddingHorizontal: 40,
     paddingVertical: 24,

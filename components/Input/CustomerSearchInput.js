@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Text,
   StyleSheet,
+  Platform,
 } from "react-native";
 import debounce from "lodash.debounce";
 import BaseInput from "./BaseInput";
@@ -14,6 +15,7 @@ import { commonStyles } from "../../styles/commonStyles";
 import { Ionicons } from "@expo/vector-icons";
 import { searchCustomer } from "../../actions/customerActions";
 import { useDispatch } from "react-redux";
+import { normalizeFont } from "../../utils/responsive";
 
 const CustomerSearchInput = ({
   label,
@@ -229,7 +231,7 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    fontSize: 16,
+    fontSize: normalizeFont(16),
     fontFamily: "nanumSquareR",
   },
   list: {
@@ -243,14 +245,19 @@ const styles = StyleSheet.create({
     ...commonStyles.dropShadow,
   },
   specialButtonContainer: {
-    height: "180%",
-    width: 50,
+    ...Platform.select({
+      android: {
+        height: "120%",
+      },
+      ios: {
+        height: "180%",
+      },
+    }),
+    width: "16%",
     position: "absolute",
     right: 0,
     borderTopRightRadius: 8,
     borderBottomRightRadius: 8,
-    borderWidth: 1,
-    borderColor: colors.backgroundPurple,
     borderLeftWidth: 1,
     borderLeftColor: colors.purple,
   },
@@ -264,7 +271,7 @@ const styles = StyleSheet.create({
     fontFamily: "nanumSquareEB",
     width: 24,
     textAlign: "center",
-    fontSize: 10,
+    fontSize: normalizeFont(10),
     color: colors.purple,
     numberOfLines: 2,
   },
@@ -277,20 +284,20 @@ const styles = StyleSheet.create({
   customerName: {
     color: colors.purple,
     fontFamily: "gamtanDotumR",
-    fontSize: 16,
+    fontSize: normalizeFont(16),
     letterSpacing: -0.5,
   },
   numOfVisits: {
     color: colors.purple,
     fontFamily: "nanumSquareR",
-    fontSize: 8,
+    fontSize: normalizeFont(8),
     letterSpacing: -0.5,
   },
   infoBox: { gap: 2, maxWidth: "50%" },
   detail: {
     color: colors.lightPurple,
     fontFamily: "nanumSquareB",
-    fontSize: 10,
+    fontSize: normalizeFont(10),
     letterSpacing: -0.5,
     alignSelf: "flex-end",
   },

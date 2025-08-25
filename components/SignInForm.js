@@ -1,6 +1,7 @@
 import React from "react";
 import {
   ActivityIndicator,
+  Platform,
   StyleSheet,
   Text,
   TextInput,
@@ -15,6 +16,7 @@ import { SignInSchema } from "../schemas/signInSchema";
 import SubmitButton from "./SubmitButton";
 import { signIn } from "../actions/authActions";
 import { useDispatch } from "react-redux";
+import { normalizeFont } from "../utils/responsive";
 
 const SignInForm = ({ setFormType }) => {
   const dispatch = useDispatch();
@@ -134,7 +136,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   inputTitle: {
-    fontSize: 16,
+    fontSize: normalizeFont(16),
     fontFamily: "nanumSquareR",
     color: colors.purple,
     letterSpacing: -0.5,
@@ -143,7 +145,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontFamily: "nanumSquareR",
-    fontSize: 16,
+    fontSize: normalizeFont(16),
   },
   purpleButton: {
     backgroundColor: colors.purple,
@@ -155,7 +157,7 @@ const styles = StyleSheet.create({
   purpleButtonText: {
     color: "white",
     fontFamily: "tjM",
-    fontSize: 16,
+    fontSize: normalizeFont(16),
     letterSpacing: -1,
     textAlign: "center",
   },
@@ -166,6 +168,6 @@ const styles = StyleSheet.create({
   transitionText: {
     color: "#2E2B1C",
     fontFamily: "nanumSquareR",
-    fontSize: 12,
+    fontSize: normalizeFont(12),
   },
 });

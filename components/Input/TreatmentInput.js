@@ -11,12 +11,14 @@ import colors from "../../styles/color";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchTreatmentsThunk } from "../../actions/treatmentActions";
 import { formatNumber } from "../../utils/format";
+import { normalizeFont } from "../../utils/responsive";
 
 const CATEGORY_KR_MAP = {
   cut: "커트",
   perm: "펌",
   color: "염색",
   elderly: "경로",
+  product: "제품",
 };
 
 const groupTreatmentsByCategory = (treatments) => {
@@ -120,6 +122,31 @@ const TreatmentInput = ({
     });
   };
 
+  const handleProductPriceChange = (treatment, text) => {
+    const price = parseInt(text, 10) || 0;
+
+    setSelectedTreatments((prev) => {
+      const exists = prev.some((t) => t.treatment_id === treatment.id);
+      let nextTreatments;
+      if (exists) {
+        // 이미 있으면 price 업데이트
+        nextTreatments = prev.map((t) =>
+          t.treatment_id === treatment.id ? { ...t, price } : t
+        );
+      } else {
+        // 없으면 새로 추가
+        nextTreatments = [...prev, { treatment_id: treatment.id, price }];
+      }
+      // 부모 콜백 호출
+      onTreatmentDataChange &&
+        onTreatmentDataChange({
+          nextTreatments,
+          extraPrices,
+        });
+      return nextTreatments;
+    });
+  };
+
   const handleExtraPriceChange = (category, text) => {
     const price = parseInt(text, 10) || 0;
     setExtraPrices((prev) => ({
@@ -133,9 +160,6 @@ const TreatmentInput = ({
   return (
     <BaseInput {...rest} portraitMode={true}>
       <View style={styles.treatmentInputContainer}>
-        {/* 빈 TextInput으로 UI 정렬용 */}
-        <TextInput style={styles.textInput} value={""} editable={false} />
-
         {Object.keys(grouped).map((category, index, array) => (
           <View key={category} style={styles.categoryGroup}>
             <Text style={styles.categoryTitle}>{category}</Text>
@@ -145,7 +169,7 @@ const TreatmentInput = ({
                 const isSelected = selectedTreatments.some(
                   (t) => t.treatment_id === treatment.id
                 );
-                return (
+                return category !== "제품" ? (
                   <TouchableOpacity
                     key={treatment.id}
                     style={[
@@ -171,20 +195,44 @@ const TreatmentInput = ({
                       {formatNumber(treatment.default_price)}원
                     </Text>
                   </TouchableOpacity>
+                ) : (
+                  <View
+                    key={treatment.id}
+                    style={[styles.treatmentItem, styles.plusOption]}
+                  >
+                    <Text style={styles.treatmentName}>가격</Text>
+                    <TextInput
+                      placeholder="가격 입력"
+                      keyboardType="numeric"
+                      style={styles.optionInput}
+                      onChangeText={(text) => {
+                        handleProductPriceChange(treatment, text);
+                      }}
+                      value={
+                        selectedTreatments
+                          .find((t) => t.treatment_id === treatment.id)
+                          ?.price?.toString() || ""
+                      }
+                    />
+                  </View>
                 );
               })}
             </View>
 
-            <View style={[styles.treatmentItem, styles.plusOption]}>
-              <Text style={styles.treatmentName}>기장추가</Text>
-              <TextInput
-                placeholder="가격 입력"
-                keyboardType="numeric"
-                style={styles.optionInput}
-                onChangeText={(text) => handleExtraPriceChange(category, text)}
-                value={extraPrices[category]?.toString() || ""}
-              />
-            </View>
+            {category !== "제품" && (
+              <View style={[styles.treatmentItem, styles.plusOption]}>
+                <Text style={styles.treatmentName}>기장추가</Text>
+                <TextInput
+                  placeholder="가격 입력"
+                  keyboardType="numeric"
+                  style={styles.optionInput}
+                  onChangeText={(text) =>
+                    handleExtraPriceChange(category, text)
+                  }
+                  value={extraPrices[category]?.toString() || ""}
+                />
+              </View>
+            )}
 
             {index !== array.length - 1 && (
               <View style={styles.horizonalLine} />
@@ -204,11 +252,12 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     paddingHorizontal: 16,
     paddingBottom: 8,
+    paddingTop: 16,
     backgroundColor: colors.backgroundPurple,
   },
   textInput: {
     fontFamily: "nanumSquareR",
-    fontSize: 12,
+    fontSize: normalizeFont(12),
   },
   categoryGroup: {
     width: "100%",
@@ -216,7 +265,7 @@ const styles = StyleSheet.create({
   },
   categoryTitle: {
     fontFamily: "nanumSquareB",
-    fontSize: 16,
+    fontSize: normalizeFont(16),
     letterSpacing: -0.5,
     marginBottom: 8,
   },
@@ -232,7 +281,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#000",
     borderRadius: 8,
-    paddingVertical: 8,
     paddingHorizontal: 4,
     gap: 4,
     justifyContent: "center",
@@ -248,12 +296,12 @@ const styles = StyleSheet.create({
   },
   treatmentName: {
     fontFamily: "gamtanDotumB",
-    fontSize: 10,
+    fontSize: normalizeFont(9),
     letterSpacing: -0.5,
   },
   treatmentPrice: {
     fontFamily: "nanumSquareB",
-    fontSize: 8,
+    fontSize: normalizeFont(8),
     letterSpacing: -0.5,
   },
   horizonalLine: {
@@ -271,6 +319,6 @@ const styles = StyleSheet.create({
     flex: 1,
     fontFamily: "nanumSquareB",
     letterSpacing: -0.5,
-    fontSize: 8,
+    fontSize: normalizeFont(8),
   },
 });

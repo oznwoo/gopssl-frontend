@@ -5,6 +5,7 @@ export const SaleSchema = Yup.object().shape({
   saleDate: Yup.string().required("시술일은 필수입니다."),
   paymentType: Yup.string().required("결제 유형은 필수입니다."),
   detail: Yup.string().optional(),
+
   treatmentList: Yup.array()
     .of(
       Yup.object().shape({
@@ -12,8 +13,15 @@ export const SaleSchema = Yup.object().shape({
         price: Yup.number().required(),
       })
     )
-    .min(1, "시술 항목을 하나 이상 선택해주세요.")
-    .required("시술 항목은 필수입니다."),
+    .when("extraPrices", {
+      is: (extraPrices) => !(extraPrices && extraPrices["제품"]),
+      then: (schema) =>
+        schema
+          .min(1, "시술 항목을 하나 이상 선택해주세요.")
+          .required("시술 항목은 필수입니다."),
+      otherwise: (schema) => schema.optional(),
+    }),
+
   extraPrices: Yup.object()
     .test(
       "is-valid-object",

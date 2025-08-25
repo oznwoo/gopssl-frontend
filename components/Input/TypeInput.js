@@ -2,6 +2,7 @@ import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import BaseInput from "./BaseInput";
 import colors from "../../styles/color";
+import { normalizeFont } from "../../utils/responsive";
 
 const TypeInput = ({ value, onChange, options = [], ...rest }) => {
   return (
@@ -54,7 +55,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   optionText: {
-    fontSize: 14,
+    fontSize: normalizeFont(14),
     fontFamily: "nanumSquareR",
     color: "#000",
   },

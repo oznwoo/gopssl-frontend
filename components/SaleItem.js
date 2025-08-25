@@ -11,6 +11,7 @@ import { commonStyles } from "../styles/commonStyles";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { formatNumber } from "../utils/format";
+import { normalizeFont } from "../utils/responsive";
 
 const SaleItem = ({ saleData, transitionSale, transitionCustomer }) => {
   const isFirstVisit = saleData.num_of_visits === 1;
@@ -24,13 +25,17 @@ const SaleItem = ({ saleData, transitionSale, transitionCustomer }) => {
   const rotateAnim = useRef(new Animated.Value(0)).current;
 
   const treatmentText = saleData.treatments
-    .map((item) => `${item.treatment_name}: ${item.price}원`)
+    .map((item) => `${item.treatment_name}: ${formatNumber(item.price)}원`)
     .join(", ");
 
   const extraPriceText =
     Object.keys(saleData.extra_prices).length !== 0
       ? Object.keys(saleData.extra_prices)
-          .map((key) => `기장추가(${key}): ${saleData.extra_prices[key]}원`)
+          .map((key) => {
+            return key === "제품"
+              ? `${key}: ${saleData.extra_prices[key]}원`
+              : `기장추가(${key}): ${saleData.extra_prices[key]}원`;
+          })
           .join(", ")
       : "기장추가: 없음";
 
@@ -80,7 +85,9 @@ const SaleItem = ({ saleData, transitionSale, transitionCustomer }) => {
 
         {expanded && (
           <View style={styles.detailBox}>
-            <Text style={styles.detailText}>{treatmentText}</Text>
+            {treatmentText && (
+              <Text style={styles.detailText}>{treatmentText}</Text>
+            )}
             <Text style={styles.detailText}>{extraPriceText}</Text>
             {saleData.previous_visit && (
               <Text style={styles.detailText}>
@@ -129,13 +136,13 @@ const styles = StyleSheet.create({
   customerInfoContainer: {},
   customerName: {
     fontFamily: "gamtanDotumR",
-    fontSize: 20,
+    fontSize: normalizeFont(20),
     letterSpacing: -0.5,
     lineHeight: 26,
   },
   numOfVisit: {
     fontFamily: "nanumSquareR",
-    fontSize: 8,
+    fontSize: normalizeFont(8),
     letterSpacing: -0.5,
   },
   detailToggle: {
@@ -146,7 +153,7 @@ const styles = StyleSheet.create({
   },
   detailTitle: {
     fontFamily: "nanumSquareB",
-    fontSize: 12,
+    fontSize: normalizeFont(12),
     letterSpacing: -0.5,
   },
   detailBox: {
@@ -158,7 +165,7 @@ const styles = StyleSheet.create({
   },
   detailText: {
     fontFamily: "nanumSquareB",
-    fontSize: 8,
+    fontSize: normalizeFont(8),
     color: colors.purple,
   },
   saleInfoButton: {

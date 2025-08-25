@@ -6,6 +6,7 @@ import FormHeader from "../components/FormHeader";
 import CustomerForm from "../components/CustomerForm";
 import { getCustomer } from "../actions/customerActions";
 import { useDispatch } from "react-redux";
+import { normalizeFont } from "../utils/responsive";
 
 const CustomerScreen = ({ route }) => {
   const dispatch = useDispatch();
@@ -68,10 +69,10 @@ const styles = StyleSheet.create({
   pageContainer: {
     flex: 1,
   },
-  contentContainer: { flex: 1 },
+  contentContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
   emptyText: {
     fontFamily: "gamtanDotumB",
-    fontSize: 16,
+    fontSize: normalizeFont(16),
     letterSpacing: -0.5,
     color: colors.lightPurple,
   },

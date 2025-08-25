@@ -12,6 +12,8 @@ import DateHeader from "../components/DateHeader";
 import SalesBarChart from "../components/SalesBarChart";
 import YearlyComparisonChart from "../components/YearlyComparisionChart";
 import { getMonthlySalesSummary } from "../actions/saleStatisticsActions";
+import { normalizeFont, normalizeSize } from "../utils/responsive";
+import { formatNumber } from "../utils/format";
 
 const SalesComparisionScreen = (props) => {
   const [date, setDate] = useState(new Date());
@@ -73,8 +75,7 @@ const SalesComparisionScreen = (props) => {
             </Text>
             <View style={styles.boxContent}>
               <Text style={styles.monthTotal}>
-                {thisMonthData ? (thisMonthData.total / 10000).toFixed(1) : 0}
-                만원
+                {thisMonthData ? formatNumber(thisMonthData.total) : 0}원
               </Text>
 
               <Text
@@ -85,9 +86,9 @@ const SalesComparisionScreen = (props) => {
               >
                 {difference === 0
                   ? "(지난달과 동일한 매출)"
-                  : `(지난 달 대비 ${(Math.abs(difference) / 10000).toFixed(
-                      1
-                    )}만원${difference > 0 ? "↑" : "↓"})`}
+                  : `(지난 달 대비 ${formatNumber(difference)}원${
+                      difference > 0 ? "↑" : "↓"
+                    })`}
               </Text>
             </View>
           </View>
@@ -117,10 +118,17 @@ const SalesComparisionScreen = (props) => {
                       {
                         flex: cashRatio,
                         backgroundColor: colors.purple,
+                        position: "relative",
                       },
                     ]}
                   >
-                    <Text style={[styles.typeRatioText, { color: "#fff" }]}>
+                    <Text
+                      style={[
+                        styles.typeRatioText,
+                        { color: "#fff", position: "absolute", left: 8 },
+                      ]}
+                      numberOfLines={1}
+                    >
                       {(cashRatio * 100).toFixed(0)}%
                     </Text>
                   </View>
@@ -131,11 +139,19 @@ const SalesComparisionScreen = (props) => {
                         flex: cardRatio,
                         backgroundColor: "#fff",
                         alignItems: "flex-end",
+                        position: "relative",
                       },
                     ]}
                   >
                     <Text
-                      style={[styles.typeRatioText, { color: colors.purple }]}
+                      style={[
+                        styles.typeRatioText,
+                        {
+                          color: colors.purple,
+                          position: "absolute",
+                          right: 8,
+                        },
+                      ]}
                     >
                       {(cardRatio * 100).toFixed(0)}%
                     </Text>
@@ -247,7 +263,7 @@ const styles = StyleSheet.create({
   boxContent: { flex: 1, gap: 4, justifyContent: "center" },
   typeText: {
     fontFamily: "gamtanDotumR",
-    fontSize: 12,
+    fontSize: normalizeFont(12),
     letterSpacing: 1,
     color: colors.purple,
   },
@@ -263,42 +279,46 @@ const styles = StyleSheet.create({
   typeRatio: {
     flex: 1,
     justifyContent: "center",
-    paddingHorizontal: 10,
+    minWidth: normalizeSize(30),
   },
   typeRatioText: {
-    fontSize: 12,
+    fontSize: normalizeFont(12),
     fontFamily: "nanumSquareB",
+    letterSpacing: -0.5,
   },
   boxTitle: {
     fontFamily: "gamtanDotumB",
-    fontSize: 16,
+    fontSize: normalizeFont(16),
     letterSpacing: -0.5,
     color: colors.purple,
   },
   boxDetail: {
     fontFamily: "nanumSquareB",
-    fontSize: 10,
+    fontSize: normalizeFont(10),
     letterSpacing: -0.5,
     color: "#656d72",
   },
   chartContainer: {
+    maxWidth: "100%",
+    overflow: "hidden",
     justifyContent: "center",
     alignItems: "center",
     padding: 4,
   },
   monthTotal: {
     fontFamily: "gamtanDotumB",
-    fontSize: 18,
+    fontSize: normalizeFont(18),
     color: "#fff",
     letterSpacing: -0.5,
   },
   comparisionText: {
     fontFamily: "gamtanDotumB",
-    fontSize: 12,
+    fontSize: normalizeFont(12),
     letterSpacing: -0.5,
     color: "#fff",
   },
   comparisionBox: {
+    maxWidth: "100%",
     backgroundColor: colors.backgroundPurple,
     borderWidth: 1,
     borderColor: colors.lightPurple,
