@@ -27,7 +27,6 @@ const CustomerForm = ({ data, mode }) => {
           detail: data.detail ? data.detail : "",
         }
       : { name: "", phoneNumber: "", detail: "" };
-  console.log(initialValues);
 
   // 등록 핸들러
   const handleRegister = async (values, { setSubmitting, setErrors }) => {

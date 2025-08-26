@@ -17,6 +17,10 @@ import { searchCustomer } from "../actions/customerActions";
 import { useDispatch } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
 import { normalizeFont } from "../utils/responsive";
+import {
+  getSnippetWithKeyword,
+  highlightMatchedText,
+} from "../utils/searchUtils";
 
 const SearchScreen = () => {
   const dispatch = useDispatch();
@@ -65,50 +69,11 @@ const SearchScreen = () => {
     [dispatch]
   );
 
-  const getSnippetWithKeyword = (text, keyword, contextLength = 10) => {
-    if (!text || !keyword) return text;
-
-    const lowerText = text.toLowerCase();
-    const lowerKeyword = keyword.toLowerCase();
-    const index = lowerText.indexOf(lowerKeyword);
-
-    if (index === -1)
-      return text.length > 40 ? text.slice(0, 40) + "..." : text;
-
-    const start = Math.max(index - contextLength, 0);
-    const end = Math.min(index + keyword.length + contextLength, text.length);
-
-    const prefix = start > 0 ? "..." : "";
-    const suffix = end < text.length ? "..." : "";
-
-    return prefix + text.slice(start, end) + suffix;
-  };
-
   useEffect(() => {
     return () => {
       debouncedSearch.cancel();
     };
   }, [debouncedSearch]);
-
-  const highlightMatchedText = (text, keyword) => {
-    if (!keyword) return <Text>{text}</Text>;
-
-    const regex = new RegExp(`(${keyword})`, "gi");
-    const parts = text.split(regex);
-
-    return parts.map((part, index) =>
-      part.toLowerCase() === keyword.toLowerCase() ? (
-        <Text
-          key={index}
-          style={[styles.customerName, { fontFamily: "gamtanDotumB" }]}
-        >
-          {part}
-        </Text>
-      ) : (
-        <Text key={index}>{part}</Text>
-      )
-    );
-  };
 
   return (
     <View style={styles.pageContainer}>

@@ -16,6 +16,10 @@ import { Ionicons } from "@expo/vector-icons";
 import { searchCustomer } from "../../actions/customerActions";
 import { useDispatch } from "react-redux";
 import { normalizeFont } from "../../utils/responsive";
+import {
+  getSnippetWithKeyword,
+  highlightMatchedText,
+} from "../../utils/searchUtils";
 
 const CustomerSearchInput = ({
   label,
@@ -56,43 +60,6 @@ const CustomerSearchInput = ({
       }, 300),
     [dispatch, minLength, isActive]
   );
-
-  // 키워드 포함된 문장 일부만 보여주는 유틸
-  const getSnippetWithKeyword = (text, keyword, contextLength = 10) => {
-    if (!text || !keyword) return text;
-    const lowerText = text.toLowerCase();
-    const lowerKeyword = keyword.toLowerCase();
-    const index = lowerText.indexOf(lowerKeyword);
-    if (index === -1)
-      return text.length > 40 ? text.slice(0, 40) + "..." : text;
-
-    const start = Math.max(index - contextLength, 0);
-    const end = Math.min(index + keyword.length + contextLength, text.length);
-
-    const prefix = start > 0 ? "..." : "";
-    const suffix = end < text.length ? "..." : "";
-
-    return prefix + text.slice(start, end) + suffix;
-  };
-
-  // 키워드 하이라이팅
-  const highlightMatchedText = (text, keyword) => {
-    if (!keyword) return <Text>{text}</Text>;
-    const regex = new RegExp(`(${keyword})`, "gi");
-    const parts = text.split(regex);
-    return parts.map((part, index) =>
-      part.toLowerCase() === keyword.toLowerCase() ? (
-        <Text
-          key={index}
-          style={[styles.customerName, { fontFamily: "gamtanDotumB" }]}
-        >
-          {part}
-        </Text>
-      ) : (
-        <Text key={index}>{part}</Text>
-      )
-    );
-  };
 
   // 검색어 변경 시 API 호출
   useEffect(() => {
