@@ -2,7 +2,7 @@ import React from "react";
 import { Text, StyleSheet, Dimensions, View } from "react-native";
 import { BarChart } from "react-native-gifted-charts";
 import colors from "../styles/color";
-import { normalizeFont } from "../utils/responsive";
+import { normalizeFont, normalizeSize } from "../utils/responsive";
 
 const SalesBarChart = ({ data }) => {
   const screenWidth = Dimensions.get("window").width;
@@ -32,21 +32,18 @@ const SalesBarChart = ({ data }) => {
     const manWonValue = item.total / 10000;
     const displayValue = Number.isInteger(manWonValue)
       ? manWonValue
-      : Number(manWonValue.toFixed(1));
+      : Number(manWonValue).toFixed(0);
 
     return {
       value: displayValue,
       label: `${item.month}월`,
       frontColor: isLast ? colors.purple : colors.secondPurple,
       topLabelComponent: () => (
-        <Text style={[styles.topLabelText, isLast && { color: "#fff" }]}>
+        <Text style={[styles.topLabelText, isLast && { color: colors.purple }]}>
           {displayValue}만원
         </Text>
       ),
-      topLabelContainerStyle: [
-        styles.topLabelContainer,
-        isLast && { backgroundColor: colors.purple },
-      ],
+      topLabelContainerStyle: [styles.topLabelContainer],
     };
   });
 
@@ -54,14 +51,14 @@ const SalesBarChart = ({ data }) => {
     <View style={[styles.chartContainer, { width: containerWidth }]}>
       <BarChart
         data={datas}
-        width={chartWidth} // Y축 레이블 공간을 제외한 차트 너비
-        height={200}
-        barWidth={30}
+        width={normalizeSize(chartWidth)}
+        height={normalizeSize(220)}
+        barWidth={normalizeSize(32)}
         barBorderTopRightRadius={8}
         barBorderTopLeftRadius={8}
-        spacing={28}
-        initialSpacing={64}
-        endSpacing={30}
+        spacing={normalizeSize(36)}
+        initialSpacing={normalizeSize(32)}
+        endSpacing={normalizeSize(30)}
         isAnimated
         maxValue={maxValue}
         noOfSections={5}
@@ -70,19 +67,21 @@ const SalesBarChart = ({ data }) => {
         xAxisColor={"#e9e3e9"}
         xAxisLabelTextStyle={styles.xAxisText}
         yAxisTextStyle={styles.yAxisText}
+        yAxisLabelWidth={normalizeSize(yAxisLabelWidth + 20)}
+        xAxisLength={normalizeSize(containerWidth - 100)}
         formatYLabel={(label) => `${label}만원`}
         rulesColor={"#e9e3e9"}
         rulesThickness={1}
         // 눈금선 길이 제한
-        rulesLength={chartWidth - 64} // initialSpacing과 endSpacing 고려
+        rulesLength={normalizeSize(containerWidth - 100)} // initialSpacing과 endSpacing 고려
         showReferenceLine1
         referenceLine1Position={average}
         referenceLine1Config={{
           color: colors.alert,
           dashWidth: 4,
-          labelText: `평균(${average}만원)`,
+          labelText: `평균(${Number(average)}만원)`,
           labelTextStyle: styles.referenceText,
-          length: chartWidth, // 참조선 길이도 제한
+          width: normalizeSize(containerWidth - 100),
         }}
         referenceLinesOverChartContent={false}
         showValuesOnTopOfBars={false}
@@ -95,7 +94,7 @@ export default SalesBarChart;
 
 const styles = StyleSheet.create({
   chartContainer: {
-    overflow: "hidden", // 넘치는 부분 숨기기
+    overflow: "visible",
     alignSelf: "center",
   },
   yAxisText: {
@@ -104,24 +103,22 @@ const styles = StyleSheet.create({
     color: colors.purple,
   },
   xAxisText: {
-    fontFamily: "gamtanBatangB",
+    fontFamily: "nanumSquareB",
     fontSize: normalizeFont(12),
-    letterSpacing: 1,
-    color: colors.purple,
+    color: "#000",
   },
   topLabelContainer: {
-    width: 56,
-    height: 20,
+    width: normalizeSize(56),
+    height: normalizeSize(40),
     alignSelf: "center",
-    backgroundColor: colors.secondPurple,
-    padding: 4,
-    borderRadius: 4,
     justifyContent: "center",
     alignItems: "center",
   },
   topLabelText: {
-    color: "#322C58",
-    fontFamily: "nanumSquareB",
+    color: "#656d72",
+    backgroundColor: colors.backgroundPurple,
+    borderRadius: 4,
+    fontFamily: "nanumSquareEB",
     fontSize: normalizeFont(8),
   },
   referenceText: {

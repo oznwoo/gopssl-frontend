@@ -300,7 +300,7 @@ const styles = StyleSheet.create({
   },
   chartContainer: {
     maxWidth: "100%",
-    overflow: "hidden",
+    overflow: "visible",
     justifyContent: "center",
     alignItems: "center",
     padding: 4,
