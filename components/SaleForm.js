@@ -408,10 +408,13 @@ const styles = StyleSheet.create({
     backgroundColor: colors.backgroundPurple,
   },
   submitContainer: {
+    backgroundColor: "#fff",
     paddingVertical: 10,
     paddingHorizontal: 20,
   },
   totalContainer: {
+    borderBottomColor: colors.backgroundPurple,
+    borderBottomWidth: 1,
     paddingHorizontal: 24,
     paddingVertical: 16,
     backgroundColor: "#fff",

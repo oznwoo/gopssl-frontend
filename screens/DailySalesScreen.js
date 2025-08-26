@@ -1,5 +1,11 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { Text, StyleSheet, View, ScrollView } from "react-native";
+import {
+  Text,
+  StyleSheet,
+  View,
+  ScrollView,
+  ActivityIndicator,
+} from "react-native";
 
 import colors from "../styles/color";
 import { commonStyles } from "../styles/commonStyles";
@@ -73,28 +79,38 @@ const DailySalesScreen = () => {
       <View style={styles.contentContainer}>
         <Text style={styles.contentTitle}>일일 매출</Text>
 
-        <View style={{ flex: 1 }}>
-          <ScrollView
-            style={{ flex: 1 }}
-            contentContainerStyle={[
-              styles.salesContainer,
-              { justifyContent: salesData ? "flex-start" : "center" },
-            ]}
+        {isLoading ? (
+          <View
+            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
           >
-            {salesData ? (
-              salesData.map((item) => (
-                <SaleItem
-                  key={item.id}
-                  saleData={item}
-                  transitionCustomer={transitionCustomer}
-                  transitionSale={transitionSale}
-                />
-              ))
-            ) : (
-              <Text style={styles.emptyText}>매출이 등록되지 않았습니다.</Text>
-            )}
-          </ScrollView>
-        </View>
+            <ActivityIndicator color={colors.purple} />
+          </View>
+        ) : (
+          <View style={{ flex: 1 }}>
+            <ScrollView
+              style={{ flex: 1 }}
+              contentContainerStyle={[
+                styles.salesContainer,
+                { justifyContent: salesData ? "flex-start" : "center" },
+              ]}
+            >
+              {salesData ? (
+                salesData.map((item) => (
+                  <SaleItem
+                    key={item.id}
+                    saleData={item}
+                    transitionCustomer={transitionCustomer}
+                    transitionSale={transitionSale}
+                  />
+                ))
+              ) : (
+                <Text style={styles.emptyText}>
+                  매출이 등록되지 않았습니다.
+                </Text>
+              )}
+            </ScrollView>
+          </View>
+        )}
 
         <FloatingExpandButton style={styles.plusButton} date={date} />
       </View>
@@ -163,21 +179,20 @@ const styles = StyleSheet.create({
   calendarContainer: { paddingHorizontal: 16 },
   contentContainer: {
     flex: 1,
-    paddingHorizontal: 28,
-    paddingVertical: 12,
   },
   contentTitle: {
-    marginLeft: 12,
+    marginHorizontal: 36,
+    marginVertical: 8,
     fontFamily: "gamtanDotumB",
     color: colors.purple,
     letterSpacing: -0.5,
     fontSize: normalizeFont(24),
-    marginBottom: 16,
   },
   salesContainer: {
     flexGrow: 1,
     alignItems: "center",
-    paddingHorizontal: 12,
+    paddingHorizontal: 32,
+    paddingVertical: 12,
     gap: 16,
   },
   emptyText: {
@@ -193,6 +208,8 @@ const styles = StyleSheet.create({
     ...commonStyles.dropShadow,
   },
   totalContainer: {
+    borderBottomColor: colors.backgroundPurple,
+    borderBottomWidth: 1,
     paddingHorizontal: 24,
     paddingVertical: 16,
     backgroundColor: "#fff",
