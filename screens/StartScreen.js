@@ -7,6 +7,7 @@ import {
   Platform,
   TouchableWithoutFeedback,
   Keyboard,
+  Image,
 } from "react-native";
 import StartForm from "../components/StartForm";
 import SignInForm from "../components/SignInForm";
@@ -14,8 +15,9 @@ import SignUpForm from "../components/SignUpForm";
 import InfoForm from "../components/InfoForm";
 import { FORM_TYPES } from "../constants/formTypes";
 import { useRoute } from "@react-navigation/native";
-import colors from "../styles/color";
 import { normalizeFont, normalizeSize } from "../utils/responsive"; // ✅ 폰트 & 간격 전용
+
+import logoImage from "../assets/Gopssl.png";
 
 const StartScreen = () => {
   const route = useRoute();
@@ -41,15 +43,11 @@ const StartScreen = () => {
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.pageContainer}>
           <View style={styles.logoContainer}>
-            <Text
-              style={[
-                styles.logo,
-                Platform.OS === "ios" ? { width: "100%" } : {},
-              ]}
-              allowFontScaling={false}
-            >
-              Gopssl
-            </Text>
+            <Image
+              source={logoImage}
+              style={styles.logo}
+              resizeMode="contain"
+            />
             <Text style={styles.phrase} allowFontScaling={false}>
               {"무질서함에서 질서를, \n복잡함 속에서 아름다움을"}
             </Text>
@@ -93,13 +91,6 @@ const styles = StyleSheet.create({
     lineHeight: normalizeFont(28),
     textAlign: "center",
     color: "#2C2E1F",
-  },
-  logo: {
-    fontFamily: "logo",
-    fontSize: normalizeFont(88),
-    color: colors.purple,
-    height: normalizeFont(140),
-    textAlign: "center",
   },
   formContainer: {
     width: "100%",

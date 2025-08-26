@@ -17,7 +17,7 @@ import SaleScreen from "../screens/SaleScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 import AddressSearchScreen from "../screens/AddressSearchScreen";
 import DetailScreen from "../screens/DetailScreen";
-import { normalizeFont } from "../utils/responsive";
+import { normalizeFont, normalizeSize } from "../utils/responsive";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -67,12 +67,13 @@ const TabNavigator = () => (
       // 개선된 스타일링
       tabBarStyle: {
         backgroundColor: "#fff", // 전체 탭바 배경
-        height: 56,
+        height: normalizeSize(56),
         paddingHorizontal: 4, // 좌우 패딩
         paddingVertical: 4, // 상하 패딩
         borderTopWidth: 0,
-        elevation: 0,
         shadowOpacity: 0,
+        borderTopColor: colors.backgroundPurple,
+        borderTopWidth: Platform.OS === "android" ? 0.5 : 1,
       },
 
       tabBarItemStyle: {
@@ -151,27 +152,12 @@ export default MainNavigator;
 const styles = StyleSheet.create({
   tabBar: {
     flex: 1,
-    maxHeight: 56,
-    ...Platform.select({
-      android: {
-        elevation: 0, // Android 그림자 제거
-        borderTopWidth: 0,
-      },
-      ios: {
-        shadowOpacity: 0, // iOS 그림자 제거
-      },
-    }),
+    maxHeight: normalizeSize(56),
   },
   tabBarItem: {
     flex: 1,
     borderRadius: 16,
     backgroundColor: colors.purple,
-    ...Platform.select({
-      android: {
-        marginHorizontal: 2, // Android에서 아이템 간격 조정
-        marginVertical: 4,
-      },
-    }),
   },
   tabBarIcon: {
     marginVertical: "auto",

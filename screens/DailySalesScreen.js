@@ -5,6 +5,7 @@ import {
   View,
   ScrollView,
   ActivityIndicator,
+  Platform,
 } from "react-native";
 
 import colors from "../styles/color";
@@ -115,7 +116,15 @@ const DailySalesScreen = () => {
         <FloatingExpandButton style={styles.plusButton} date={date} />
       </View>
 
-      <View style={styles.totalContainer}>
+      <View
+        style={[
+          styles.totalContainer,
+          Platform.OS === "android" && {
+            borderColor: colors.backgroundPurple,
+            borderWidth: 1,
+          },
+        ]}
+      >
         <Text style={styles.totalText}>
           총 매출:{" "}
           {salesData
@@ -208,8 +217,6 @@ const styles = StyleSheet.create({
     ...commonStyles.dropShadow,
   },
   totalContainer: {
-    borderBottomColor: colors.backgroundPurple,
-    borderBottomWidth: 1,
     paddingHorizontal: 24,
     paddingVertical: 16,
     backgroundColor: "#fff",

@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   FlatList,
+  Platform,
   StyleSheet,
   Text,
   TextInput,
@@ -112,7 +113,12 @@ const SearchScreen = () => {
   return (
     <View style={styles.pageContainer}>
       <View style={styles.headerContainer}>
-        <View style={styles.inputContainer}>
+        <View
+          style={[
+            styles.inputContainer,
+            Platform.OS === "android" && { marginTop: 8 },
+          ]}
+        >
           {isFocused ? (
             <TouchableOpacity onPress={handleBackPress}>
               <Ionicons name="arrow-back" size={24} color={colors.purple} />
@@ -224,7 +230,7 @@ const styles = StyleSheet.create({
     gap: 8,
     marginHorizontal: 20,
     marginBottom: 8,
-    padding: 8,
+    padding: 6,
     borderWidth: 4,
     borderColor: colors.purple,
     borderRadius: 12,
