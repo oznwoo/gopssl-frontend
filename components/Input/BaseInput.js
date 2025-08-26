@@ -18,7 +18,7 @@ const BaseInput = ({
   onFocus,
   ...rest
 }) => {
-  const Container = useBlur ? BlurView : View;
+  const Container = useBlur && Platform.OS === "ios" ? BlurView : View;
 
   return (
     <View style={styles.container}>
@@ -28,10 +28,15 @@ const BaseInput = ({
           Platform.OS === "ios" || portraitMode
             ? { paddingVertical: 10 }
             : { paddingVertical: 4 },
-          useBlur && commonStyles.blurView,
+          useBlur && Platform.OS === "ios" && commonStyles.blurView,
+          useBlur &&
+            Platform.OS === "android" && {
+              backgroundColor: "rgba(255,255,255,0.9)",
+            },
           portraitMode && styles.portraitMode,
         ]}
-        {...(useBlur && { tint: "xlight", intensity: 30 })}
+        {...(useBlur &&
+          Platform.OS === "ios" && { tint: "xlight", intensity: 30 })}
       >
         {label && <Text style={styles.inputTitle}>{label}</Text>}
 
@@ -43,9 +48,7 @@ const BaseInput = ({
             {...rest}
             {...inputProps}
             onFocus={(e) => {
-              // 부모 컴포넌트에서 전달된 onFocus 먼저 호출
               onFocus && onFocus(e);
-              // 기존에 inputProps나 rest에 있던 onFocus도 호출
               inputProps.onFocus && inputProps.onFocus(e);
               rest.onFocus && rest.onFocus(e);
             }}
@@ -77,7 +80,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#EDECF4",
     borderRadius: 8,
-
     paddingHorizontal: 20,
     gap: 12,
     backgroundColor: "#fff",
