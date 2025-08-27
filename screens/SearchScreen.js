@@ -9,8 +9,7 @@ import {
   Platform,
 } from "react-native";
 import { Ionicons, Feather } from "@expo/vector-icons";
-import { useDispatch, useSelector } from "react-redux";
-import { getAllCustomer } from "../actions/customerActions";
+import { useSelector } from "react-redux";
 import CustomerList from "../components/CustomerList";
 import FloatingExpandedButton from "../components/FloatingExpandedButton";
 import colors from "../styles/color";
@@ -18,14 +17,9 @@ import { normalizeFont } from "../utils/responsive";
 import { commonStyles } from "../styles/commonStyles";
 
 const SearchScreen = ({ navigation }) => {
-  const dispatch = useDispatch();
   const customers = useSelector((state) => state.customer.list); // Redux에 저장된 전체 고객
   const [searchText, setSearchText] = useState("");
   const inputRef = useRef(null);
-
-  useEffect(() => {
-    dispatch(getAllCustomer());
-  }, [dispatch]);
 
   const handleClearText = () => setSearchText("");
 

@@ -133,7 +133,7 @@ const CustomerSearchInput = ({
           />
         </View>
         {isActive && results.length > 0 && (
-          <View style={styles.listContainer}>
+          <View>
             <FlatList
               data={results}
               keyExtractor={keyExtractor}

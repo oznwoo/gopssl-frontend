@@ -155,7 +155,7 @@ const CustomerList = ({ customers, searchText, onItemPress }) => {
           <View>
             <Text style={styles.customerName}>
               <Text style={{ fontFamily: "gamtanDotumB" }}>{item.name}</Text>
-              고객님
+              {" 고객님"}
             </Text>
             <Text style={styles.numOfVisits}>
               {item.num_of_visits ? `${item.num_of_visits}회 방문` : "미방문"}
