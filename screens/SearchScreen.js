@@ -17,7 +17,7 @@ import { normalizeFont } from "../utils/responsive";
 import { commonStyles } from "../styles/commonStyles";
 
 const SearchScreen = ({ navigation }) => {
-  const customers = useSelector((state) => state.customer.list); // Redux에 저장된 전체 고객
+  const customers = useSelector((state) => state.customer.list);
   const [searchText, setSearchText] = useState("");
   const inputRef = useRef(null);
 

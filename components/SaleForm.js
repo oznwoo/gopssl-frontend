@@ -30,7 +30,7 @@ import {
   updateSaleThunk,
 } from "../actions/saleActions";
 import { commonStyles } from "../styles/commonStyles";
-import { registerCustomer } from "../actions/customerActions";
+import { getAllCustomer, registerCustomer } from "../actions/customerActions";
 import { normalizeFont } from "../utils/responsive";
 
 const SaleForm = ({ saleDate, data, mode }) => {
@@ -119,6 +119,7 @@ const SaleForm = ({ saleDate, data, mode }) => {
           })
         );
         customer_id = res.id;
+        dispatch(getAllCustomer());
       }
 
       const sale_date = new Date(values.saleDate).toISOString().split("T")[0];

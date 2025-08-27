@@ -1,5 +1,11 @@
-import React from "react";
-import { ActivityIndicator, StyleSheet, View, Alert } from "react-native";
+import React, { useCallback } from "react";
+import {
+  ActivityIndicator,
+  StyleSheet,
+  View,
+  Alert,
+  ScrollView,
+} from "react-native";
 import SubmitButton from "./SubmitButton";
 import colors from "../styles/color";
 import { Formik } from "formik";
@@ -8,10 +14,13 @@ import { BaseInput, DetailInput, PhoneNumberInput } from "./Input";
 import { useDispatch, useSelector } from "react-redux";
 import {
   deleteCustomerById,
+  getAllCustomer,
   registerCustomer,
   updateCustomer,
 } from "../actions/customerActions";
 import { useNavigation } from "@react-navigation/native";
+import { normalizeFont } from "../utils/responsive";
+import CustomerSaleItem from "./CustomerSaleItem";
 
 const CustomerForm = ({ data, mode }) => {
   const dispatch = useDispatch();
@@ -40,6 +49,8 @@ const CustomerForm = ({ data, mode }) => {
         })
       );
       Alert.alert("알림", "고객 등록이 완료되었습니다.");
+
+      dispatch(getAllCustomer());
       navigation.navigate("Home");
     } catch (error) {
       console.log("에러 상태코드:", error?.response?.status || error.message);
@@ -61,6 +72,8 @@ const CustomerForm = ({ data, mode }) => {
         })
       );
       Alert.alert("알림", "고객 정보 수정이 완료되었습니다.");
+
+      dispatch(getAllCustomer());
       navigation.navigate("Home");
     } catch (error) {
       console.log("에러 상태코드:", error?.response?.status || error.message);
@@ -84,6 +97,17 @@ const CustomerForm = ({ data, mode }) => {
     }
   };
 
+  const transitionSale = useCallback(
+    (itemId = undefined, date) => {
+      const baseParams = {
+        saleDate: date,
+        mode: "view",
+      };
+
+      navigation.navigate("Sale", { ...baseParams, itemId });
+    },
+    [navigation]
+  );
   return (
     <Formik
       initialValues={initialValues}
@@ -103,7 +127,7 @@ const CustomerForm = ({ data, mode }) => {
         dirty,
       }) => (
         <View style={styles.formContainer}>
-          <View style={styles.inputContainer}>
+          <ScrollView contentContainerStyle={styles.inputContainer}>
             <BaseInput
               id="name"
               label="고객명"
@@ -136,7 +160,29 @@ const CustomerForm = ({ data, mode }) => {
               portraitMode={true}
               editable={true} // 수정 가능
             />
-          </View>
+
+            {mode === "view" && (
+              <>
+                <BaseInput
+                  id="visits"
+                  label="방문횟수"
+                  useBlur={false}
+                  value={`${data.num_of_visits}회`}
+                  readOnly
+                />
+
+                {data?.sales.map((item) => {
+                  return (
+                    <CustomerSaleItem
+                      key={item.id}
+                      item={item}
+                      transitionSale={transitionSale}
+                    />
+                  );
+                })}
+              </>
+            )}
+          </ScrollView>
           <View style={styles.submitContainer}>
             {isSubmitting ? (
               <ActivityIndicator
@@ -195,5 +241,49 @@ const styles = StyleSheet.create({
     gap: 12,
     justifyContent: "center",
     alignItems: "center",
+  },
+  saleItemContainer: {
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+
+    borderWidth: 1,
+    borderColor: "#EDECF4",
+    borderRadius: 8,
+
+    backgroundColor: "#fff",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  saleContentContainer: { gap: 8 },
+  dateText: {
+    fontFamily: "nanumSquareB",
+    fontSize: normalizeFont(20),
+    color: colors.purple,
+    letterSpacing: -0.5,
+  },
+  detailText: {
+    fontFamily: "nanumSquareB",
+    fontSize: normalizeFont(12),
+    color: colors.purple,
+    letterSpacing: -0.5,
+  },
+  detailContainer: {
+    width: "100%",
+    flexDirection: "row",
+    borderWidth: 1,
+    borderColor: colors.purple,
+    borderRadius: 8,
+    padding: 8,
+    gap: 12,
+  },
+  detailContentText: {
+    fontFamily: "nanumSqaureR",
+    fontSize: normalizeFont(10),
+    color: "#000",
+    lineHeight: 12,
+  },
+  saleInfoButton: {
+    paddingLeft: 8,
   },
 });
