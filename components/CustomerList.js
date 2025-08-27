@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import {
   SectionList,
   Text,
@@ -12,11 +12,13 @@ import {
   highlightMatchedText,
   getSnippetWithKeyword,
 } from "../utils/searchUtils";
+import SectionHeader from "./SectionHeader";
 
 const CustomerList = ({ customers, searchText, onItemPress }) => {
-  // 초성 추출 함수
+  const [collapsedSections, setCollapsedSections] = useState({}); // { 'ㄱ': true, 'ㄴ': false ... }
+
   const getInitial = (name) => {
-    if (!name) return "#";
+    if (!name || name === "신규") return "#";
     const firstChar = name[0];
     const code = firstChar.charCodeAt(0);
 
@@ -45,15 +47,13 @@ const CustomerList = ({ customers, searchText, onItemPress }) => {
       ];
       return initials[cho];
     }
-
-    return firstChar.toUpperCase(); // 영문/기타
+    return firstChar.toUpperCase();
   };
 
-  // 🔍 검색어 필터링 + 가나다 순 정렬
   const filteredCustomers = useMemo(() => {
     if (!customers) return [];
     const result = !searchText.trim()
-      ? [...customers] // 원본 배열 보호
+      ? [...customers]
       : customers.filter(
           (c) =>
             c.name.toLowerCase().includes(searchText.toLowerCase()) ||
@@ -63,7 +63,6 @@ const CustomerList = ({ customers, searchText, onItemPress }) => {
     return [...result].sort((a, b) => a.name.localeCompare(b.name, "ko"));
   }, [customers, searchText]);
 
-  // 검색어 없을 때 초성별 섹션 생성
   const sections = useMemo(() => {
     if (searchText.trim() || !filteredCustomers.length) return [];
     const grouped = {};
@@ -72,10 +71,21 @@ const CustomerList = ({ customers, searchText, onItemPress }) => {
       if (!grouped[initial]) grouped[initial] = [];
       grouped[initial].push(customer);
     });
+
     return Object.keys(grouped)
       .sort()
-      .map((key) => ({ title: key, data: grouped[key] }));
-  }, [filteredCustomers, searchText]);
+      .map((key) => ({
+        title: key,
+        data: collapsedSections[key] ? [] : grouped[key], // 접힘 상태면 data 비움
+      }));
+  }, [filteredCustomers, searchText, collapsedSections]);
+
+  const toggleSection = (title) => {
+    setCollapsedSections((prev) => ({
+      ...prev,
+      [title]: !prev[title],
+    }));
+  };
 
   if (!filteredCustomers.length) {
     return (
@@ -85,8 +95,8 @@ const CustomerList = ({ customers, searchText, onItemPress }) => {
     );
   }
 
-  // 검색어가 있으면 그냥 FlatList, 없으면 SectionList
   if (searchText.trim()) {
+    // (검색 결과는 기존과 동일)
     return (
       <View style={styles.contentContainer}>
         {filteredCustomers.map((item, index) => (
@@ -132,9 +142,11 @@ const CustomerList = ({ customers, searchText, onItemPress }) => {
       keyExtractor={(item) => item.id.toString()}
       stickySectionHeadersEnabled={true}
       renderSectionHeader={({ section: { title } }) => (
-        <View style={styles.sectionHeaderContainer}>
-          <Text style={styles.sectionHeaderText}>{title}</Text>
-        </View>
+        <SectionHeader
+          title={title}
+          collapsed={!!collapsedSections[title]}
+          onToggle={() => toggleSection(title)}
+        />
       )}
       renderItem={({ item, index, section }) => (
         <TouchableOpacity
@@ -185,20 +197,7 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     justifyContent: "flex-start",
   },
-  sectionHeaderContainer: {
-    backgroundColor: "#fff",
-    borderBottomWidth: 1,
-    borderBottomColor: colors.backgroundPurple,
-    borderRadius: 4,
-  },
-  sectionHeaderText: {
-    fontSize: normalizeFont(14),
-    fontFamily: "nanumSquareEB",
-    color: colors.purple,
-    marginTop: 12,
-    marginBottom: 4,
-    marginHorizontal: 16,
-  },
+
   customerItem: {
     flexDirection: "row",
     justifyContent: "space-between",
