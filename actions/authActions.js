@@ -167,11 +167,11 @@ export const signUp = ({ name, email, password }) => {
   };
 };
 
-export const signIn = ({ email, password }) => {
+export const signIn = ({ email, password, rememberMe }) => {
   return async (dispatch) => {
     try {
       const params = new URLSearchParams();
-      params.append("username", email); // OAuth2PasswordRequestForm에서는 username으로 받음
+      params.append("username", email);
       params.append("password", password);
 
       // 로그인은 인증이 필요하지 않으므로 일반 axios 사용
@@ -182,9 +182,6 @@ export const signIn = ({ email, password }) => {
       });
 
       const token = response.data.access_token;
-
-      // 먼저 토큰을 저장
-      await AsyncStorage.setItem("token", token);
 
       // 토큰을 직접 헤더에 포함시켜서 사용자 정보 요청
       const userRes = await axios.get(`${BASE_URL}/users/me`, {
@@ -197,7 +194,14 @@ export const signIn = ({ email, password }) => {
       // 토큰과 사용자 정보를 한 번에 Redux store에 저장
       dispatch(signInSuccess({ token, user }));
       dispatch(getAllCustomer());
-      await AsyncStorage.setItem("user", JSON.stringify(user));
+
+      if (rememberMe) {
+        await AsyncStorage.setItem("token", token);
+        await AsyncStorage.setItem("user", JSON.stringify(user));
+      } else {
+        await AsyncStorage.removeItem("token");
+        await AsyncStorage.removeItem("user");
+      }
     } catch (e) {
       let errorMessage =
         "로그인에 실패했습니다. 아이디나 비밀번호를 확인해주세요.";
@@ -226,10 +230,6 @@ export const signIn = ({ email, password }) => {
 export const logout = () => {
   return async (dispatch) => {
     try {
-      // AsyncStorage에서 토큰과 유저 정보 삭제
-      await AsyncStorage.removeItem("token");
-      await AsyncStorage.removeItem("user");
-
       // Redux 상태 초기화
       dispatch(logoutAction());
     } catch (e) {
