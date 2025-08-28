@@ -22,7 +22,7 @@ const CustomerSaleItem = ({ item, transitionSale }) => {
       : "기장추가: 없음";
 
   return (
-    <View style={styles.saleItemContainer}>
+    <View key={item.id} style={styles.saleItemContainer}>
       <View style={styles.saleContentContainer}>
         <Text style={styles.dateText}>{formatKoreanDate(item.created_at)}</Text>
         <View style={{ gap: 4 }}>
@@ -31,18 +31,16 @@ const CustomerSaleItem = ({ item, transitionSale }) => {
           <Text style={styles.detailText}>결재 방식: {item.payment_type}</Text>
         </View>
 
-        {item.detail && (
-          <View style={styles.detailContainer}>
-            <Text style={styles.detailText}>시술 내용</Text>
-            <Text style={styles.detailContentText}>{item.detail}</Text>
-          </View>
-        )}
-
         <Text style={[styles.detailText, { fontSize: normalizeFont(16) }]}>
           매출: {formatNumber(item.total_amount)}원
         </Text>
       </View>
-
+      {item.detail && (
+        <View style={styles.detailContainer}>
+          <Text style={styles.detailText}>시술 내용</Text>
+          <Text style={styles.detailContentText}>{item.detail}</Text>
+        </View>
+      )}
       <TouchableOpacity
         style={styles.saleInfoButton}
         onPress={() => {
@@ -72,7 +70,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 12,
   },
-  saleContentContainer: { flex: 1, gap: 8 },
+  saleContentContainer: {
+    flex: 1,
+    gap: 8,
+    flexShrink: 0,
+  },
   dateText: {
     fontFamily: "nanumSquareB",
     fontSize: normalizeFont(20),
@@ -86,16 +88,15 @@ const styles = StyleSheet.create({
     letterSpacing: -0.5,
   },
   detailContainer: {
-    width: "100%",
-    flexDirection: "row",
-    borderWidth: 1,
-    borderColor: colors.purple,
+    maxWidth: "30%",
+    height: "100%",
+    borderTopWidth: 1,
+    borderTopColor: colors.purple,
     borderRadius: 8,
     padding: 8,
     gap: 12,
   },
   detailContentText: {
-    flex: 1,
     fontFamily: "nanumSqaureR",
     fontSize: normalizeFont(10),
     color: "#000",
