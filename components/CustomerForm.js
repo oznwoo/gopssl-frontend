@@ -38,64 +38,112 @@ const CustomerForm = ({ data, mode }) => {
       : { name: "", phoneNumber: "", detail: "" };
 
   // 등록 핸들러
-  const handleRegister = async (values, { setSubmitting, setErrors }) => {
-    try {
-      await dispatch(
-        registerCustomer({
-          user_id: id,
-          name: values.name,
-          phone_number: values.phoneNumber,
-          detail: values.detail,
-        })
-      );
-      Alert.alert("알림", "고객 등록이 완료되었습니다.");
-
-      dispatch(getAllCustomer());
-      navigation.navigate("Home");
-    } catch (error) {
-      console.log("에러 상태코드:", error?.response?.status || error.message);
-    } finally {
-      setSubmitting(false);
-    }
+  const handleRegister = (values, { setSubmitting, setErrors }) => {
+    Alert.alert(
+      "등록 확인",
+      "고객을 등록하시겠습니까?",
+      [
+        { text: "취소", style: "cancel", onPress: () => setSubmitting(false) },
+        {
+          text: "등록",
+          style: "default",
+          onPress: async () => {
+            try {
+              await dispatch(
+                registerCustomer({
+                  user_id: id,
+                  name: values.name,
+                  phone_number: values.phoneNumber,
+                  detail: values.detail,
+                })
+              );
+              Alert.alert("알림", "고객 등록이 완료되었습니다.");
+              dispatch(getAllCustomer());
+              navigation.navigate("Home");
+            } catch (error) {
+              console.log(
+                "에러 상태코드:",
+                error?.response?.status || error.message
+              );
+              setErrors({ submit: "등록 중 문제가 발생했습니다." });
+            } finally {
+              setSubmitting(false);
+            }
+          },
+        },
+      ],
+      { cancelable: true }
+    );
   };
 
-  // 수정 핸들러 (view 모드 포함)
-  const handleUpdate = async (values, { setSubmitting, setErrors }) => {
-    try {
-      await dispatch(
-        updateCustomer({
-          customer_id: data.id,
-          user_id: id,
-          name: values.name,
-          phone_number: values.phoneNumber,
-          detail: values.detail,
-        })
-      );
-      Alert.alert("알림", "고객 정보 수정이 완료되었습니다.");
-
-      dispatch(getAllCustomer());
-      navigation.navigate("Home");
-    } catch (error) {
-      console.log("에러 상태코드:", error?.response?.status || error.message);
-    } finally {
-      setSubmitting(false);
-    }
+  // 수정 핸들러
+  const handleUpdate = (values, { setSubmitting, setErrors }) => {
+    Alert.alert(
+      "수정 확인",
+      "수정하시겠습니까?",
+      [
+        { text: "취소", style: "cancel", onPress: () => setSubmitting(false) },
+        {
+          text: "수정",
+          style: "default",
+          onPress: async () => {
+            try {
+              await dispatch(
+                updateCustomer({
+                  customer_id: data.id,
+                  user_id: id,
+                  name: values.name,
+                  phone_number: values.phoneNumber,
+                  detail: values.detail,
+                })
+              );
+              Alert.alert("알림", "고객 정보 수정이 완료되었습니다.");
+              dispatch(getAllCustomer());
+              navigation.navigate("Home");
+            } catch (error) {
+              console.log(
+                "에러 상태코드:",
+                error?.response?.status || error.message
+              );
+              setErrors({ submit: "수정 중 문제가 발생했습니다." });
+            } finally {
+              setSubmitting(false);
+            }
+          },
+        },
+      ],
+      { cancelable: true }
+    );
   };
 
-  const handleDelete = async ({ setSubmitting, setErrors }) => {
-    try {
-      const customerId = data?.id;
+  const handleDelete = () => {
+    const customerId = data?.id;
 
-      await dispatch(deleteCustomerById(customerId));
-      Alert.alert("알림", "고객이 삭제되었습니다.");
-
-      navigation.goBack();
-    } catch (error) {
-      console.log("에러 상태코드:", error?.response?.status || error.message);
-      setErrors({ submit: "삭제 중 오류가 발생했습니다." });
-    } finally {
-      setSubmitting(false);
-    }
+    Alert.alert(
+      "삭제 확인",
+      "정말로 삭제하시겠습니까?\n⚠️ 고객을 삭제하시면 해당 고객으로 등록된 모든 매출이 함께 삭제됩니다. ⚠️",
+      [
+        { text: "취소", style: "cancel" },
+        {
+          text: "삭제",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await dispatch(deleteCustomerById(customerId));
+              Alert.alert("알림", "고객이 삭제되었습니다.");
+              navigation.goBack();
+            } catch (error) {
+              console.log(
+                "에러 상태코드:",
+                error?.response?.status || error.message
+              );
+              Alert.alert("오류", "삭제 중 문제가 발생했습니다.");
+            }
+          },
+        },
+      ],
+      { cancelable: true }
+    );
   };
 
   const transitionSale = useCallback(
@@ -168,7 +216,7 @@ const CustomerForm = ({ data, mode }) => {
                   id="visits"
                   label="방문횟수"
                   useBlur={false}
-                  value={`${data.num_of_visits}회`}
+                  value={data.num_of_visits ? `${data.num_of_visits}회` : "0회"}
                   readOnly
                 />
 

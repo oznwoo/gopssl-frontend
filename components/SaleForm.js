@@ -8,7 +8,6 @@ import {
   View,
   KeyboardAvoidingView,
   Platform,
-  Keyboard,
   Dimensions,
 } from "react-native";
 import SubmitButton from "./SubmitButton";
@@ -107,103 +106,149 @@ const SaleForm = ({ saleDate, data, mode }) => {
           totalAmount: 0,
         };
 
-  const handleRegister = async (values, { setSubmitting, setErrors }) => {
-    try {
-      const user_id = id;
-      let customer_id = values.customerId;
+  // 등록 핸들러
+  const handleRegister = (values, formikHelpers) => {
+    const { setSubmitting, setErrors } = formikHelpers;
 
-      if (values.customerId < 0) {
-        const res = await dispatch(
-          registerCustomer({
-            user_id: id,
-          })
-        );
-        customer_id = res.id;
-        dispatch(getAllCustomer());
-      }
+    Alert.alert(
+      "등록 확인",
+      "매출을 등록하시겠습니까?",
+      [
+        { text: "취소", style: "cancel", onPress: () => {} },
+        {
+          text: "등록",
+          style: "default",
+          onPress: async () => {
+            setSubmitting(true);
+            try {
+              let customer_id = values.customerId;
 
-      const sale_date = new Date(values.saleDate).toISOString().split("T")[0];
+              if (values.customerId < 0) {
+                const res = await dispatch(registerCustomer({ user_id: id }));
+                customer_id = res.id;
+                dispatch(getAllCustomer());
+              }
 
-      const treatments = values.treatmentList.map(
-        ({ treatment_id, price }) => ({
-          treatment_id,
-          price,
-        })
-      );
+              const sale_date = new Date(values.saleDate)
+                .toISOString()
+                .split("T")[0];
 
-      const saleData = {
-        user_id,
-        customer_id,
-        sale_date,
-        detail: values.detail,
-        payment_type: values.paymentType,
-        total_amount: values.totalAmount,
-        treatments,
-        extra_prices: values.extraPrices,
-      };
+              const treatments = values.treatmentList.map(
+                ({ treatment_id, price }) => ({ treatment_id, price })
+              );
 
-      await dispatch(postSaleThunk(saleData));
-      Alert.alert("알림", "매출 등록이 완료되었습니다.");
-      navigation.goBack();
-    } catch (error) {
-      console.log("에러 상태코드:", error?.response?.status || error.message);
-      setErrors({ submit: "등록 중 오류가 발생했습니다." });
-    } finally {
-      setSubmitting(false);
-    }
+              const saleData = {
+                user_id: id,
+                customer_id,
+                sale_date,
+                detail: values.detail,
+                payment_type: values.paymentType,
+                total_amount: values.totalAmount,
+                treatments,
+                extra_prices: values.extraPrices,
+              };
+
+              await dispatch(postSaleThunk(saleData));
+              Alert.alert("알림", "매출 등록이 완료되었습니다.");
+              navigation.goBack();
+            } catch (error) {
+              console.log(error);
+              setErrors({ submit: "등록 중 오류가 발생했습니다." });
+            } finally {
+              setSubmitting(false);
+            }
+          },
+        },
+      ],
+      { cancelable: true }
+    );
   };
 
-  const handleUpdate = async (values, { setSubmitting, setErrors }) => {
-    try {
-      const user_id = id;
-      const customer_id = values.customerId;
-      const sale_id = data?.id;
+  // 수정 핸들러
+  const handleUpdate = (values, formikHelpers) => {
+    const { setSubmitting, setErrors } = formikHelpers;
 
-      const sale_date = new Date(values.saleDate).toISOString().split("T")[0];
+    Alert.alert(
+      "수정 확인",
+      "매출 정보를 수정하시겠습니까?",
+      [
+        {
+          text: "취소",
+          style: "cancel",
+          onPress: () => {
+            setSubmitting(false);
+          },
+        },
+        {
+          text: "수정",
+          style: "default",
+          onPress: async () => {
+            setSubmitting(true);
+            try {
+              const customer_id = values.customerId;
+              const sale_id = data?.id;
+              const sale_date = new Date(values.saleDate)
+                .toISOString()
+                .split("T")[0];
 
-      const treatments = values.treatmentList.map(
-        ({ treatment_id, price }) => ({
-          treatment_id,
-          price,
-        })
-      );
+              const treatments = values.treatmentList.map(
+                ({ treatment_id, price }) => ({ treatment_id, price })
+              );
 
-      const saleData = {
-        id: sale_id,
-        user_id,
-        customer_id,
-        sale_date,
-        detail: values.detail,
-        payment_type: values.paymentType,
-        total_amount: values.totalAmount,
-        treatments,
-        extra_prices: values.extraPrices,
-      };
+              const saleData = {
+                id: sale_id,
+                user_id: id,
+                customer_id,
+                sale_date,
+                detail: values.detail,
+                payment_type: values.paymentType,
+                total_amount: values.totalAmount,
+                treatments,
+                extra_prices: values.extraPrices,
+              };
 
-      await dispatch(updateSaleThunk(saleData));
-      Alert.alert("알림", "고객 정보 수정이 완료되었습니다.");
-      navigation.goBack();
-    } catch (error) {
-      console.log("에러 상태코드:", error?.response?.status || error.message);
-      setErrors({ submit: "수정 중 오류가 발생했습니다." });
-    } finally {
-      setSubmitting(false);
-    }
+              await dispatch(updateSaleThunk(saleData));
+              Alert.alert("알림", "고객 정보 수정이 완료되었습니다.");
+              navigation.goBack();
+            } catch (error) {
+              console.log(error);
+              setErrors({ submit: "수정 중 오류가 발생했습니다." });
+            } finally {
+              setSubmitting(false);
+            }
+          },
+        },
+      ],
+      { cancelable: true }
+    );
   };
 
-  const handleDelete = async ({ setSubmitting, setErrors }) => {
-    try {
-      const sale_id = data?.id;
+  // 삭제 핸들러
+  const handleDelete = () => {
+    const sale_id = data?.id;
 
-      await dispatch(deleteSaleById(sale_id));
-      Alert.alert("알림", "매출이 삭제되었습니다.");
-      navigation.goBack();
-    } catch (error) {
-      console.log("에러 상태코드:", error?.response?.status || error.message);
-      setErrors({ submit: "삭제 중 오류가 발생했습니다." });
-    } finally {
-      setSubmitting(false);
-    }
+    Alert.alert(
+      "삭제 확인",
+      "정말로 이 매출을 삭제하시겠습니까?",
+      [
+        { text: "취소", style: "cancel", onPress: () => {} },
+        {
+          text: "삭제",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await dispatch(deleteSaleById(sale_id));
+              Alert.alert("알림", "매출이 삭제되었습니다.");
+              navigation.goBack();
+            } catch (error) {
+              console.log(error);
+              setErrors({ submit: "삭제 중 오류가 발생했습니다." });
+            }
+          },
+        },
+      ],
+      { cancelable: true }
+    );
   };
 
   return (
