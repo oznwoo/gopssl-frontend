@@ -1,10 +1,9 @@
 import React from "react";
 import {
   ActivityIndicator,
-  Platform,
   StyleSheet,
+  Switch,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -16,7 +15,7 @@ import { SignInSchema } from "../schemas/signInSchema";
 import SubmitButton from "./SubmitButton";
 import { signIn } from "../actions/authActions";
 import { useDispatch } from "react-redux";
-import { normalizeFont } from "../utils/responsive";
+import { normalizeFont, normalizeSize } from "../utils/responsive";
 
 const SignInForm = ({ setFormType }) => {
   const dispatch = useDispatch();
@@ -27,17 +26,13 @@ const SignInForm = ({ setFormType }) => {
 
   const handleSignIn = async (values, { setSubmitting, setErrors }) => {
     try {
-      await dispatch(signIn(values));
+      const { email, password, rememberMe } = values;
+      await dispatch(signIn({ email, password, rememberMe }));
+
       setFormType(FORM_TYPES.INFO);
     } catch (error) {
-      console.log("에러 상태코드:", error.status); // 여기서 접근 가능!
-
-      // 400은 중복 이메일 에러로 처리
-      if (error.status === 400) {
-        setErrors({ email: error.message });
-      } else {
-        setErrors({ password: error.message });
-      }
+      if (error.status === 400) setErrors({ email: error.message });
+      else setErrors({ password: error.message });
     } finally {
       setSubmitting(false);
     }
@@ -45,7 +40,7 @@ const SignInForm = ({ setFormType }) => {
 
   return (
     <Formik
-      initialValues={{ email: "", password: "" }}
+      initialValues={{ email: "", password: "", rememberMe: false }}
       validationSchema={SignInSchema}
       onSubmit={handleSignIn}
     >
@@ -53,6 +48,7 @@ const SignInForm = ({ setFormType }) => {
         handleChange,
         handleBlur,
         handleSubmit,
+        setFieldValue,
         values,
         errors,
         touched,
@@ -62,30 +58,47 @@ const SignInForm = ({ setFormType }) => {
       }) => (
         <View style={styles.formContainer}>
           <View style={styles.contentContainer}>
-            <BaseInput
-              id="email"
-              label={"이메일"}
-              autoCapitalize="none"
-              value={values.email}
-              onChangeText={handleChange("email")}
-              onBlur={handleBlur("email")}
-              errorText={touched.email && errors.email}
-            />
-            <PasswordInput
-              id="password"
-              label={"비밀번호"}
-              secureTextEntry
-              value={values.password}
-              onChangeText={handleChange("password")}
-              onBlur={handleBlur("password")}
-              errorText={touched.password && errors.password}
-            />
-            <TouchableOpacity
-              onPress={() => {}}
-              style={styles.transitionButton}
-            >
-              <Text style={styles.transitionText}>비밀번호 찾기</Text>
-            </TouchableOpacity>
+            <View style={{ gap: 16 }}>
+              <BaseInput
+                id="email"
+                label={"이메일"}
+                autoCapitalize="none"
+                value={values.email}
+                onChangeText={handleChange("email")}
+                onBlur={handleBlur("email")}
+                errorText={touched.email && errors.email}
+              />
+              <PasswordInput
+                id="password"
+                label={"비밀번호"}
+                secureTextEntry
+                value={values.password}
+                onChangeText={handleChange("password")}
+                onBlur={handleBlur("password")}
+                errorText={touched.password && errors.password}
+              />
+            </View>
+
+            <View style={styles.autoLoginContainer}>
+              <TouchableOpacity
+                style={styles.checkboxContainer}
+                onPress={() => setFieldValue("rememberMe", !values.rememberMe)}
+              >
+                <View
+                  style={[styles.checkbox, values.rememberMe && styles.checked]}
+                >
+                  {values.rememberMe && <View style={styles.innerCheck} />}
+                </View>
+                <Text style={styles.checkboxLabel}>자동 로그인</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => {}}
+                style={styles.searchPassword}
+              >
+                <Text style={styles.transitionText}>비밀번호 찾기</Text>
+              </TouchableOpacity>
+            </View>
           </View>
 
           <View style={styles.contentContainer}>
@@ -119,11 +132,11 @@ export default SignInForm;
 
 const styles = StyleSheet.create({
   formContainer: {
-    gap: 24,
+    gap: 12,
     width: "100%",
   },
   contentContainer: {
-    gap: 16,
+    gap: 12,
   },
   inputContainer: {
     flexDirection: "row",
@@ -161,9 +174,43 @@ const styles = StyleSheet.create({
     letterSpacing: -1,
     textAlign: "center",
   },
-  transitionButton: {
-    alignSelf: "flex-end",
+  autoLoginContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 12,
   },
+  checkboxContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  checkbox: {
+    marginLeft: 4,
+    width: normalizeSize(18),
+    height: normalizeSize(18),
+    borderWidth: 1,
+    borderColor: "#2E2B1C",
+    borderRadius: 4,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  checked: {
+    borderColor: colors.purple,
+    backgroundColor: colors.purple,
+  },
+  innerCheck: {
+    width: normalizeSize(10),
+    height: normalizeSize(10),
+    borderRadius: 2,
+  },
+  checkboxLabel: {
+    marginLeft: 8,
+    fontSize: normalizeFont(12),
+    color: "#2E2B1C",
+    fontFamily: "nanumSquareR",
+  },
+
+  transitionButton: { alignSelf: "flex-end" },
 
   transitionText: {
     color: "#2E2B1C",
