@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   View,
   TextInput,
@@ -7,21 +7,37 @@ import {
   Keyboard,
   Pressable,
   Platform,
+  RefreshControl,
 } from "react-native";
 import { Ionicons, Feather } from "@expo/vector-icons";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import CustomerList from "../components/CustomerList";
 import FloatingExpandedButton from "../components/FloatingExpandedButton";
 import colors from "../styles/color";
 import { normalizeFont } from "../utils/responsive";
 import { commonStyles } from "../styles/commonStyles";
+import { getAllCustomer } from "../actions/customerActions";
 
 const SearchScreen = ({ navigation }) => {
+  const dispatch = useDispatch();
   const customers = useSelector((state) => state.customer.list);
   const [searchText, setSearchText] = useState("");
+  const [refreshing, setRefreshing] = useState(false);
   const inputRef = useRef(null);
 
   const handleClearText = () => setSearchText("");
+
+  // 새로고침 핸들러
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      await dispatch(getAllCustomer());
+    } catch (err) {
+      console.log("새로고침 실패:", err);
+    } finally {
+      setRefreshing(false);
+    }
+  }, [dispatch]);
 
   return (
     <Pressable style={styles.pageContainer} onPress={Keyboard.dismiss}>
@@ -57,6 +73,15 @@ const SearchScreen = ({ navigation }) => {
         searchText={searchText}
         onItemPress={(id) =>
           navigation.navigate("Customer", { mode: "view", itemId: id })
+        }
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={colors.purple} // iOS 인디케이터 색상
+            colors={[colors.purple, "blue"]} // Android 인디케이터 색상
+            progressBackgroundColor="#fff" // Android 배경색
+          />
         }
       />
 

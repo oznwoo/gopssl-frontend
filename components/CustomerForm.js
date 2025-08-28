@@ -88,6 +88,7 @@ const CustomerForm = ({ data, mode }) => {
 
       await dispatch(deleteCustomerById(customerId));
       Alert.alert("알림", "고객이 삭제되었습니다.");
+
       navigation.goBack();
     } catch (error) {
       console.log("에러 상태코드:", error?.response?.status || error.message);

@@ -14,7 +14,12 @@ import {
 } from "../utils/searchUtils";
 import SectionHeader from "./SectionHeader";
 
-const CustomerList = ({ customers, searchText, onItemPress }) => {
+const CustomerList = ({
+  customers,
+  searchText,
+  onItemPress,
+  refreshControl,
+}) => {
   const [collapsedSections, setCollapsedSections] = useState({}); // { 'ㄱ': true, 'ㄴ': false ... }
 
   const getInitial = (name) => {
@@ -184,6 +189,7 @@ const CustomerList = ({ customers, searchText, onItemPress }) => {
       contentContainerStyle={{ paddingVertical: 4 }}
       ItemSeparatorComponent={() => <View style={styles.divideLine} />}
       keyboardShouldPersistTaps="handled"
+      refreshControl={refreshControl}
     />
   );
 };
