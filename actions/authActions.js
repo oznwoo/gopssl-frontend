@@ -6,6 +6,7 @@ import {
   registerSuccess,
 } from "../store/authSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getAllCustomer } from "./customerActions";
 import { store } from "../store/store";
 import axios from "axios";
 
@@ -115,6 +116,7 @@ export const signUp = ({ name, email, password }) => {
 
       // 먼저 토큰을 Redux store에 저장
       dispatch(signUpSuccess({ token, user: null }));
+      dispatch(getAllCustomer());
       await AsyncStorage.setItem("token", token);
 
       // 토큰을 직접 헤더에 포함시켜서 사용자 정보 요청
@@ -194,6 +196,7 @@ export const signIn = ({ email, password }) => {
 
       // 토큰과 사용자 정보를 한 번에 Redux store에 저장
       dispatch(signInSuccess({ token, user }));
+      dispatch(getAllCustomer());
       await AsyncStorage.setItem("user", JSON.stringify(user));
     } catch (e) {
       let errorMessage =

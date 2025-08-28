@@ -4,7 +4,7 @@ import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import colors from "../styles/color";
 import FormHeader from "../components/FormHeader";
 import CustomerForm from "../components/CustomerForm";
-import { getCustomer } from "../actions/customerActions";
+import { getCustomerbyId } from "../actions/customerActions";
 import { useDispatch } from "react-redux";
 import { normalizeFont } from "../utils/responsive";
 
@@ -23,7 +23,7 @@ const CustomerScreen = ({ route }) => {
     const fetchCustomerData = async () => {
       setIsLoading(true);
       try {
-        const data = await dispatch(getCustomer(customerId));
+        const data = await dispatch(getCustomerbyId(customerId));
         setCustomerData(data);
       } catch (error) {
         console.log(error);
