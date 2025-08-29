@@ -144,7 +144,7 @@ export default DailySalesScreen;
 const styles = StyleSheet.create({
   pageContainer: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: colors.backgroundPurple,
   },
   headerContainer: {
     alignItems: "center",
@@ -190,22 +190,27 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   contentTitle: {
-    marginHorizontal: 36,
+    backgroundColor: "#fff",
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    marginHorizontal: 20,
     marginVertical: 8,
-    fontFamily: "gamtanDotumB",
+    borderRadius: 12,
+    fontFamily: "nanumSquareEB",
     color: colors.purple,
-    letterSpacing: -0.5,
-    fontSize: normalizeFont(24),
+    letterSpacing: -1.5,
+    fontSize: normalizeFont(20),
+    ...commonStyles.lightDropShadow,
   },
   salesContainer: {
     flexGrow: 1,
     alignItems: "center",
-    paddingHorizontal: 32,
+    paddingHorizontal: 20,
     paddingVertical: 12,
     gap: 16,
   },
   emptyText: {
-    fontFamily: "gamtanDotumB",
+    fontFamily: "nanumSquareB",
     fontSize: normalizeFont(16),
     letterSpacing: -0.5,
     color: colors.lightPurple,
@@ -226,9 +231,9 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 16,
   },
   totalText: {
-    fontFamily: "gamtanBatangB",
-    fontSize: normalizeFont(24),
-    letterSpacing: -0.5,
+    fontFamily: "nanumSquareEB",
+    fontSize: normalizeFont(20),
+    letterSpacing: -1.5,
     color: colors.purple,
   },
 });

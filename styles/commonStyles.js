@@ -16,6 +16,17 @@ export const commonStyles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: normalizeFont(16),
   },
+  lightDropShadow: {
+    // iOS 전용 shadow
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.1,
+    shadowRadius: 1,
+
+    // Android 전용 shadow
+    elevation: 1,
+  },
+
   dropShadow: {
     // iOS 전용 shadow
     shadowColor: "#000",
@@ -24,7 +35,7 @@ export const commonStyles = StyleSheet.create({
     shadowRadius: 2,
 
     // Android 전용 shadow
-    elevation: 5,
+    elevation: 10,
   },
 
   blurView: {

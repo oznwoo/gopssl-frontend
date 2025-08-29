@@ -11,8 +11,6 @@ import { normalizeFont } from "../utils/responsive";
 const SaleScreen = ({ route }) => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
-  const saleDateString = route.params?.saleDate;
-  const saleDate = saleDateString ? new Date(saleDateString) : null;
   const saleId = route.params?.itemId;
   const [saleData, setSaleData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);

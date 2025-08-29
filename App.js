@@ -1,20 +1,25 @@
 import { StatusBar } from "expo-status-bar";
-import { useEffect } from "react";
-import { StyleSheet, Text } from "react-native";
+import { useEffect, useState } from "react";
+import { Text, View } from "react-native";
 import * as Font from "expo-font";
 import AppNavigator from "./navigation/AppNavigator";
 import { enableScreens } from "react-native-screens";
 import { Provider } from "react-redux";
 import { store } from "./store/store";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import {
+  SafeAreaProvider,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 
 if (Text.defaultProps == null) {
   Text.defaultProps = {};
 }
-Text.defaultProps.allowFontScaling = false; // ✅ 접근성 글꼴 배율 무시
+Text.defaultProps.allowFontScaling = false; // 접근성 글꼴 배율 무시
 enableScreens();
 
 export default function App() {
+  const [appIsLoaded, setAppIsLoaded] = useState(false);
+
   useEffect(() => {
     const prepare = async () => {
       try {
@@ -36,7 +41,7 @@ export default function App() {
           tjM: require("./assets/fonts/TJJoyofsingingM_TTF.ttf"),
         });
       } catch (error) {
-        console.log.error();
+        console.log(error);
       } finally {
         setAppIsLoaded(true);
       }
@@ -44,20 +49,18 @@ export default function App() {
     prepare();
   }, []);
 
+  if (!appIsLoaded) {
+    return null; // 폰트 로딩 전에는 빈 화면
+  }
+
   return (
     <Provider store={store}>
       <SafeAreaProvider>
-        <SafeAreaView style={styles.container}>
+        <View style={{ flex: 1 }}>
+          <StatusBar style={"auto"} />
           <AppNavigator />
-          <StatusBar style="auto" />
-        </SafeAreaView>
+        </View>
       </SafeAreaProvider>
     </Provider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
