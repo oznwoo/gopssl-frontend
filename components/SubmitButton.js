@@ -38,8 +38,8 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   purpleButtonText: {
-    color: "white",
-    fontFamily: "tjM",
+    color: "#fff",
+    fontFamily: "nanumSquareB",
     fontSize: normalizeFont(16),
     letterSpacing: -1,
     textAlign: "center",

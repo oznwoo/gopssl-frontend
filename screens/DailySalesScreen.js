@@ -203,7 +203,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 20,
     paddingVertical: 12,
-    gap: 16,
+    gap: 12,
   },
   emptyText: {
     fontFamily: "nanumSquareB",

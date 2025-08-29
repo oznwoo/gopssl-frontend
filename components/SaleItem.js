@@ -79,7 +79,7 @@ const SaleItem = ({ saleData, transitionSale, transitionCustomer }) => {
             상세 정보
           </Text>
           <Animated.View style={{ transform: [{ rotate }] }}>
-            <Ionicons name="triangle" size={12} color={textColor} />
+            <Ionicons name="triangle" size={10} color={textColor} />
           </Animated.View>
         </TouchableOpacity>
 
@@ -112,7 +112,7 @@ const SaleItem = ({ saleData, transitionSale, transitionCustomer }) => {
         style={styles.saleInfoButton}
         onPress={() => transitionSale(saleData.id)}
       >
-        <FontAwesome5 name="chevron-right" size={24} color={textColor} />
+        <FontAwesome5 name="chevron-right" size={20} color={textColor} />
       </TouchableOpacity>
     </View>
   );
@@ -127,7 +127,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     borderRadius: 12,
-    padding: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
     ...commonStyles.dropShadow,
   },
   contentContainer: {
@@ -136,7 +137,7 @@ const styles = StyleSheet.create({
   customerInfoContainer: {},
   customerName: {
     fontFamily: "gamtanDotumR",
-    fontSize: normalizeFont(20),
+    fontSize: normalizeFont(18),
     letterSpacing: -0.5,
     lineHeight: 26,
   },
@@ -157,7 +158,7 @@ const styles = StyleSheet.create({
     letterSpacing: -0.5,
   },
   detailBox: {
-    maxWidth: "90%",
+    width: "100%",
     padding: 8,
     backgroundColor: colors.backgroundPurple,
     borderRadius: 8,
