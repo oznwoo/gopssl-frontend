@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Platform,
+} from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { Calendar } from "react-native-calendars";
 import colors from "../styles/color";
@@ -97,35 +103,27 @@ const DateHeader = ({ currentDate, onChangeDate, onlyCalendar }) => {
             onPress={() => handleArrowPress(-1)}
             style={[styles.arrowButton, styles.horizontalArrowButton]}
           >
-            <FontAwesome5 name="chevron-left" size={24} color="#fff" />
+            <FontAwesome5 name="chevron-left" size={16} color={colors.purple} />
           </TouchableOpacity>
 
-          <View style={styles.dateContainer}>
+          <TouchableOpacity
+            onPress={() => setIsExpanded(!isExpanded)}
+            style={styles.dateContainer}
+          >
             <Text style={styles.dateText}>{formattedDate}</Text>
-          </View>
+          </TouchableOpacity>
 
           <TouchableOpacity
             onPress={() => handleArrowPress(1)}
             style={[styles.arrowButton, styles.horizontalArrowButton]}
           >
-            <FontAwesome5 name="chevron-right" size={24} color="#fff" />
-          </TouchableOpacity>
-        </View>
-
-        {onlyCalendar ? (
-          <View style={styles.horizontalLine}></View>
-        ) : (
-          <TouchableOpacity
-            onPress={() => setIsExpanded(!isExpanded)}
-            style={[styles.arrowButton, styles.verticalArrowButton]}
-          >
             <FontAwesome5
-              name={isExpanded ? "chevron-up" : "chevron-down"}
-              size={24}
-              color="#fff"
+              name="chevron-right"
+              size={16}
+              color={colors.purple}
             />
           </TouchableOpacity>
-        )}
+        </View>
       </View>
 
       {isExpanded && (
@@ -163,9 +161,9 @@ const DateHeader = ({ currentDate, onChangeDate, onlyCalendar }) => {
               onChangeDate(formatDate(newMonthDate)); // 필요하면 상위로 전달
             }}
             theme={{
-              calendarBackground: "#f1ebf1",
+              calendarBackground: colors.backgroundPurple,
               textDayFontSize: normalizeFont(12),
-              textDayFontFamily: "gamtanBatangB",
+              textDayFontFamily: "nanumSquareB",
               dayTextColor: colors.purple,
               textDisabledColor: colors.lightPurple,
               weekVerticalMargin: 0,
@@ -193,6 +191,7 @@ const DateHeader = ({ currentDate, onChangeDate, onlyCalendar }) => {
                         ? colors.purple
                         : "transparent",
                     },
+                    isSelected && { ...commonStyles.dropShadow },
                   ]}
                   onPress={() => handleDayPress(date)}
                 >
@@ -245,20 +244,14 @@ const styles = StyleSheet.create({
     backgroundColor: "tranparent",
     paddingHorizontal: 20,
     borderRadius: 12,
-    marginBottom: 12,
   },
   headerContainer: {
     alignItems: "center",
     justifyContent: "center",
     paddingTop: 4,
-    paddingBottom: 4,
-    marginBottom: 28,
-    width: "100%",
-    gap: 10,
   },
   horizontalHeader: {
     flexDirection: "row",
-    gap: 16,
     alignItems: "center",
   },
   horizontalLine: {
@@ -271,43 +264,26 @@ const styles = StyleSheet.create({
     ...commonStyles.dropShadow,
   },
   arrowButton: {
-    backgroundColor: colors.purple,
-    borderRadius: 12,
-    ...commonStyles.dropShadow,
+    justifyContent: "center",
   },
   horizontalArrowButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-  },
-  verticalArrowButton: {
-    position: "absolute",
-    top: 44,
-    zIndex: 10,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    marginTop: 8,
+    paddingHorizontal: 6,
+    paddingVertical: 6,
   },
   dateContainer: {
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: 12,
-    backgroundColor: "#fff",
-    ...commonStyles.dropShadow,
   },
   dateText: {
-    fontFamily: "gamtanDotumB",
-    letterSpacing: -0.5,
-    fontSize: normalizeFont(20),
+    fontFamily: "nanumSquareB",
+    letterSpacing: -1,
+    fontSize: normalizeFont(16),
     color: colors.purple,
   },
   calendarContainer: {
-    backgroundColor: colors.backgroundPurple,
-    borderRadius: 12,
-    padding: 12,
-    paddingTop: 16,
-    ...commonStyles.dropShadow,
+    paddingVertical: 12,
   },
   dayNamesRow: {
     flexDirection: "row",
@@ -317,8 +293,8 @@ const styles = StyleSheet.create({
   dayNameText: {
     textAlign: "center",
     color: colors.purple,
-    fontSize: normalizeFont(16),
-    fontFamily: "gamtanBatangB",
+    fontSize: normalizeFont(14),
+    fontFamily: "nanumSquareB",
   },
   calendar: {
     borderTopWidth: 1,
@@ -332,10 +308,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 4,
   },
-  dayText: { fontFamily: "gamtanBatangB", fontSize: normalizeFont(14) },
+  dayText: { fontFamily: "nanumSquareB", fontSize: normalizeFont(14) },
   salesText: {
-    fontSize: normalizeFont(6),
+    fontSize: normalizeFont(8),
     color: colors.purple,
-    fontFamily: "nanumSquareB",
+    fontFamily: "nanumSquareR",
   },
 });
