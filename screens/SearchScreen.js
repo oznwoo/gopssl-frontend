@@ -103,7 +103,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: "#fff",
   },
-  headerContainer: {},
+  headerContainer: {
+    ...commonStyles.blurView,
+    ...commonStyles.dropShadow,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.backgroundPurple,
+    zIndex: 10,
+  },
   inputContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -124,15 +130,7 @@ const styles = StyleSheet.create({
     letterSpacing: -0.5,
     paddingVertical: 4,
   },
-  horizontalLine: {
-    height: 2,
-    width: "100%",
-    position: "absolute",
-    top: normalizeSize(56),
-    zIndex: 20,
-    backgroundColor: "#fff",
-    ...commonStyles.dropShadow,
-  },
+
   plusButton: {
     position: "absolute",
     right: 20,

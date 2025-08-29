@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import {
   Text,
   StyleSheet,
@@ -6,6 +6,7 @@ import {
   ScrollView,
   ActivityIndicator,
   Platform,
+  Animated,
 } from "react-native";
 
 import colors from "../styles/color";
@@ -26,22 +27,24 @@ const DailySalesScreen = () => {
   const [salesData, setSalesData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
+  // 👇 Animated 값
+  const scrollY = useRef(new Animated.Value(1)).current; // 1=보임, 0=숨김
+  const lastScrollY = useRef(0);
+
   const transitionCustomer = useCallback(
     (itemId = undefined) => {
-      const baseParams = { mode: "view" };
-      navigation.navigate("Customer", { ...baseParams, itemId });
+      navigation.navigate("Customer", { mode: "view", itemId });
     },
     [navigation]
   );
 
   const transitionSale = useCallback(
     (itemId = undefined) => {
-      const baseParams = {
+      navigation.navigate("Sale", {
         saleDate: date.toISOString(),
         mode: "view",
-      };
-
-      navigation.navigate("Sale", { ...baseParams, itemId });
+        itemId,
+      });
     },
     [navigation, date]
   );
@@ -60,17 +63,36 @@ const DailySalesScreen = () => {
     }
   }, [date]);
 
-  // 날짜 바뀔 때 데이터 불러오기
   useEffect(() => {
     fetchSalesData();
   }, [date, fetchSalesData]);
 
-  // 화면 다시 포커스될 때마다 데이터 새로 불러오기
   useFocusEffect(
     useCallback(() => {
       fetchSalesData();
     }, [fetchSalesData])
   );
+
+  // 👇 스크롤 방향 감지
+  const handleScroll = (event) => {
+    const currentY = event.nativeEvent.contentOffset.y;
+    if (currentY > lastScrollY.current + 5) {
+      // 위로 스크롤 → 타이틀 숨김
+      Animated.timing(titleAnim, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: true,
+      }).start();
+    } else if (currentY < lastScrollY.current - 5) {
+      // 아래로 스크롤 → 타이틀 보이기
+      Animated.timing(titleAnim, {
+        toValue: 1,
+        duration: 200,
+        useNativeDriver: true,
+      }).start();
+    }
+    lastScrollY.current = currentY;
+  };
 
   return (
     <View style={[styles.pageContainer, { paddingTop: insets.top }]}>
@@ -80,7 +102,30 @@ const DailySalesScreen = () => {
       />
 
       <View style={styles.contentContainer}>
-        <Text style={styles.contentTitle}>일일 매출</Text>
+        {/* 👇 스크롤에 따라 서서히 사라지는 타이틀 */}
+        <Animated.Text
+          style={[
+            styles.contentTitle,
+            {
+              transform: [
+                {
+                  translateY: scrollY.interpolate({
+                    inputRange: [0, 50], // 스크롤 0~50px 구간
+                    outputRange: [0, -30], // 위로 30px 밀림
+                    extrapolate: "clamp",
+                  }),
+                },
+              ],
+              opacity: scrollY.interpolate({
+                inputRange: [0, 50],
+                outputRange: [1, 0], // 서서히 사라짐
+                extrapolate: "clamp",
+              }),
+            },
+          ]}
+        >
+          오늘의 매출 {salesData?.length && `(${salesData?.length})`}
+        </Animated.Text>
 
         {isLoading ? (
           <View
@@ -90,8 +135,13 @@ const DailySalesScreen = () => {
           </View>
         ) : (
           <View style={{ flex: 1 }}>
-            <ScrollView
+            <Animated.ScrollView
               style={{ flex: 1 }}
+              scrollEventThrottle={16}
+              onScroll={Animated.event(
+                [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+                { useNativeDriver: true }
+              )}
               contentContainerStyle={[
                 styles.salesContainer,
                 { justifyContent: salesData ? "flex-start" : "center" },
@@ -111,14 +161,14 @@ const DailySalesScreen = () => {
                   매출이 등록되지 않았습니다.
                 </Text>
               )}
-            </ScrollView>
+            </Animated.ScrollView>
           </View>
         )}
 
         <FloatingExpandButton style={styles.plusButton} date={date} />
       </View>
 
-      <View
+      <Animated.View
         style={[
           styles.totalContainer,
           Platform.OS === "android" && {
@@ -136,7 +186,7 @@ const DailySalesScreen = () => {
             : 0}
           원
         </Text>
-      </View>
+      </Animated.View>
     </View>
   );
 };
@@ -148,61 +198,31 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.backgroundPurple,
   },
-  horizontalHeader: {
-    flexDirection: "row",
-    gap: 16,
-    alignItems: "center",
-  },
-  arrowButton: {
-    backgroundColor: colors.purple,
-    borderRadius: 12,
-    ...commonStyles.dropShadow,
-  },
-  horizontalArrowButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-  },
-  verticalArrowButton: {
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-  },
-  dateContainer: {
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 12,
-    backgroundColor: "#fff",
-    ...commonStyles.dropShadow,
-  },
-  dateText: {
-    fontFamily: "gamtanDotumB",
-    letterSpacing: -0.5,
-    fontSize: normalizeFont(20),
-    color: colors.purple,
-  },
-  calendarContainer: { paddingHorizontal: 16 },
   contentContainer: {
     flex: 1,
   },
   contentTitle: {
+    width: "90%",
+    position: "absolute",
+    top: 12,
+    zIndex: 20,
     backgroundColor: "#fff",
     paddingHorizontal: 16,
     paddingVertical: 8,
     marginHorizontal: 20,
-    marginVertical: 8,
     borderRadius: 12,
-    fontFamily: "nanumSquareEB",
+    fontFamily: "nanumSquareB",
     color: colors.purple,
     letterSpacing: -1.5,
-    fontSize: normalizeFont(20),
+    fontSize: normalizeFont(18),
     ...commonStyles.lightDropShadow,
   },
+
   salesContainer: {
     flexGrow: 1,
     alignItems: "center",
     paddingHorizontal: 20,
-    paddingVertical: 12,
+    paddingVertical: 64,
     gap: 12,
   },
   emptyText: {
