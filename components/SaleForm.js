@@ -229,7 +229,7 @@ const SaleForm = ({ saleDate, data, mode }) => {
 
     Alert.alert(
       "삭제 확인",
-      "정말로 이 매출을 삭제하시겠습니까?",
+      "매출을 삭제하시겠습니까?",
       [
         { text: "취소", style: "cancel", onPress: () => {} },
         {
