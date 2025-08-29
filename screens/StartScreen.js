@@ -18,10 +18,8 @@ import { useRoute } from "@react-navigation/native";
 import { normalizeFont, normalizeSize } from "../utils/responsive"; // ✅ 폰트 & 간격 전용
 
 import logoImage from "../assets/Gopssl.png";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const StartScreen = () => {
-  const insets = useSafeAreaInsets();
   const route = useRoute();
   const [formType, setFormType] = useState(FORM_TYPES.START);
 

@@ -11,6 +11,7 @@ import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import colors from "../styles/color";
 import { useNavigation } from "@react-navigation/native";
 import { normalizeFont } from "../utils/responsive";
+import { commonStyles } from "../styles/commonStyles";
 
 const FloatingExpandButton = (props) => {
   const navigation = useNavigation();
@@ -126,6 +127,7 @@ const FloatingExpandButton = (props) => {
 const styles = StyleSheet.create({
   buttonContainer: {
     backgroundColor: colors.purple,
+    ...commonStyles.dropShadow,
   },
   fullSize: {
     flex: 1,

@@ -28,13 +28,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
 
+    paddingTop: 12,
     padding: 24,
   },
   goBackButton: {
     position: "absolute",
+    top: 12,
     left: 20,
-    justifyContent: "center",
-    alignItems: "center",
   },
   headerTitleContainer: { flex: 1, pointerEvents: "none" },
   headerTitle: {

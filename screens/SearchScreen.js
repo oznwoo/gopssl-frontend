@@ -14,11 +14,13 @@ import { useDispatch, useSelector } from "react-redux";
 import CustomerList from "../components/CustomerList";
 import FloatingExpandedButton from "../components/FloatingExpandedButton";
 import colors from "../styles/color";
-import { normalizeFont } from "../utils/responsive";
+import { normalizeFont, normalizeSize } from "../utils/responsive";
 import { commonStyles } from "../styles/commonStyles";
 import { getAllCustomer } from "../actions/customerActions";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const SearchScreen = ({ navigation }) => {
+  const insets = useSafeAreaInsets();
   const dispatch = useDispatch();
   const customers = useSelector((state) => state.customer.list);
   const [searchText, setSearchText] = useState("");
@@ -40,9 +42,11 @@ const SearchScreen = ({ navigation }) => {
   }, [dispatch]);
 
   return (
-    <Pressable style={styles.pageContainer} onPress={Keyboard.dismiss}>
+    <Pressable
+      style={[styles.pageContainer, { paddingTop: insets.top }]}
+      onPress={Keyboard.dismiss}
+    >
       <View style={styles.headerContainer}>
-        {/* 🔍 검색 Input */}
         <View
           style={[
             styles.inputContainer,
@@ -99,31 +103,33 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: "#fff",
   },
-  headerContainer: {
-    justifyContent: "center",
-  },
+  headerContainer: {},
   inputContainer: {
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
     marginHorizontal: 20,
+    marginTop: 3,
     marginBottom: 8,
     padding: 6,
-    borderWidth: 4,
+    borderWidth: 3,
     borderColor: colors.purple,
     borderRadius: 12,
-    ...commonStyles.dropShadow,
     backgroundColor: "#fff",
   },
   searchInput: {
     flex: 1,
-    fontFamily: "NanumSquareB",
+    fontFamily: "nanumSquareB",
     fontSize: normalizeFont(16),
     letterSpacing: -0.5,
     paddingVertical: 4,
   },
   horizontalLine: {
     height: 2,
+    width: "100%",
+    position: "absolute",
+    top: normalizeSize(56),
+    zIndex: 20,
     backgroundColor: "#fff",
     ...commonStyles.dropShadow,
   },

@@ -470,8 +470,8 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 16,
   },
   totalText: {
-    fontFamily: "gamtanBatangB",
-    fontSize: normalizeFont(24),
+    fontFamily: "nanumSquareEB",
+    fontSize: normalizeFont(20),
     letterSpacing: -0.5,
     color: colors.purple,
   },

@@ -17,8 +17,10 @@ import { formatNumber } from "../utils/format";
 import DateHeader from "../components/DateHeader";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { normalizeFont } from "../utils/responsive";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const DailySalesScreen = () => {
+  const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const [date, setDate] = useState(new Date());
   const [salesData, setSalesData] = useState(null);
@@ -71,7 +73,7 @@ const DailySalesScreen = () => {
   );
 
   return (
-    <View style={styles.pageContainer}>
+    <View style={[styles.pageContainer, { paddingTop: insets.top }]}>
       <DateHeader
         currentDate={date}
         onChangeDate={(newDateStr) => setDate(new Date(newDateStr))}
@@ -145,12 +147,6 @@ const styles = StyleSheet.create({
   pageContainer: {
     flex: 1,
     backgroundColor: colors.backgroundPurple,
-  },
-  headerContainer: {
-    alignItems: "center",
-    justifyContent: "center",
-    paddingTop: 8,
-    gap: 4,
   },
   horizontalHeader: {
     flexDirection: "row",

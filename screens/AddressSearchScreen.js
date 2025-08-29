@@ -15,8 +15,10 @@ import colors from "../styles/color";
 import { commonStyles } from "../styles/commonStyles";
 import { useRoute } from "@react-navigation/native";
 import { normalizeFont } from "../utils/responsive";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const AddressSearchScreen = ({ navigation }) => {
+  const insets = useSafeAreaInsets();
   const route = useRoute();
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
@@ -52,7 +54,12 @@ const AddressSearchScreen = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.pageContainer}>
+    <View
+      style={[
+        styles.pageContainer,
+        { paddingTop: insets.top, paddingBottom: insets.bottom },
+      ]}
+    >
       <View
         style={[
           styles.inputContainer,
@@ -116,13 +123,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 8,
     marginHorizontal: 20,
-    marginBottom: 8,
+    marginVertical: 8,
     padding: 8,
-    borderWidth: 4,
+    borderWidth: 3,
     borderColor: colors.purple,
     borderRadius: 12,
   },
-  backButton: {},
   searchInput: {
     flex: 1,
     fontFamily: "NanumSquareB",

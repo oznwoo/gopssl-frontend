@@ -15,9 +15,11 @@ import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../actions/authActions";
 import { useNavigation } from "@react-navigation/native";
-import { normalizeFont } from "../utils/responsive";
+import { normalizeFont, normalizeSize } from "../utils/responsive";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const SettingScreen = (props) => {
+  const insets = useSafeAreaInsets();
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
@@ -43,11 +45,12 @@ const SettingScreen = (props) => {
   };
 
   return (
-    <View style={styles.pageContainer}>
+    <View style={[styles.pageContainer, { paddingTop: insets.top }]}>
       <View style={styles.headerContainer}>
         <Text style={styles.headerTitle}>설정</Text>
         <View style={styles.horizontalLine}></View>
       </View>
+
       <View style={styles.contentContainer}>
         <View style={styles.logoContainer}>
           <Text style={styles.logo}>Gopssl</Text>
@@ -109,6 +112,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
 
+    paddingTop: 12,
     padding: 24,
   },
   headerTitle: {
@@ -120,9 +124,9 @@ const styles = StyleSheet.create({
   },
   horizontalLine: {
     width: "120%",
-    position: "absolute",
-    top: 60,
     zIndex: 20,
+    position: "absolute",
+    top: normalizeSize(56),
     height: 2,
     backgroundColor: "#fff",
     ...commonStyles.dropShadow,

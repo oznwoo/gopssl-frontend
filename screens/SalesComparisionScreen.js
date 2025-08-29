@@ -14,8 +14,10 @@ import YearlyComparisonChart from "../components/YearlyComparisionChart";
 import { getMonthlySalesSummary } from "../actions/saleStatisticsActions";
 import { normalizeFont, normalizeSize } from "../utils/responsive";
 import { formatNumber } from "../utils/format";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const SalesComparisionScreen = (props) => {
+  const insets = useSafeAreaInsets();
   const [date, setDate] = useState(new Date());
   const [statisticsData, setStatisticsData] = useState({});
   const [isLoading, setIsLoading] = useState(true);
@@ -218,7 +220,7 @@ const SalesComparisionScreen = (props) => {
   };
 
   return (
-    <View style={styles.pageContainer}>
+    <View style={[styles.pageContainer, { paddingTop: insets.top }]}>
       <View style={styles.headerContainer}>
         <DateHeader
           onlyCalendar={true}

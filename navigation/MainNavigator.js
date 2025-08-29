@@ -30,7 +30,7 @@ const TabNavigator = () => (
       tabBarInactiveTintColor: colors.lightPurple,
       tabBarStyle: {
         backgroundColor: "#fff",
-        height: normalizeSize(56),
+        height: normalizeSize(90),
         borderTopColor: colors.backgroundPurple,
         borderTopWidth: Platform.OS === "android" ? 0.5 : 1,
       },
@@ -43,7 +43,7 @@ const TabNavigator = () => (
       tabBarButton: (props) => (
         <TouchableOpacity
           {...props}
-          style={[props.style, { paddingHorizontal: 12, paddingVertical: 8 }]}
+          style={[props.style, { paddingHorizontal: 12, paddingVertical: 16 }]}
           activeOpacity={0.7}
         >
           {props.children}

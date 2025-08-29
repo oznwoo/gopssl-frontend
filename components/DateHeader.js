@@ -6,7 +6,7 @@ import colors from "../styles/color";
 import { formatKoreanDate } from "../utils/format";
 import { commonStyles } from "../styles/commonStyles";
 import { getDailySalesSummary } from "../actions/saleStatisticsActions";
-import { normalizeFont } from "../utils/responsive";
+import { normalizeFont, normalizeSize } from "../utils/responsive";
 
 const dayNames = ["일", "월", "화", "수", "목", "금", "토"];
 
@@ -250,10 +250,11 @@ const styles = StyleSheet.create({
   headerContainer: {
     alignItems: "center",
     justifyContent: "center",
-    paddingTop: 8,
+    paddingTop: 4,
     paddingBottom: 4,
     marginBottom: 28,
     width: "100%",
+    gap: 10,
   },
   horizontalHeader: {
     flexDirection: "row",
@@ -263,7 +264,7 @@ const styles = StyleSheet.create({
   horizontalLine: {
     width: "120%",
     position: "absolute",
-    top: 60,
+    top: normalizeSize(56),
     zIndex: 20,
     height: 2,
     backgroundColor: "#fff",

@@ -7,8 +7,10 @@ import colors from "../styles/color";
 import { useDispatch } from "react-redux";
 import { getSaleById } from "../actions/saleActions";
 import { normalizeFont } from "../utils/responsive";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const SaleScreen = ({ route }) => {
+  const insets = useSafeAreaInsets();
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const saleId = route.params?.itemId;
@@ -40,10 +42,10 @@ const SaleScreen = ({ route }) => {
   };
 
   return (
-    <View style={styles.pageContainer}>
+    <View style={[styles.pageContainer, { paddingTop: insets.top }]}>
       <FormHeader title={headerTitle} onGoBack={handleGoBack} />
 
-      <View style={styles.contentContainer}>
+      <View style={[styles.contentContainer, { paddingBottom: 20 }]}>
         {isLoading ? (
           <ActivityIndicator color={colors.purple} />
         ) : mode === "register" ? (
@@ -68,15 +70,17 @@ export default SaleScreen;
 const styles = StyleSheet.create({
   pageContainer: {
     flex: 1,
+    backgroundColor: colors.purple,
   },
   contentContainer: {
     flex: 1,
     width: "100%",
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "#fff",
   },
   emptyText: {
-    fontFamily: "gamtanDotumB",
+    fontFamily: "nanumSquareB",
     fontSize: normalizeFont(16),
     letterSpacing: -0.5,
     color: colors.lightPurple,

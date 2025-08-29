@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   detailContentText: {
-    fontFamily: "nanumSqaureR",
+    fontFamily: "nanumSquareR",
     fontSize: normalizeFont(10),
     color: "#000",
     lineHeight: 12,
