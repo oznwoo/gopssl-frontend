@@ -178,7 +178,7 @@ const DailySalesScreen = () => {
         ]}
       >
         <Text style={styles.totalText}>
-          총 매출:{" "}
+          합계:
           {salesData
             ? formatNumber(
                 salesData.reduce((acc, curr) => acc + curr.total_amount, 0)

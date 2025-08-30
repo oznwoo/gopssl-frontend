@@ -1,6 +1,12 @@
 import { useNavigation } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  Platform,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import FormHeader from "../components/FormHeader";
 import SaleForm from "../components/SaleForm";
 import colors from "../styles/color";
@@ -45,7 +51,14 @@ const SaleScreen = ({ route }) => {
     <View style={[styles.pageContainer, { paddingTop: insets.top }]}>
       <FormHeader title={headerTitle} onGoBack={handleGoBack} />
 
-      <View style={[styles.contentContainer, { paddingBottom: 20 }]}>
+      <View
+        style={[
+          styles.contentContainer,
+          Platform.OS === "android"
+            ? { paddingBottom: insets.bottom }
+            : { paddingBottom: 20 },
+        ]}
+      >
         {isLoading ? (
           <ActivityIndicator color={colors.purple} />
         ) : mode === "register" ? (

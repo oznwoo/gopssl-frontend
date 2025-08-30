@@ -5,6 +5,7 @@ import {
   View,
   ScrollView,
   Alert,
+  Platform,
 } from "react-native";
 import { Formik } from "formik";
 import { useDispatch, useSelector } from "react-redux";
@@ -16,8 +17,10 @@ import colors from "../styles/color";
 import { commonStyles } from "../styles/commonStyles";
 import { UserSchema } from "../schemas/UserSchema";
 import { registerUserInfo } from "../actions/userActions";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const UserForm = () => {
+  const insets = useSafeAreaInsets();
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const route = useRoute();
@@ -88,7 +91,14 @@ const UserForm = () => {
           }
         }, [selectedAddress]);
         return (
-          <View style={[styles.formContainer, { paddingBottom: 20 }]}>
+          <View
+            style={[
+              styles.formContainer,
+              Platform.OS === "android"
+                ? { paddingBottom: insets.bottom }
+                : { paddingBottom: 20 },
+            ]}
+          >
             <ScrollView contentContainerStyle={styles.inputContainer}>
               <BaseInput
                 id="name"
