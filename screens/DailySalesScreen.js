@@ -3,7 +3,6 @@ import {
   Text,
   StyleSheet,
   View,
-  ScrollView,
   ActivityIndicator,
   Platform,
   Animated,
@@ -28,8 +27,7 @@ const DailySalesScreen = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   // 👇 Animated 값
-  const scrollY = useRef(new Animated.Value(1)).current; // 1=보임, 0=숨김
-  const lastScrollY = useRef(0);
+  const scrollY = useRef(new Animated.Value(0)).current;
 
   const transitionCustomer = useCallback(
     (itemId = undefined) => {
@@ -73,27 +71,6 @@ const DailySalesScreen = () => {
     }, [fetchSalesData])
   );
 
-  // 👇 스크롤 방향 감지
-  const handleScroll = (event) => {
-    const currentY = event.nativeEvent.contentOffset.y;
-    if (currentY > lastScrollY.current + 5) {
-      // 위로 스크롤 → 타이틀 숨김
-      Animated.timing(titleAnim, {
-        toValue: 0,
-        duration: 200,
-        useNativeDriver: true,
-      }).start();
-    } else if (currentY < lastScrollY.current - 5) {
-      // 아래로 스크롤 → 타이틀 보이기
-      Animated.timing(titleAnim, {
-        toValue: 1,
-        duration: 200,
-        useNativeDriver: true,
-      }).start();
-    }
-    lastScrollY.current = currentY;
-  };
-
   return (
     <View style={[styles.pageContainer, { paddingTop: insets.top }]}>
       <DateHeader
@@ -110,15 +87,15 @@ const DailySalesScreen = () => {
               transform: [
                 {
                   translateY: scrollY.interpolate({
-                    inputRange: [0, 50], // 스크롤 0~50px 구간
-                    outputRange: [0, -30], // 위로 30px 밀림
+                    inputRange: [0, 50],
+                    outputRange: [0, -30],
                     extrapolate: "clamp",
                   }),
                 },
               ],
               opacity: scrollY.interpolate({
                 inputRange: [0, 50],
-                outputRange: [1, 0], // 서서히 사라짐
+                outputRange: [1, 0],
                 extrapolate: "clamp",
               }),
             },
@@ -128,52 +105,63 @@ const DailySalesScreen = () => {
         </Animated.Text>
 
         {isLoading ? (
-          <View
-            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-          >
+          <View style={styles.loaderContainer}>
             <ActivityIndicator color={colors.purple} />
           </View>
         ) : (
-          <View style={{ flex: 1 }}>
-            <Animated.ScrollView
-              style={{ flex: 1 }}
-              scrollEventThrottle={16}
-              onScroll={Animated.event(
-                [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-                { useNativeDriver: true }
-              )}
-              contentContainerStyle={[
-                styles.salesContainer,
-                { justifyContent: salesData ? "flex-start" : "center" },
-              ]}
-            >
-              {salesData ? (
-                salesData.map((item) => (
-                  <SaleItem
-                    key={item.id}
-                    saleData={item}
-                    transitionCustomer={transitionCustomer}
-                    transitionSale={transitionSale}
-                  />
-                ))
-              ) : (
-                <Text style={styles.emptyText}>
-                  매출이 등록되지 않았습니다.
-                </Text>
-              )}
-            </Animated.ScrollView>
-          </View>
+          <Animated.ScrollView
+            style={{ flex: 1 }}
+            scrollEventThrottle={16}
+            onScroll={Animated.event(
+              [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+              { useNativeDriver: true } // opacity / transform 만 애니메이션
+            )}
+            contentContainerStyle={[
+              styles.salesContainer,
+              { justifyContent: salesData ? "flex-start" : "center" },
+            ]}
+          >
+            {salesData ? (
+              salesData.map((item) => (
+                <SaleItem
+                  key={item.id}
+                  saleData={item}
+                  transitionCustomer={transitionCustomer}
+                  transitionSale={transitionSale}
+                />
+              ))
+            ) : (
+              <Text style={styles.emptyText}>매출이 등록되지 않았습니다.</Text>
+            )}
+          </Animated.ScrollView>
         )}
 
-        <FloatingExpandButton style={styles.plusButton} date={date} />
+        <FloatingExpandButton date={date} style={[styles.plusButton]} />
       </View>
 
+      {/* 👇 합계 영역 → 스크롤 따라 translateY & opacity */}
       <Animated.View
         style={[
           styles.totalContainer,
           Platform.OS === "android" && {
             borderColor: colors.backgroundPurple,
             borderWidth: 1,
+          },
+          {
+            transform: [
+              {
+                translateY: scrollY.interpolate({
+                  inputRange: [0, 50],
+                  outputRange: [0, 30],
+                  extrapolate: "clamp",
+                }),
+              },
+            ],
+            opacity: scrollY.interpolate({
+              inputRange: [0, 50],
+              outputRange: [1, 0],
+              extrapolate: "clamp",
+            }),
           },
         ]}
       >
@@ -217,7 +205,11 @@ const styles = StyleSheet.create({
     fontSize: normalizeFont(18),
     ...commonStyles.lightDropShadow,
   },
-
+  loaderContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   salesContainer: {
     flexGrow: 1,
     alignItems: "center",
@@ -234,10 +226,13 @@ const styles = StyleSheet.create({
   plusButton: {
     position: "absolute",
     right: 20,
-    bottom: 20,
+    bottom: 64,
     ...commonStyles.dropShadow,
   },
   totalContainer: {
+    position: "absolute",
+    bottom: 0,
+    width: "100%",
     paddingHorizontal: 24,
     paddingVertical: 16,
     backgroundColor: "#fff",

@@ -126,6 +126,8 @@ const FloatingExpandButton = (props) => {
 
 const styles = StyleSheet.create({
   buttonContainer: {
+    borderWidth: 1,
+    borderColor: colors.purple,
     backgroundColor: colors.purple,
     ...commonStyles.dropShadow,
   },
@@ -141,7 +143,7 @@ const styles = StyleSheet.create({
   registerText: {
     color: "#fff",
     fontSize: normalizeFont(16),
-    fontFamily: "gamtanDotumB",
+    fontFamily: "nanumSquareB",
     textAlign: "center",
   },
   separator: {

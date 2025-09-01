@@ -241,7 +241,7 @@ export default DateHeader;
 
 const styles = StyleSheet.create({
   wrapper: {
-    backgroundColor: "tranparent",
+    backgroundColor: "transparent",
     paddingHorizontal: 20,
     borderRadius: 12,
   },

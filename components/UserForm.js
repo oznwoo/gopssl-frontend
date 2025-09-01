@@ -195,7 +195,7 @@ const styles = StyleSheet.create({
   inputContainer: {
     width: "100%",
     gap: 16,
-    paddingHorizontal: 40,
+    paddingHorizontal: 20,
     paddingVertical: 24,
   },
   submitContainer: {

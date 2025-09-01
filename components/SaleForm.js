@@ -444,7 +444,7 @@ const styles = StyleSheet.create({
   inputContainer: {
     flex: 1,
     gap: 16,
-    paddingHorizontal: 40,
+    paddingHorizontal: 20,
     paddingVertical: 24,
   },
   bottomSpacing: {

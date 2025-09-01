@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import {
   ActivityIndicator,
+  Image,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -15,8 +16,9 @@ import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../actions/authActions";
 import { useNavigation } from "@react-navigation/native";
-import { normalizeFont, normalizeSize } from "../utils/responsive";
+import { normalizeFont } from "../utils/responsive";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import logoURL from "../assets/Gopssl.png";
 
 const SettingScreen = (props) => {
   const insets = useSafeAreaInsets();
@@ -45,17 +47,17 @@ const SettingScreen = (props) => {
   };
 
   return (
-    <View style={[styles.pageContainer, { paddingTop: insets.top }]}>
-      <View style={styles.headerContainer}>
+    <View style={styles.pageContainer}>
+      <View style={[styles.headerContainer, { paddingTop: insets.top + 12 }]}>
         <Text style={styles.headerTitle}>설정</Text>
         <View style={styles.horizontalLine}></View>
       </View>
 
       <View style={styles.contentContainer}>
         <View style={styles.logoContainer}>
-          <Text style={styles.logo}>Gopssl</Text>
+          <Image source={logoURL} style={styles.logo} />
           <Text style={styles.userName}>
-            <Text style={{ fontFamily: "gamtanDotumB" }}>{name}</Text> 원장님
+            <Text style={{ fontFamily: "nanumSquareEB" }}>{name}</Text> 원장님
           </Text>
         </View>
 
@@ -106,59 +108,67 @@ const styles = StyleSheet.create({
   pageContainer: {
     flex: 1,
     backgroundColor: "#fff",
-    gap: 0,
   },
   headerContainer: {
     alignItems: "center",
     justifyContent: "center",
 
-    paddingTop: 12,
-    padding: 24,
+    padding: 16,
+    borderBottomWidth: 2,
+    borderBottomColor: colors.purple,
+    backgroundColor: "#fff",
+    ...commonStyles.dropShadow,
   },
   headerTitle: {
     textAlign: "center",
     color: colors.purple,
-    fontFamily: "gamtanDotumB",
-    fontSize: normalizeFont(20),
-    letterSpacing: -0.5,
+    fontFamily: "nanumSquareB",
+    fontSize: normalizeFont(16),
+    letterSpacing: -1,
   },
-  horizontalLine: {
-    width: "120%",
-    zIndex: 20,
-    position: "absolute",
-    top: normalizeSize(56),
-    height: 2,
-    backgroundColor: "#fff",
-    ...commonStyles.dropShadow,
-  },
+
   contentContainer: {
     flex: 1,
+    justifyContent: "space-around",
     alignItems: "center",
-    gap: 180,
-    padding: 32,
+    gap: 120,
+    padding: 20,
   },
   logoContainer: {
-    justifyContent: "center",
+    flexDirection: "row",
+    justifyContent: "flex-start",
     alignItems: "center",
+    alignSelf: "flex-start",
     gap: 8,
-    marginTop: 12,
+    marginTop: 0,
+    padding: 12,
+
+    borderRadius: 12,
+    backgroundColor: "#fff",
+    ...commonStyles.dropShadow,
+    borderWidth: 1,
+    borderColor: colors.backgroundPurple,
+    width: "100%",
   },
   logo: {
-    width: "100%",
-    fontFamily: "logo",
-    fontSize: normalizeFont(80),
-    color: colors.purple,
-    height: normalizeFont(140),
-    textAlign: "center",
+    width: 64,
+    height: 64,
+    resizeMode: "contain",
+    backgroundColor: colors.backgroundPurple,
+    padding: 12,
+    borderRadius: 60,
+    borderWidth: 1,
+    borderColor: colors.purple,
   },
   userName: {
-    fontFamily: "gamtanDotumR",
-    fontSize: normalizeFont(24),
+    fontFamily: "nanumSquareR",
+    fontSize: normalizeFont(20),
     letterSpacing: -0.5,
     lineHeight: 32,
     color: colors.purple,
   },
   settingContainer: {
+    justifyContent: "space-between",
     width: "100%",
     gap: 24,
   },
@@ -166,7 +176,10 @@ const styles = StyleSheet.create({
     width: "100%",
     backgroundColor: "#fff",
 
+    borderWidth: 1,
+    borderColor: colors.backgroundPurple,
     flexDirection: "row",
+    paddingVertical: 16,
     padding: 20,
     borderRadius: 12,
     gap: 16,
