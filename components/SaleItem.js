@@ -54,7 +54,14 @@ const SaleItem = ({ saleData, transitionSale, transitionCustomer }) => {
   });
 
   return (
-    <View style={[styles.itemContainer, { backgroundColor: cardBgColor }]}>
+    <View
+      style={[
+        styles.itemContainer,
+        {
+          backgroundColor: cardBgColor,
+        },
+      ]}
+    >
       <View style={styles.contentContainer}>
         <View style={styles.customerInfoContainer}>
           <TouchableOpacity

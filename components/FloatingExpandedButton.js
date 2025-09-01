@@ -85,6 +85,7 @@ const FloatingExpandButton = (props) => {
             height,
             borderRadius,
           },
+          { transform: props.transform },
         ]}
       >
         {expanded ? (

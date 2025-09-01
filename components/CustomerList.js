@@ -110,14 +110,14 @@ const CustomerList = ({
               style={styles.customerItem}
               onPress={() => onItemPress(item.id)}
             >
-              <View>
-                <Text style={styles.customerName}>
-                  {highlightMatchedText(`${item.name} 고객님`, searchText)}
+              <View style={styles.customerNameContainer}>
+                <Text
+                  style={[styles.customerName, { fontFamily: "nanumSquareR" }]}
+                >
+                  {highlightMatchedText(`${item.name}`, searchText)}
                 </Text>
                 <Text style={styles.numOfVisits}>
-                  {item.num_of_visits
-                    ? `${item.num_of_visits}회 방문`
-                    : "미방문"}
+                  {item.num_of_visits ? `${item.num_of_visits}` : "0"}
                 </Text>
               </View>
               <View style={styles.infoBox}>
@@ -153,29 +153,16 @@ const CustomerList = ({
           onToggle={() => toggleSection(title)}
         />
       )}
-      renderItem={({ item, index, section }) => (
+      renderItem={({ item }) => (
         <TouchableOpacity
-          style={[
-            styles.customerItem,
-            { backgroundColor: colors.backgroundPurple },
-            index === 0 && {
-              borderTopLeftRadius: 8,
-              borderTopRightRadius: 8,
-            },
-            index === section.data.length - 1 && {
-              borderBottomLeftRadius: 8,
-              borderBottomRightRadius: 8,
-            },
-          ]}
+          style={[styles.customerItem, { backgroundColor: "#fff" }]}
           onPress={() => onItemPress(item.id)}
         >
-          <View>
-            <Text style={styles.customerName}>
-              <Text style={{ fontFamily: "gamtanDotumB" }}>{item.name}</Text>
-              {" 고객님"}
-            </Text>
+          <View style={styles.customerNameContainer}>
+            <Text style={styles.customerName}>{item.name}</Text>
+
             <Text style={styles.numOfVisits}>
-              {item.num_of_visits ? `${item.num_of_visits}회 방문` : "미방문"}
+              {item.num_of_visits ? `${item.num_of_visits}` : "0"}
             </Text>
           </View>
           <View style={styles.infoBox}>
@@ -212,21 +199,31 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 8,
   },
+  customerNameContainer: {
+    flexDirection: "row",
+    gap: 3,
+  },
   customerName: {
     color: colors.purple,
-    fontFamily: "gamtanDotumR",
+    fontFamily: "nanumSquareB",
     fontSize: normalizeFont(16),
-    letterSpacing: -0.5,
+    letterSpacing: -1,
     marginBottom: 2,
   },
   numOfVisits: {
-    color: colors.purple,
-    fontFamily: "nanumSquareR",
-    fontSize: normalizeFont(8),
+    color: "#fff",
+    fontFamily: "nanumSquareB",
+    fontSize: normalizeFont(10),
     letterSpacing: -0.5,
+    alignSelf: "flex-end",
+    backgroundColor: colors.opacityPurple,
+    borderRadius: 4,
+    paddingHorizontal: 4,
+    paddingVertical: 2,
+    textAlign: "center",
   },
   emptyText: {
-    fontFamily: "gamtanDotumB",
+    fontFamily: "nanumSquareB",
     fontSize: normalizeFont(16),
     letterSpacing: -0.5,
     color: colors.lightPurple,
@@ -241,7 +238,7 @@ const styles = StyleSheet.create({
   },
   divideLine: {
     height: 1,
-    backgroundColor: colors.purple,
+    backgroundColor: colors.backgroundPurple,
     marginHorizontal: 16,
   },
 });

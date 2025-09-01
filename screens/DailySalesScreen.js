@@ -114,7 +114,7 @@ const DailySalesScreen = () => {
             scrollEventThrottle={16}
             onScroll={Animated.event(
               [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-              { useNativeDriver: true } // opacity / transform 만 애니메이션
+              { useNativeDriver: false } // opacity / transform 만 애니메이션
             )}
             contentContainerStyle={[
               styles.salesContainer,
@@ -136,7 +136,19 @@ const DailySalesScreen = () => {
           </Animated.ScrollView>
         )}
 
-        <FloatingExpandButton date={date} style={[styles.plusButton]} />
+        <FloatingExpandButton
+          date={date}
+          style={[styles.plusButton]}
+          transform={[
+            {
+              translateY: scrollY.interpolate({
+                inputRange: [0, 50],
+                outputRange: [0, 30],
+                extrapolate: "clamp",
+              }),
+            },
+          ]}
+        />
       </View>
 
       {/* 👇 합계 영역 → 스크롤 따라 translateY & opacity */}

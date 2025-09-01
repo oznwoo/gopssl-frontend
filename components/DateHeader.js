@@ -1,11 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  Platform,
-} from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { Calendar } from "react-native-calendars";
 import colors from "../styles/color";
@@ -22,7 +16,7 @@ const DateHeader = ({ currentDate, onChangeDate, onlyCalendar }) => {
     currentDate ? new Date(currentDate) : new Date()
   );
   const [salesByDate, setSalesByDate] = useState({});
-  const DayComponent = onlyCalendar ? View : TouchableOpacity;
+  const OnlyCalendarComponent = onlyCalendar ? View : TouchableOpacity;
 
   const formatDate = (date) => date.toISOString().split("T")[0];
   const parsedDate = new Date(currentDate);
@@ -106,12 +100,12 @@ const DateHeader = ({ currentDate, onChangeDate, onlyCalendar }) => {
             <FontAwesome5 name="chevron-left" size={16} color={colors.purple} />
           </TouchableOpacity>
 
-          <TouchableOpacity
+          <OnlyCalendarComponent
             onPress={() => setIsExpanded(!isExpanded)}
             style={styles.dateContainer}
           >
             <Text style={styles.dateText}>{formattedDate}</Text>
-          </TouchableOpacity>
+          </OnlyCalendarComponent>
 
           <TouchableOpacity
             onPress={() => handleArrowPress(1)}
@@ -161,7 +155,7 @@ const DateHeader = ({ currentDate, onChangeDate, onlyCalendar }) => {
               onChangeDate(formatDate(newMonthDate)); // 필요하면 상위로 전달
             }}
             theme={{
-              calendarBackground: colors.backgroundPurple,
+              calendarBackground: "trasparent",
               textDayFontSize: normalizeFont(12),
               textDayFontFamily: "nanumSquareB",
               dayTextColor: colors.purple,
@@ -183,7 +177,7 @@ const DateHeader = ({ currentDate, onChangeDate, onlyCalendar }) => {
               }
 
               return (
-                <DayComponent
+                <OnlyCalendarComponent
                   style={[
                     styles.dayContainer,
                     {
@@ -227,7 +221,7 @@ const DateHeader = ({ currentDate, onChangeDate, onlyCalendar }) => {
                   >
                     {displayText}
                   </Text>
-                </DayComponent>
+                </OnlyCalendarComponent>
               );
             }}
           />
