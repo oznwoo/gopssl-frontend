@@ -50,11 +50,11 @@ const SearchScreen = ({ navigation }) => {
             Platform.OS === "android" && { marginTop: 8 },
           ]}
         >
-          <Feather name="search" size={20} color={colors.opacityPurple} />
+          <Feather name="search" size={20} color={colors.purple} />
           <TextInput
             ref={inputRef}
             placeholder="검색어를 입력해주세요"
-            placeholderTextColor={colors.opacityPurple}
+            placeholderTextColor={`${colors.purple}99`}
             style={styles.searchInput}
             value={searchText}
             onChangeText={setSearchText}

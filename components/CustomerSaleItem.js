@@ -1,108 +1,123 @@
-import { FontAwesome5 } from "@expo/vector-icons";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { normalizeFont } from "../utils/responsive";
+import { formatNumber } from "../utils/format";
 import colors from "../styles/color";
-import { formatKoreanDate, formatNumber } from "../utils/format";
 
 const CustomerSaleItem = ({ item, transitionSale }) => {
-  const treatmentText = item.treatments
-    .map((item) => `${item.treatment_name}: ${formatNumber(item.price)}원`)
-    .join(", ");
-
-  const extraPriceText =
-    Object.keys(item.extra_prices).length !== 0
-      ? Object.keys(item.extra_prices)
-          .map((key) => {
-            return key === "제품"
-              ? `${key}: ${formatNumber(item.extra_prices[key])}원`
-              : `기장추가(${key}): ${formatNumber(item.extra_prices[key])}원`;
-          })
-          .join(", ")
-      : "기장추가: 없음";
-
   return (
-    <View key={item.id} style={styles.saleItemContainer}>
-      <View style={styles.saleContentContainer}>
-        <Text style={styles.dateText}>{formatKoreanDate(item.created_at)}</Text>
-        <View style={{ gap: 4 }}>
-          <Text style={styles.detailText}>{treatmentText}</Text>
-          <Text style={styles.detailText}>{extraPriceText}</Text>
-          <Text style={styles.detailText}>결재 방식: {item.payment_type}</Text>
+    <TouchableOpacity
+      key={item.id}
+      style={styles.saleItemContainer}
+      onPress={() => {
+        transitionSale(item.id, item.created_at);
+      }}
+    >
+      <View style={styles.tableRow}>
+        {/* 방문일 컬럼 - 헤더와 동일한 flex: 1 */}
+        <View
+          style={[
+            styles.tableColumn,
+            { minHeight: 20, justifyContent: "center" },
+          ]}
+        >
+          <Text style={styles.dateText}>{item.sale_date}</Text>
         </View>
 
-        <Text style={[styles.detailText, { fontSize: normalizeFont(16) }]}>
-          매출: {formatNumber(item.total_amount)}원
-        </Text>
-      </View>
-      {item.detail && (
-        <View style={styles.detailContainer}>
-          <Text style={styles.detailText}>시술 내용</Text>
-          <Text style={styles.detailContentText}>{item.detail}</Text>
+        {/* 시술 목록 컬럼 - 헤더와 동일한 flex: 1 */}
+        <View style={[styles.tableColumn, { gap: 2 }]}>
+          {item.treatments.map((treatment, index) => (
+            <Text key={index} style={styles.treatmentText}>
+              {treatment.treatment_name}
+            </Text>
+          ))}
+          {Object.keys(item.extra_prices).length !== 0 &&
+            Object.keys(item.extra_prices).map((key) => {
+              return (
+                <Text key={key} style={styles.treatmentText}>
+                  {key === "제품" ? key : `기장추가(${key})`}
+                </Text>
+              );
+            })}
         </View>
-      )}
-      <TouchableOpacity
-        style={styles.saleInfoButton}
-        onPress={() => {
-          transitionSale(item.id, item.created_at);
-        }}
-      >
-        <FontAwesome5 name="chevron-right" size={24} color={colors.purple} />
-      </TouchableOpacity>
-    </View>
+
+        {/* 시술 내용 컬럼 - 헤더와 동일한 flex: 1 */}
+        <View style={[styles.tableColumn, { maxWidth: "25%" }]}>
+          <Text style={styles.memoText} numberOfLines={4}>
+            {item.detail}
+          </Text>
+        </View>
+
+        {/* 합계 컬럼 - 헤더와 동일한 flex: 1 */}
+        <View
+          style={[
+            styles.tableColumn,
+            { minHeight: 20, justifyContent: "center", borderRightWidth: 0 },
+          ]}
+        >
+          <Text style={styles.totalText}>
+            {formatNumber(item.total_amount)}원
+          </Text>
+        </View>
+      </View>
+    </TouchableOpacity>
   );
 };
 
 export default CustomerSaleItem;
 
 const styles = StyleSheet.create({
-  saleItemContainer: {
-    paddingVertical: 16,
-    paddingHorizontal: 20,
-
-    borderWidth: 1,
-    borderColor: "#EDECF4",
-    borderRadius: 8,
-
-    backgroundColor: "#fff",
+  saleItemContainer: { paddingVertical: 2, width: "110%", alignSelf: "center" },
+  tableRow: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    gap: 12,
+    backgroundColor: "#00000008",
+    borderRadius: 8,
+    paddingVertical: 4,
   },
-  saleContentContainer: {
-    flex: 1,
-    gap: 8,
-    flexShrink: 0,
+  tableColumn: {
+    flex: 1, // 헤더와 동일한 flex: 1
+    paddingHorizontal: 4,
+    borderRightWidth: 1,
+    borderColor: "#00000055",
+    height: "100%",
   },
   dateText: {
+    width: "100%",
     fontFamily: "nanumSquareB",
-    fontSize: normalizeFont(20),
-    color: colors.purple,
-    letterSpacing: -0.5,
-  },
-  detailText: {
-    fontFamily: "nanumSquareB",
-    fontSize: normalizeFont(12),
-    color: colors.purple,
-    letterSpacing: -0.5,
-  },
-  detailContainer: {
-    maxWidth: "30%",
-    height: "100%",
-    borderTopWidth: 1,
-    borderTopColor: colors.purple,
-    borderRadius: 8,
-    padding: 8,
-    gap: 12,
-  },
-  detailContentText: {
-    fontFamily: "nanumSquareR",
-    fontSize: normalizeFont(10),
+    fontSize: normalizeFont(11),
     color: "#000",
-    lineHeight: 12,
+    letterSpacing: -0.5,
+    textAlign: "center",
   },
-  saleInfoButton: {
-    paddingLeft: 8,
+  treatmentText: {
+    fontFamily: "nanumSquareB",
+    fontSize: normalizeFont(9),
+    color: "#000",
+    letterSpacing: -0.5,
+    lineHeight: 12,
+    textAlign: "center",
+  },
+  priceText: {
+    fontFamily: "nanumSquareB",
+    fontSize: normalizeFont(9),
+    color: "#000",
+    letterSpacing: -0.5,
+    lineHeight: 12,
+    textAlign: "center",
+  },
+  memoText: {
+    fontFamily: "nanumSquareB",
+    fontSize: normalizeFont(8),
+    color: "#333",
+    lineHeight: 10,
+    textAlign: "center",
+    marginTop: 2,
+  },
+  totalText: {
+    fontFamily: "nanumSquareB",
+    fontSize: normalizeFont(11),
+    color: "#000",
+    letterSpacing: -0.5,
+    textAlign: "center",
   },
 });
