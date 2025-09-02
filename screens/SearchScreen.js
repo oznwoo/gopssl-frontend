@@ -68,24 +68,30 @@ const SearchScreen = ({ navigation }) => {
         <View style={styles.horizontalLine}></View>
       </View>
 
-      {/* 📋 고객 리스트 */}
-      <CustomerList
-        customers={customers}
-        searchText={searchText}
-        onItemPress={(id) =>
-          navigation.navigate("Customer", { mode: "view", itemId: id })
-        }
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            tintColor={colors.purple} // iOS 인디케이터 색상
-            colors={[colors.purple, "blue"]} // Android 인디케이터 색상
-            progressBackgroundColor="#fff" // Android 배경색
-          />
-        }
-      />
-
+      <View style={styles.contentContainer}>
+        <View style={styles.numOfCustomers}>
+          <Text style={styles.numOfCustomersText}>
+            고객 {customers && `(${customers.length})`}
+          </Text>
+        </View>
+        {/* 📋 고객 리스트 */}
+        <CustomerList
+          customers={customers}
+          searchText={searchText}
+          onItemPress={(id) =>
+            navigation.navigate("Customer", { mode: "view", itemId: id })
+          }
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              tintColor={colors.purple} // iOS 인디케이터 색상
+              colors={[colors.purple, colors.green]} // Android 인디케이터 색상
+              progressBackgroundColor="#fff" // Android 배경색
+            />
+          }
+        />
+      </View>
       {/* ➕ 플로팅 버튼 */}
       <FloatingExpandedButton style={styles.plusButton} />
     </Pressable>
@@ -126,6 +132,20 @@ const styles = StyleSheet.create({
     fontSize: normalizeFont(16),
     letterSpacing: -1,
     paddingVertical: 4,
+  },
+  contentContainer: { flex: 1, justifyContent: "center" },
+  numOfCustomers: {
+    width: "100%",
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    backgroundColor: `${colors.purple}12`,
+  },
+
+  numOfCustomersText: {
+    fontFamily: "nanumSquareB",
+    fontSize: normalizeFont(16),
+    color: colors.purple,
+    letterSpacing: -1,
   },
 
   plusButton: {

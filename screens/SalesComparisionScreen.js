@@ -264,7 +264,7 @@ const styles = StyleSheet.create({
   },
   boxContent: { flex: 1, gap: 4, justifyContent: "center" },
   typeText: {
-    fontFamily: "gamtanDotumR",
+    fontFamily: "nanumSquareR",
     fontSize: normalizeFont(12),
     letterSpacing: 1,
     color: colors.purple,
@@ -289,9 +289,9 @@ const styles = StyleSheet.create({
     letterSpacing: -0.5,
   },
   boxTitle: {
-    fontFamily: "gamtanDotumB",
+    fontFamily: "nanumSquareB",
     fontSize: normalizeFont(16),
-    letterSpacing: -0.5,
+    letterSpacing: -1,
     color: colors.purple,
   },
   boxDetail: {

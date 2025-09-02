@@ -173,7 +173,7 @@ const DateHeader = ({ currentDate, onChangeDate, onlyCalendar }) => {
               if (salesAmount !== undefined) {
                 displayText = `${salesAmount.toLocaleString()}원`;
               } else {
-                displayText = isFuture ? "미등록" : "0원";
+                displayText = !isFuture && "0원";
               }
 
               return (
