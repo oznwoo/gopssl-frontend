@@ -39,7 +39,7 @@ const CustomerForm = ({ data, mode }) => {
       : { name: "", phoneNumber: "", detail: "" };
 
   // 등록 핸들러
-  const handleRegister = (values, { setSubmitting, setErrors }) => {
+  const handleRegister = (values, { setSubmitting, setErrors, resetForm }) => {
     Alert.alert(
       "등록 확인",
       "고객을 등록하시겠습니까?",
@@ -60,7 +60,7 @@ const CustomerForm = ({ data, mode }) => {
               );
               Alert.alert("알림", "고객 등록이 완료되었습니다.");
               dispatch(getAllCustomer());
-              navigation.navigate("Home");
+              resetForm();
             } catch (error) {
               console.log(
                 "에러 상태코드:",
@@ -100,7 +100,6 @@ const CustomerForm = ({ data, mode }) => {
               );
               Alert.alert("알림", "고객 정보 수정이 완료되었습니다.");
               dispatch(getAllCustomer());
-              navigation.navigate("Home");
             } catch (error) {
               console.log(
                 "에러 상태코드:",
