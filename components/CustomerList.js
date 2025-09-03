@@ -20,7 +20,7 @@ const CustomerList = ({
   onItemPress,
   refreshControl,
 }) => {
-  const [collapsedSections, setCollapsedSections] = useState({}); // { 'ㄱ': true, 'ㄴ': false ... }
+  const [collapsedSections, setCollapsedSections] = useState({});
 
   const getInitial = (name) => {
     if (!name || name === "신규") return "#";
@@ -103,7 +103,7 @@ const CustomerList = ({
   if (searchText.trim()) {
     // (검색 결과는 기존과 동일)
     return (
-      <View style={styles.contentContainer}>
+      <View style={[styles.contentContainer, { paddingVertical: 4 }]}>
         {filteredCustomers.map((item, index) => (
           <View key={item.id}>
             <TouchableOpacity
@@ -142,42 +142,49 @@ const CustomerList = ({
   }
 
   return (
-    <SectionList
-      sections={sections}
-      keyExtractor={(item) => item.id.toString()}
-      stickySectionHeadersEnabled={true}
-      renderSectionHeader={({ section: { title } }) => (
-        <SectionHeader
-          title={title}
-          collapsed={!!collapsedSections[title]}
-          onToggle={() => toggleSection(title)}
-        />
-      )}
-      renderItem={({ item }) => (
-        <TouchableOpacity
-          style={[styles.customerItem, { backgroundColor: "#fff" }]}
-          onPress={() => onItemPress(item.id)}
-        >
-          <View style={styles.customerNameContainer}>
-            <Text style={styles.customerName}>{item.name}</Text>
+    <View style={styles.contentContainer}>
+      <View style={styles.numOfCustomers}>
+        <Text style={styles.numOfCustomersText}>
+          고객 {customers && `(${customers.length})`}
+        </Text>
+      </View>
+      <SectionList
+        sections={sections}
+        keyExtractor={(item) => item.id.toString()}
+        stickySectionHeadersEnabled={true}
+        renderSectionHeader={({ section: { title } }) => (
+          <SectionHeader
+            title={title}
+            collapsed={!!collapsedSections[title]}
+            onToggle={() => toggleSection(title)}
+          />
+        )}
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            style={[styles.customerItem, { backgroundColor: "#fff" }]}
+            onPress={() => onItemPress(item.id)}
+          >
+            <View style={styles.customerNameContainer}>
+              <Text style={styles.customerName}>{item.name}</Text>
 
-            <Text style={styles.numOfVisits}>
-              {item.num_of_visits ? `${item.num_of_visits}` : "0"}
-            </Text>
-          </View>
-          <View style={styles.infoBox}>
-            <Text style={styles.detail} numberOfLines={1}>
-              {item.detail}
-            </Text>
-            <Text style={styles.detail}>{item.phone_number}</Text>
-          </View>
-        </TouchableOpacity>
-      )}
-      contentContainerStyle={{ paddingVertical: 4 }}
-      ItemSeparatorComponent={() => <View style={styles.divideLine} />}
-      keyboardShouldPersistTaps="handled"
-      refreshControl={refreshControl}
-    />
+              <Text style={styles.numOfVisits}>
+                {item.num_of_visits ? `${item.num_of_visits}` : "0"}
+              </Text>
+            </View>
+            <View style={styles.infoBox}>
+              <Text style={styles.detail} numberOfLines={1}>
+                {item.detail}
+              </Text>
+              <Text style={styles.detail}>{item.phone_number}</Text>
+            </View>
+          </TouchableOpacity>
+        )}
+        contentContainerStyle={{ paddingVertical: 4 }}
+        ItemSeparatorComponent={() => <View style={styles.divideLine} />}
+        keyboardShouldPersistTaps="handled"
+        refreshControl={refreshControl}
+      />
+    </View>
   );
 };
 
@@ -187,7 +194,6 @@ const styles = StyleSheet.create({
   pageContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
   contentContainer: {
     flex: 1,
-    paddingVertical: 4,
     justifyContent: "flex-start",
   },
 
@@ -240,5 +246,18 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: colors.backgroundPurple,
     marginHorizontal: 16,
+  },
+  numOfCustomers: {
+    width: "100%",
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    backgroundColor: `${colors.purple}12`,
+  },
+
+  numOfCustomersText: {
+    fontFamily: "nanumSquareB",
+    fontSize: normalizeFont(16),
+    color: colors.purple,
+    letterSpacing: -1,
   },
 });

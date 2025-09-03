@@ -72,11 +72,13 @@ const DailySalesScreen = () => {
   );
 
   return (
-    <View style={[styles.pageContainer, { paddingTop: insets.top }]}>
-      <DateHeader
-        currentDate={date}
-        onChangeDate={(newDateStr) => setDate(new Date(newDateStr))}
-      />
+    <View style={styles.pageContainer}>
+      <View style={{ paddingTop: insets.top }}>
+        <DateHeader
+          currentDate={date}
+          onChangeDate={(newDateStr) => setDate(new Date(newDateStr))}
+        />
+      </View>
 
       <View style={styles.contentContainer}>
         {/* 👇 스크롤에 따라 서서히 사라지는 타이틀 */}

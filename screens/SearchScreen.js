@@ -69,11 +69,6 @@ const SearchScreen = ({ navigation }) => {
       </View>
 
       <View style={styles.contentContainer}>
-        <View style={styles.numOfCustomers}>
-          <Text style={styles.numOfCustomersText}>
-            고객 {customers && `(${customers.length})`}
-          </Text>
-        </View>
         {/* 📋 고객 리스트 */}
         <CustomerList
           customers={customers}
@@ -134,20 +129,6 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
   },
   contentContainer: { flex: 1, justifyContent: "center" },
-  numOfCustomers: {
-    width: "100%",
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    backgroundColor: `${colors.purple}12`,
-  },
-
-  numOfCustomersText: {
-    fontFamily: "nanumSquareB",
-    fontSize: normalizeFont(16),
-    color: colors.purple,
-    letterSpacing: -1,
-  },
-
   plusButton: {
     position: "absolute",
     right: 20,
