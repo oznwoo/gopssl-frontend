@@ -15,7 +15,6 @@ import { getMonthlySalesSummary } from "../actions/saleStatisticsActions";
 import { normalizeFont, normalizeSize } from "../utils/responsive";
 import { formatNumber } from "../utils/format";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import AnimatedText from "../components/AnimatedText";
 
 const SalesComparisionScreen = (props) => {
@@ -58,11 +57,16 @@ const SalesComparisionScreen = (props) => {
       statisticsData?.monthly_comparison?.[
         statisticsData.monthly_comparison.length - 1
       ];
-    const lastMonthData =
-      statisticsData?.monthly_comparison?.[
-        statisticsData.monthly_comparison.length - 2
-      ];
-    const difference = thisMonthData.total - lastMonthData.total;
+    const difference =
+      thisMonthData.total - statisticsData?.last_month_until_today_total;
+    const percentage =
+      statisticsData?.last_month_until_today_total &&
+      (
+        (Math.abs(difference) / statisticsData?.last_month_until_today_total) *
+        100
+      ).toFixed(2);
+    console.log(percentage);
+
     const comparisionTextColor = difference > 0 ? colors.green : "#FF5151";
 
     const cashCount = statisticsData?.payment_type_count?.["현금"] ?? 0;
@@ -97,18 +101,18 @@ const SalesComparisionScreen = (props) => {
               </Text>
               {difference !== 0 && (
                 <View style={[styles.comparisonContainer]}>
-                  <Text
+                  <AnimatedText
+                    texts={[
+                      `${formatNumber(difference)}원 ${
+                        difference > 0 ? "↑" : "↓"
+                      }`,
+                      `${percentage}% ${difference > 0 ? "↑" : "↓"}`,
+                    ]}
                     style={[
                       styles.comparisionText,
                       { color: comparisionTextColor },
                     ]}
-                  >
-                    {`${formatNumber(difference)}원`}
-                  </Text>
-                  <FontAwesome5
-                    name={`long-arrow-alt-${difference > 0 ? "up" : "down"}`}
-                    size={10}
-                    color={comparisionTextColor}
+                    textHeight={normalizeFont(10)}
                   />
                 </View>
               )}
@@ -371,6 +375,7 @@ const styles = StyleSheet.create({
     letterSpacing: -0.5,
   },
   comparisonContainer: {
+    paddingHorizontal: 4,
     flexDirection: "row",
     borderRadius: 8,
     gap: 4,
