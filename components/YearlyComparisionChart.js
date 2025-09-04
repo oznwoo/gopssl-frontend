@@ -113,7 +113,15 @@ const YearlyComparisonChart = ({ data }) => {
       {renderCustomTooltip()}
 
       {/* 범례 */}
-      <View style={{ flexDirection: "row", justifyContent: "center" }}>
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "center",
+          position: "absolute",
+          top: -56,
+          right: 24,
+        }}
+      >
         <View
           style={{
             flexDirection: "row",
@@ -220,14 +228,14 @@ const styles = StyleSheet.create({
     color: "#000",
   },
   legendCircle: {
-    width: normalizeSize(12),
-    height: normalizeSize(12),
+    width: normalizeSize(10),
+    height: normalizeSize(10),
     marginRight: 4,
     borderRadius: 12,
   },
   legendText: {
     fontFamily: "nanumSquareB",
-    fontSize: normalizeFont(12),
+    fontSize: normalizeFont(10),
   },
 });
 

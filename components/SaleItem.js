@@ -33,8 +33,10 @@ const SaleItem = ({ saleData, transitionSale, transitionCustomer }) => {
       ? Object.keys(saleData.extra_prices)
           .map((key) => {
             return key === "제품"
-              ? `${key}: ${saleData.extra_prices[key]}원`
-              : `기장추가(${key}): ${saleData.extra_prices[key]}원`;
+              ? `${key}: ${formatNumber(saleData.extra_prices[key])}원`
+              : `기장추가(${key}): ${formatNumber(
+                  saleData.extra_prices[key]
+                )}원`;
           })
           .join(", ")
       : "기장추가: 없음";
@@ -68,7 +70,7 @@ const SaleItem = ({ saleData, transitionSale, transitionCustomer }) => {
             onPress={() => transitionCustomer(saleData.customer_id)}
           >
             <Text style={[styles.customerName, { color: textColor }]}>
-              <Text style={{ fontFamily: "gamtanDotumB" }}>
+              <Text style={{ fontFamily: "nanumSquareEB" }}>
                 {saleData.customer_name}
               </Text>
               {` 고객님`}
@@ -143,9 +145,9 @@ const styles = StyleSheet.create({
   },
   customerInfoContainer: {},
   customerName: {
-    fontFamily: "gamtanDotumR",
+    fontFamily: "nanumSquareR",
     fontSize: normalizeFont(18),
-    letterSpacing: -0.5,
+    letterSpacing: -1,
     lineHeight: 26,
   },
   numOfVisit: {

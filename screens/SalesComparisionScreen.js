@@ -16,6 +16,7 @@ import { normalizeFont, normalizeSize } from "../utils/responsive";
 import { formatNumber } from "../utils/format";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+import AnimatedText from "../components/AnimatedText";
 
 const SalesComparisionScreen = (props) => {
   const insets = useSafeAreaInsets();
@@ -64,8 +65,12 @@ const SalesComparisionScreen = (props) => {
     const difference = thisMonthData.total - lastMonthData.total;
     const comparisionTextColor = difference > 0 ? colors.green : "#FF5151";
 
-    const cashRatio = statisticsData?.payment_type_ratio?.["현금"] ?? 0;
-    const cardRatio = statisticsData?.payment_type_ratio?.["카드"] ?? 0;
+    const cashCount = statisticsData?.payment_type_count?.["현금"] ?? 0;
+    const cardCount = statisticsData?.payment_type_count?.["카드"] ?? 0;
+    const totalCount = cashCount + cardCount;
+
+    const cashRatio = cashCount / totalCount;
+    const cardRatio = cardCount / totalCount;
 
     return (
       <ScrollView
@@ -154,15 +159,18 @@ const SalesComparisionScreen = (props) => {
                       },
                     ]}
                   >
-                    <Text
+                    <AnimatedText
+                      texts={[
+                        `${(cashRatio * 100).toFixed(0)}%`,
+                        `${cashCount}명`,
+                      ]}
                       style={[
                         styles.typeRatioText,
                         { color: "#fff", position: "absolute", left: 8 },
                       ]}
+                      textHeight={12}
                       numberOfLines={1}
-                    >
-                      {(cashRatio * 100).toFixed(0)}%
-                    </Text>
+                    />
                   </View>
                   <View
                     style={[
@@ -175,7 +183,11 @@ const SalesComparisionScreen = (props) => {
                       },
                     ]}
                   >
-                    <Text
+                    <AnimatedText
+                      texts={[
+                        `${(cardRatio * 100).toFixed(0)}%`,
+                        `${cardCount}명`,
+                      ]}
                       style={[
                         styles.typeRatioText,
                         {
@@ -184,9 +196,9 @@ const SalesComparisionScreen = (props) => {
                           right: 8,
                         },
                       ]}
-                    >
-                      {(cardRatio * 100).toFixed(0)}%
-                    </Text>
+                      textHeight={12}
+                      numberOfLines={1}
+                    />
                   </View>
                 </View>
               ) : (
