@@ -57,17 +57,13 @@ const SalesComparisionScreen = (props) => {
       statisticsData?.monthly_comparison?.[
         statisticsData.monthly_comparison.length - 1
       ];
-    const difference =
-      thisMonthData.total - statisticsData?.last_month_until_today_total;
+    const lastMonthSale = statisticsData?.last_month_until_today_total;
+    const difference = thisMonthData.total - lastMonthSale;
     const percentage =
-      statisticsData?.last_month_until_today_total &&
-      (
-        (Math.abs(difference) / statisticsData?.last_month_until_today_total) *
-        100
-      ).toFixed(2);
-    console.log(percentage);
+      lastMonthSale &&
+      ((Math.abs(difference) / lastMonthSale) * 100).toFixed(2);
 
-    const comparisionTextColor = difference > 0 ? colors.green : "#FF5151";
+    const comparisionTextColor = difference > 0 ? colors.green : "#FF6B57";
 
     const cashCount = statisticsData?.payment_type_count?.["현금"] ?? 0;
     const cardCount = statisticsData?.payment_type_count?.["카드"] ?? 0;
@@ -99,20 +95,20 @@ const SalesComparisionScreen = (props) => {
               <Text style={styles.monthTotal}>
                 {thisMonthData ? formatNumber(thisMonthData.total) : 0}원
               </Text>
-              {difference !== 0 && (
+              {lastMonthSale !== 0 && (
                 <View style={[styles.comparisonContainer]}>
                   <AnimatedText
                     texts={[
+                      `${percentage}% ${difference > 0 ? "↑" : "↓"}`,
                       `${formatNumber(difference)}원 ${
                         difference > 0 ? "↑" : "↓"
                       }`,
-                      `${percentage}% ${difference > 0 ? "↑" : "↓"}`,
                     ]}
                     style={[
                       styles.comparisionText,
                       { color: comparisionTextColor },
                     ]}
-                    textHeight={normalizeFont(10)}
+                    textHeight={12}
                   />
                 </View>
               )}
@@ -371,8 +367,8 @@ const styles = StyleSheet.create({
   },
   comparisionText: {
     fontFamily: "nanumSquareEB",
-    fontSize: normalizeFont(10),
-    letterSpacing: -0.5,
+    fontSize: normalizeFont(12),
+    letterSpacing: -1,
   },
   comparisonContainer: {
     paddingHorizontal: 4,
@@ -380,6 +376,8 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     gap: 4,
     justifyContent: "center",
+    height: "100%",
+    alignItems: "center",
   },
   comparisionBox: {
     maxWidth: "100%",

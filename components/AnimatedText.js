@@ -3,7 +3,7 @@ import { Animated, Text, View, Easing } from "react-native";
 
 const AnimatedText = ({
   texts = [],
-  interval = 5000,
+  interval = 5500,
   style = {},
   textHeight = 20,
 }) => {
