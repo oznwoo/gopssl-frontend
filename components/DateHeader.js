@@ -143,7 +143,7 @@ const DateHeader = ({ currentDate, onChangeDate, onlyCalendar }) => {
             key={formatDate(monthDate)} // 리렌더 트리거
             current={formatDate(monthDate)}
             onDayPress={handleDayPress}
-            markedDates={getMarkedDates()} // 수정된 부분
+            markedDates={getMarkedDates()}
             renderHeader={() => null} // 기본 헤더 제거
             hideDayNames={true}
             hideExtraDays={false}
@@ -155,7 +155,7 @@ const DateHeader = ({ currentDate, onChangeDate, onlyCalendar }) => {
               onChangeDate(formatDate(newMonthDate)); // 필요하면 상위로 전달
             }}
             theme={{
-              calendarBackground: "trasparent",
+              calendarBackground: "transparent",
               textDayFontSize: normalizeFont(12),
               textDayFontFamily: "nanumSquareB",
               dayTextColor: colors.purple,
@@ -166,14 +166,19 @@ const DateHeader = ({ currentDate, onChangeDate, onlyCalendar }) => {
             dayComponent={({ date, state, marking }) => {
               const isSelected = marking?.selected;
               const isSunday = new Date(date.dateString).getDay() === 0;
-              const salesAmount = salesByDate[date.dateString]; // 매출 가져오기
+              const salesAmount = salesByDate[date.dateString];
 
               const isFuture = new Date(date.dateString) > todayDate;
-              let displayText;
-              if (salesAmount !== undefined) {
+
+              // extraDays(이달 외 날짜)는 클릭 불가, 미래 날짜는 클릭 가능
+              const isDisabled = state === "disabled";
+
+              // 매출 표시 로직
+              let displayText = " "; // 공백 유지
+              if (!isDisabled && !isFuture && salesAmount !== undefined) {
                 displayText = `${salesAmount.toLocaleString()}원`;
-              } else {
-                displayText = !isFuture && "0원";
+              } else if (!isDisabled && !isFuture) {
+                displayText = "0원";
               }
 
               return (
@@ -195,24 +200,24 @@ const DateHeader = ({ currentDate, onChangeDate, onlyCalendar }) => {
                       {
                         color: isSelected
                           ? "#fff"
-                          : state === "disabled"
+                          : isDisabled
                           ? colors.lightPurple
                           : isSunday
-                          ? colors.alert // ✅ 일요일 숫자만 빨강
+                          ? colors.alert
                           : colors.purple,
                       },
                     ]}
                   >
                     {date.day}
                   </Text>
+
+                  {/* 미래 날짜 → 공백만 유지 */}
                   <Text
                     style={[
                       styles.salesText,
                       {
                         color: isSelected
                           ? "#fff"
-                          : state === "disabled"
-                          ? colors.lightPurple
                           : isSunday
                           ? colors.alert
                           : colors.purple,
@@ -307,5 +312,6 @@ const styles = StyleSheet.create({
     fontSize: normalizeFont(8),
     color: colors.purple,
     fontFamily: "nanumSquareR",
+    minHeight: normalizeSize(10), // ✅ 최소 높이 확보해서 간격 유지
   },
 });
