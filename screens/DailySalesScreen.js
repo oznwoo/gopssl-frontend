@@ -6,6 +6,7 @@ import {
   ActivityIndicator,
   Platform,
   Animated,
+  PanResponder,
 } from "react-native";
 
 import colors from "../styles/color";
@@ -25,6 +26,28 @@ const DailySalesScreen = () => {
   const [date, setDate] = useState(new Date());
   const [salesData, setSalesData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  const changeDate = useCallback((offset) => {
+    setDate((prev) => {
+      const newDate = new Date(prev);
+      newDate.setDate(prev.getDate() + offset);
+      return newDate;
+    });
+  }, []);
+
+  const panResponder = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: (_, gestureState) =>
+        Math.abs(gestureState.dx) > 20,
+      onPanResponderRelease: (_, gestureState) => {
+        if (gestureState.dx > 50) {
+          changeDate(-1);
+        } else if (gestureState.dx < -50) {
+          changeDate(1);
+        }
+      },
+    })
+  ).current;
 
   // 👇 Animated 값
   const scrollY = useRef(new Animated.Value(0)).current;
@@ -122,6 +145,7 @@ const DailySalesScreen = () => {
               styles.salesContainer,
               { justifyContent: salesData ? "flex-start" : "center" },
             ]}
+            {...panResponder.panHandlers}
           >
             {salesData ? (
               salesData.map((item) => (
@@ -229,7 +253,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 20,
     paddingVertical: 64,
-    gap: 12,
+    gap: 8,
   },
   emptyText: {
     fontFamily: "nanumSquareB",

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { Calendar } from "react-native-calendars";
@@ -19,7 +19,6 @@ const DateHeader = ({ currentDate, onChangeDate, onlyCalendar }) => {
   const OnlyCalendarComponent = onlyCalendar ? View : TouchableOpacity;
 
   const formatDate = (date) => date.toISOString().split("T")[0];
-  const parsedDate = new Date(currentDate);
 
   // 오늘 날짜 고정
   const todayDate = new Date();

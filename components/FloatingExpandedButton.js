@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Animated,
+  Platform,
 } from "react-native";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import colors from "../styles/color";
@@ -72,7 +73,7 @@ const FloatingExpandButton = (props) => {
     <>
       {expanded && (
         <TouchableWithoutFeedback onPress={() => setExpanded(false)}>
-          <View style={StyleSheet.absoluteFill} />
+          <View style={StyleSheet.absoluteFill} pointerEvents="auto" />
         </TouchableWithoutFeedback>
       )}
 
@@ -86,6 +87,10 @@ const FloatingExpandButton = (props) => {
             borderRadius,
           },
           { transform: props.transform },
+          Platform.OS === "android" && {
+            backgroundColor: "#784a80",
+            borderColor: "#784a80",
+          },
         ]}
       >
         {expanded ? (
@@ -145,6 +150,7 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: normalizeFont(16),
     fontFamily: "nanumSquareB",
+    letterSpacing: -1,
     textAlign: "center",
   },
   separator: {

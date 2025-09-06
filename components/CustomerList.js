@@ -20,7 +20,7 @@ const CustomerList = ({
   onItemPress,
   refreshControl,
 }) => {
-  const [collapsedSections, setCollapsedSections] = useState({});
+  const [collapsedSections, setCollapsedSections] = useState({ "#": true });
 
   const getInitial = (name) => {
     if (!name || name === "신규") return "#";
@@ -82,6 +82,7 @@ const CustomerList = ({
       .map((key) => ({
         title: key,
         data: collapsedSections[key] ? [] : grouped[key], // 접힘 상태면 data 비움
+        count: grouped[key].length, // 👈 고객 수 추가
       }));
   }, [filteredCustomers, searchText, collapsedSections]);
 
@@ -152,9 +153,10 @@ const CustomerList = ({
         sections={sections}
         keyExtractor={(item) => item.id.toString()}
         stickySectionHeadersEnabled={true}
-        renderSectionHeader={({ section: { title } }) => (
+        renderSectionHeader={({ section: { title, count } }) => (
           <SectionHeader
             title={title}
+            count={count}
             collapsed={!!collapsedSections[title]}
             onToggle={() => toggleSection(title)}
           />

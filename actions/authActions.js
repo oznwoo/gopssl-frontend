@@ -193,7 +193,6 @@ export const signIn = ({ email, password, rememberMe }) => {
 
       if (e.response) {
         const { status, data } = e.response;
-        console.log(data);
 
         statusCode = status;
 
