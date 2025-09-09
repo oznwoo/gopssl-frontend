@@ -363,7 +363,7 @@ const styles = StyleSheet.create({
     fontFamily: "nanumSquareB",
     fontSize: normalizeFont(18),
     color: "#fff",
-    letterSpacing: -0.5,
+    letterSpacing: -1,
   },
   comparisionText: {
     fontFamily: "nanumSquareEB",

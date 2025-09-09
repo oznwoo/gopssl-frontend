@@ -6,4 +6,5 @@ export default {
   backgroundPurple: "#F8F5F8",
   green: "#76B4A0",
   opacityPurple: "#743D7B88",
+  darkPurple: "#58265E",
 };
