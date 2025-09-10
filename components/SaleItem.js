@@ -16,8 +16,6 @@ const SaleItem = ({ saleData, transitionSale, transitionCustomer }) => {
     ? { color: "#76B4A0", fontFamily: "nanumSquareEB" }
     : { color: colors.purple, fontFamily: "nanumSquareR" };
 
-  console.log(saleData);
-
   return (
     <TouchableOpacity
       style={[

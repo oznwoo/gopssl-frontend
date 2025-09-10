@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import {
   ActivityIndicator,
   Image,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -12,13 +13,13 @@ import SubmitButton from "../components/SubmitButton";
 import { commonStyles } from "../styles/commonStyles";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../actions/authActions";
 import { useNavigation } from "@react-navigation/native";
-import { normalizeFont } from "../utils/responsive";
+import { normalizeFont, normalizeSize } from "../utils/responsive";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import logoURL from "../assets/Gopssl.png";
+import SettingItem from "../components/SettingItem";
 
 const SettingScreen = (props) => {
   const insets = useSafeAreaInsets();
@@ -47,57 +48,64 @@ const SettingScreen = (props) => {
   };
 
   return (
-    <View style={styles.pageContainer}>
-      <View style={[styles.headerContainer, { paddingTop: insets.top + 12 }]}>
-        <Text style={styles.headerTitle}>설정</Text>
-        <View style={styles.horizontalLine}></View>
+    <View style={[styles.pageContainer, { paddingTop: insets.top }]}>
+      <View style={styles.logoContainer}>
+        <Image source={logoURL} style={styles.logo} />
+      </View>
+      <View style={styles.userInfo}>
+        <Text style={styles.userName}>
+          <Text style={{ fontFamily: "nanumSquareEB" }}>{name}</Text> 원장님
+        </Text>
+        <Text style={styles.dDayText}>개업일로부터 D+1000 🎉</Text>
       </View>
 
-      <View style={styles.contentContainer}>
-        <View style={styles.logoContainer}>
-          <Image source={logoURL} style={styles.logo} />
-          <Text style={styles.userName}>
-            <Text style={{ fontFamily: "nanumSquareEB" }}>{name}</Text> 원장님
-          </Text>
-        </View>
-
+      <ScrollView contentContainerStyle={styles.contentContainer}>
         <View style={styles.settingContainer}>
-          <TouchableOpacity style={styles.settingItem} onPress={handleProfile}>
-            <Ionicons name="person" size={20} color={colors.purple} />
-            <Text style={styles.settingText}>계정</Text>
-            <FontAwesome5
-              name="chevron-right"
-              size={20}
-              color={colors.purple}
+          <Text
+            style={{
+              fontFamily: "nanumSquareB",
+              fontSize: normalizeFont(16),
+              letterSpacing: -1,
+              color: colors.purple,
+              borderBottomColor: colors.purple,
+              borderBottomWidth: 1,
+              paddingBottom: 8,
+              paddingLeft: 8,
+            }}
+          >
+            설정
+          </Text>
+          <View style={styles.settingContainer}>
+            <SettingItem
+              title={"프로필"}
+              icon={<Ionicons name="person" size={16} color={colors.purple} />}
+              onPress={handleProfile}
             />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.settingItem} onPress={handleDetail}>
-            <FontAwesome6
-              name="circle-exclamation"
-              size={20}
-              color={colors.purple}
+            <SettingItem
+              title={"상세정보"}
+              icon={
+                <FontAwesome6
+                  name="circle-exclamation"
+                  size={16}
+                  color={colors.purple}
+                />
+              }
+              onPress={handleDetail}
             />
-            <Text style={styles.settingText}>상세정보</Text>
-            <FontAwesome5
-              name="chevron-right"
-              size={20}
-              color={colors.purple}
-            />
-          </TouchableOpacity>
-
-          <View style={{ marginTop: 36 }}>
-            {isLoading ? (
-              <ActivityIndicator
-                size="small"
-                color={colors.alert}
-                style={{ marginTop: 10 }}
-              />
-            ) : (
-              <SubmitButton title="로그아웃" onDelete={handleLogout} />
-            )}
           </View>
         </View>
-      </View>
+        <View style={{ paddingHorizontal: 16, paddingTop: 8 }}>
+          {isLoading ? (
+            <ActivityIndicator
+              size="small"
+              color={colors.alert}
+              style={{ marginTop: 10 }}
+            />
+          ) : (
+            <SubmitButton title="로그아웃" onDelete={handleLogout} />
+          )}
+        </View>
+      </ScrollView>
     </View>
   );
 };
@@ -107,91 +115,54 @@ export default SettingScreen;
 const styles = StyleSheet.create({
   pageContainer: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: colors.backgroundPurple,
   },
-  headerContainer: {
-    alignItems: "center",
-    justifyContent: "center",
-
-    padding: 16,
-    borderBottomWidth: 2,
-    borderBottomColor: colors.purple,
-    backgroundColor: "#fff",
-    ...commonStyles.dropShadow,
-  },
-  headerTitle: {
-    textAlign: "center",
-    color: colors.purple,
-    fontFamily: "nanumSquareB",
-    fontSize: normalizeFont(16),
-    letterSpacing: -1,
-  },
-
   contentContainer: {
     flex: 1,
-    justifyContent: "space-around",
-    alignItems: "center",
-    gap: 120,
-    padding: 20,
+    padding: 16,
+    gap: 12,
   },
   logoContainer: {
-    flexDirection: "row",
-    justifyContent: "flex-start",
-    alignItems: "center",
+    alignItems: "flex-start",
     alignSelf: "flex-start",
+    paddingHorizontal: 12,
     gap: 8,
-    marginTop: 0,
-    padding: 12,
-
-    borderRadius: 12,
-    backgroundColor: "#fff",
-    ...commonStyles.dropShadow,
-    borderWidth: 1,
-    borderColor: colors.backgroundPurple,
     width: "100%",
   },
   logo: {
-    width: 64,
-    height: 64,
+    width: normalizeSize(100),
+    height: normalizeSize(50),
     resizeMode: "contain",
-    backgroundColor: colors.backgroundPurple,
-    padding: 12,
-    borderRadius: 60,
-    borderWidth: 1,
-    borderColor: colors.purple,
+  },
+  userInfo: {
+    paddingHorizontal: 8,
+    marginHorizontal: 12,
+    marginTop: 4,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    ...commonStyles.dropShadow,
   },
   userName: {
+    alignSelf: "flex-start",
     fontFamily: "nanumSquareR",
-    fontSize: normalizeFont(20),
-    letterSpacing: -0.5,
+    fontSize: normalizeFont(18),
+    letterSpacing: -1,
     lineHeight: 32,
     color: colors.purple,
   },
-  settingContainer: {
-    justifyContent: "space-between",
-    width: "100%",
-    gap: 24,
-  },
-  settingItem: {
-    width: "100%",
-    backgroundColor: "#fff",
-
-    borderWidth: 1,
-    borderColor: colors.backgroundPurple,
-    flexDirection: "row",
-    paddingVertical: 16,
-    padding: 20,
-    borderRadius: 12,
-    gap: 16,
-    justifyContent: "center",
-    alignItems: "center",
-    ...commonStyles.dropShadow,
-  },
-  settingText: {
-    flex: 1,
+  dDayText: {
     fontFamily: "nanumSquareB",
-    fontSize: normalizeFont(16),
-    letterSpacing: -0.5,
-    color: colors.purple,
+    color: colors.alert,
+    letterSpacing: -1,
+  },
+  settingContainer: {
+    flex: 1,
+    justifyContent: "flex-start",
+    paddingVertical: 12,
+    width: "100%",
+    gap: 8,
   },
 });
