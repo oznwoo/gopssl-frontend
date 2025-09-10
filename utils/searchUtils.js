@@ -52,7 +52,7 @@ export const highlightMatchedText = (text, keyword) => {
             key={index}
             style={{
               color: colors.purple,
-              fontFamily: "gamtanDotumB",
+              fontFamily: "nanumSquareEB",
               fontSize: normalizeFont(16),
             }}
           >

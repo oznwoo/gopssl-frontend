@@ -6,11 +6,13 @@ import {
   TouchableOpacity,
   StyleSheet,
   Animated,
+  Platform,
 } from "react-native";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import colors from "../styles/color";
 import { useNavigation } from "@react-navigation/native";
 import { normalizeFont } from "../utils/responsive";
+import { commonStyles } from "../styles/commonStyles";
 
 const FloatingExpandButton = (props) => {
   const navigation = useNavigation();
@@ -71,7 +73,7 @@ const FloatingExpandButton = (props) => {
     <>
       {expanded && (
         <TouchableWithoutFeedback onPress={() => setExpanded(false)}>
-          <View style={StyleSheet.absoluteFill} />
+          <View style={StyleSheet.absoluteFill} pointerEvents="auto" />
         </TouchableWithoutFeedback>
       )}
 
@@ -83,6 +85,11 @@ const FloatingExpandButton = (props) => {
             width,
             height,
             borderRadius,
+          },
+          { transform: props.transform },
+          Platform.OS === "android" && {
+            backgroundColor: "#784a80",
+            borderColor: "#784a80",
           },
         ]}
       >
@@ -125,7 +132,10 @@ const FloatingExpandButton = (props) => {
 
 const styles = StyleSheet.create({
   buttonContainer: {
+    borderWidth: 1,
+    borderColor: colors.purple,
     backgroundColor: colors.purple,
+    ...commonStyles.dropShadow,
   },
   fullSize: {
     flex: 1,
@@ -139,7 +149,8 @@ const styles = StyleSheet.create({
   registerText: {
     color: "#fff",
     fontSize: normalizeFont(16),
-    fontFamily: "gamtanDotumB",
+    fontFamily: "nanumSquareB",
+    letterSpacing: -1,
     textAlign: "center",
   },
   separator: {

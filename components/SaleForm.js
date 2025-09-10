@@ -108,7 +108,7 @@ const SaleForm = ({ saleDate, data, mode }) => {
 
   // 등록 핸들러
   const handleRegister = (values, formikHelpers) => {
-    const { setSubmitting, setErrors } = formikHelpers;
+    const { setSubmitting, setErrors, resetForm } = formikHelpers;
 
     Alert.alert(
       "등록 확인",
@@ -150,7 +150,7 @@ const SaleForm = ({ saleDate, data, mode }) => {
 
               await dispatch(postSaleThunk(saleData));
               Alert.alert("알림", "매출 등록이 완료되었습니다.");
-              navigation.goBack();
+              resetForm();
             } catch (error) {
               console.log(error);
               setErrors({ submit: "등록 중 오류가 발생했습니다." });
@@ -209,7 +209,6 @@ const SaleForm = ({ saleDate, data, mode }) => {
 
               await dispatch(updateSaleThunk(saleData));
               Alert.alert("알림", "고객 정보 수정이 완료되었습니다.");
-              navigation.goBack();
             } catch (error) {
               console.log(error);
               setErrors({ submit: "수정 중 오류가 발생했습니다." });
@@ -229,7 +228,7 @@ const SaleForm = ({ saleDate, data, mode }) => {
 
     Alert.alert(
       "삭제 확인",
-      "정말로 이 매출을 삭제하시겠습니까?",
+      "매출을 삭제하시겠습니까?",
       [
         { text: "취소", style: "cancel", onPress: () => {} },
         {
@@ -444,7 +443,7 @@ const styles = StyleSheet.create({
   inputContainer: {
     flex: 1,
     gap: 16,
-    paddingHorizontal: 40,
+    paddingHorizontal: 20,
     paddingVertical: 24,
   },
   bottomSpacing: {
@@ -470,8 +469,8 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 16,
   },
   totalText: {
-    fontFamily: "gamtanBatangB",
-    fontSize: normalizeFont(24),
+    fontFamily: "nanumSquareEB",
+    fontSize: normalizeFont(20),
     letterSpacing: -0.5,
     color: colors.purple,
   },

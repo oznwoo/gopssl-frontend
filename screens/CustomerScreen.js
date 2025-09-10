@@ -1,14 +1,22 @@
 import { useNavigation } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  Platform,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import colors from "../styles/color";
 import FormHeader from "../components/FormHeader";
 import CustomerForm from "../components/CustomerForm";
 import { getCustomerbyId } from "../actions/customerActions";
 import { useDispatch } from "react-redux";
 import { normalizeFont } from "../utils/responsive";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const CustomerScreen = ({ route }) => {
+  const insets = useSafeAreaInsets();
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const mode = route.params?.mode;
@@ -40,10 +48,17 @@ const CustomerScreen = ({ route }) => {
   };
 
   return (
-    <View style={styles.pageContainer}>
+    <View style={[styles.pageContainer, { paddingTop: insets.top }]}>
       <FormHeader title={headerTitle} onGoBack={handleGoBack} />
 
-      <View style={styles.contentContainer}>
+      <View
+        style={[
+          styles.contentContainer,
+          Platform.OS === "android"
+            ? { paddingBottom: insets.bottom }
+            : { paddingBottom: 20 },
+        ]}
+      >
         {isLoading ? (
           <ActivityIndicator color={colors.purple} />
         ) : mode === "register" ? (
@@ -68,10 +83,16 @@ export default CustomerScreen;
 const styles = StyleSheet.create({
   pageContainer: {
     flex: 1,
+    backgroundColor: colors.purple,
   },
-  contentContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
+  contentContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: colors.backgroundPurple,
+  },
   emptyText: {
-    fontFamily: "gamtanDotumB",
+    fontFamily: "nanumSquareB",
     fontSize: normalizeFont(16),
     letterSpacing: -0.5,
     color: colors.lightPurple,

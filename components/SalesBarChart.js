@@ -69,7 +69,7 @@ const SalesBarChart = ({ data }) => {
         yAxisTextStyle={styles.yAxisText}
         yAxisLabelWidth={normalizeSize(yAxisLabelWidth + 20)}
         xAxisLength={normalizeSize(containerWidth - 100)}
-        formatYLabel={(label) => `${label}만원`}
+        formatYLabel={(label) => `${label} 만원`}
         rulesColor={"#e9e3e9"}
         rulesThickness={1}
         // 눈금선 길이 제한
@@ -79,7 +79,7 @@ const SalesBarChart = ({ data }) => {
         referenceLine1Config={{
           color: colors.alert,
           dashWidth: 4,
-          labelText: `평균(${Number(average)}만원)`,
+          labelText: `평균(${Number(average).toFixed(0)}만원)`,
           labelTextStyle: styles.referenceText,
           width: normalizeSize(containerWidth - 100),
         }}
@@ -98,8 +98,9 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   yAxisText: {
-    fontFamily: "nanumSquareB",
+    fontFamily: "nanumSquareEB",
     fontSize: normalizeFont(10),
+    letterSpacing: -0.5,
     color: colors.purple,
   },
   xAxisText: {
@@ -123,7 +124,7 @@ const styles = StyleSheet.create({
   },
   referenceText: {
     color: colors.alert,
-    fontFamily: "gamtanDotumB",
+    fontFamily: "nanumSquareB",
     fontSize: normalizeFont(10),
     marginVertical: 4,
   },

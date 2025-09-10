@@ -99,20 +99,6 @@ export const signUp = ({ name, email, password }) => {
       });
 
       const token = response.data.access_token;
-      console.log("받은 토큰:", token);
-      console.log("토큰 타입:", typeof token);
-      console.log("토큰 길이:", token ? token.length : 0);
-
-      // JWT 토큰 페이로드 확인
-      try {
-        const payload = JSON.parse(atob(token.split(".")[1]));
-        console.log("토큰 페이로드:", payload);
-        console.log("만료 시간:", new Date(payload.exp * 1000));
-        console.log("현재 시간:", new Date());
-        console.log("토큰 만료 여부:", Date.now() > payload.exp * 1000);
-      } catch (e) {
-        console.log("토큰 디코딩 실패:", e);
-      }
 
       // 먼저 토큰을 Redux store에 저장
       dispatch(signUpSuccess({ token, user: null }));
@@ -123,8 +109,6 @@ export const signUp = ({ name, email, password }) => {
       const headers = {
         Authorization: `Bearer ${token}`,
       };
-      console.log("전송할 헤더:", headers);
-      console.log("요청 URL:", `${BASE_URL}/users/me`);
 
       const userRes = await axios.get(`${BASE_URL}/users/me`, { headers });
       const user = userRes.data;
@@ -209,7 +193,6 @@ export const signIn = ({ email, password, rememberMe }) => {
 
       if (e.response) {
         const { status, data } = e.response;
-        console.log(data);
 
         statusCode = status;
 

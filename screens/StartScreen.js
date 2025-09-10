@@ -38,7 +38,10 @@ const StartScreen = () => {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={{ flex: 1 }}
+      style={{
+        flex: 1,
+        backgroundColor: "#fff",
+      }}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.pageContainer}>
@@ -68,8 +71,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "flex-start",
-    paddingTop: normalizeSize(60), // ✅ 반응형 간격
-    paddingBottom: normalizeSize(30),
+    paddingTop: normalizeSize(120), // ✅ 반응형 간격
+    paddingBottom: normalizeSize(48),
     paddingHorizontal: normalizeSize(24),
   },
   logoContainer: {
@@ -83,6 +86,7 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: "center",
     justifyContent: "flex-end",
+    paddingBottom: 12,
   },
   phrase: {
     fontFamily: "gamtanBatangR",

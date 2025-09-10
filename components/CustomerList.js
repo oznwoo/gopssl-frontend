@@ -20,7 +20,7 @@ const CustomerList = ({
   onItemPress,
   refreshControl,
 }) => {
-  const [collapsedSections, setCollapsedSections] = useState({}); // { 'ㄱ': true, 'ㄴ': false ... }
+  const [collapsedSections, setCollapsedSections] = useState({ "#": true });
 
   const getInitial = (name) => {
     if (!name || name === "신규") return "#";
@@ -82,6 +82,7 @@ const CustomerList = ({
       .map((key) => ({
         title: key,
         data: collapsedSections[key] ? [] : grouped[key], // 접힘 상태면 data 비움
+        count: grouped[key].length, // 👈 고객 수 추가
       }));
   }, [filteredCustomers, searchText, collapsedSections]);
 
@@ -103,21 +104,21 @@ const CustomerList = ({
   if (searchText.trim()) {
     // (검색 결과는 기존과 동일)
     return (
-      <View style={styles.contentContainer}>
+      <View style={[styles.contentContainer, { paddingVertical: 4 }]}>
         {filteredCustomers.map((item, index) => (
           <View key={item.id}>
             <TouchableOpacity
               style={styles.customerItem}
               onPress={() => onItemPress(item.id)}
             >
-              <View>
-                <Text style={styles.customerName}>
-                  {highlightMatchedText(`${item.name} 고객님`, searchText)}
+              <View style={styles.customerNameContainer}>
+                <Text
+                  style={[styles.customerName, { fontFamily: "nanumSquareR" }]}
+                >
+                  {highlightMatchedText(`${item.name}`, searchText)}
                 </Text>
                 <Text style={styles.numOfVisits}>
-                  {item.num_of_visits
-                    ? `${item.num_of_visits}회 방문`
-                    : "미방문"}
+                  {item.num_of_visits ? `${item.num_of_visits}` : "0"}
                 </Text>
               </View>
               <View style={styles.infoBox}>
@@ -142,55 +143,50 @@ const CustomerList = ({
   }
 
   return (
-    <SectionList
-      sections={sections}
-      keyExtractor={(item) => item.id.toString()}
-      stickySectionHeadersEnabled={true}
-      renderSectionHeader={({ section: { title } }) => (
-        <SectionHeader
-          title={title}
-          collapsed={!!collapsedSections[title]}
-          onToggle={() => toggleSection(title)}
-        />
-      )}
-      renderItem={({ item, index, section }) => (
-        <TouchableOpacity
-          style={[
-            styles.customerItem,
-            { backgroundColor: colors.backgroundPurple },
-            index === 0 && {
-              borderTopLeftRadius: 8,
-              borderTopRightRadius: 8,
-            },
-            index === section.data.length - 1 && {
-              borderBottomLeftRadius: 8,
-              borderBottomRightRadius: 8,
-            },
-          ]}
-          onPress={() => onItemPress(item.id)}
-        >
-          <View>
-            <Text style={styles.customerName}>
-              <Text style={{ fontFamily: "gamtanDotumB" }}>{item.name}</Text>
-              {" 고객님"}
-            </Text>
-            <Text style={styles.numOfVisits}>
-              {item.num_of_visits ? `${item.num_of_visits}회 방문` : "미방문"}
-            </Text>
-          </View>
-          <View style={styles.infoBox}>
-            <Text style={styles.detail} numberOfLines={1}>
-              {item.detail}
-            </Text>
-            <Text style={styles.detail}>{item.phone_number}</Text>
-          </View>
-        </TouchableOpacity>
-      )}
-      contentContainerStyle={{ paddingVertical: 4 }}
-      ItemSeparatorComponent={() => <View style={styles.divideLine} />}
-      keyboardShouldPersistTaps="handled"
-      refreshControl={refreshControl}
-    />
+    <View style={styles.contentContainer}>
+      <View style={styles.numOfCustomers}>
+        <Text style={styles.numOfCustomersText}>
+          고객 {customers && `(${customers.length})`}
+        </Text>
+      </View>
+      <SectionList
+        sections={sections}
+        keyExtractor={(item) => item.id.toString()}
+        stickySectionHeadersEnabled={true}
+        renderSectionHeader={({ section: { title, count } }) => (
+          <SectionHeader
+            title={title}
+            count={count}
+            collapsed={!!collapsedSections[title]}
+            onToggle={() => toggleSection(title)}
+          />
+        )}
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            style={[styles.customerItem, { backgroundColor: "#fff" }]}
+            onPress={() => onItemPress(item.id)}
+          >
+            <View style={styles.customerNameContainer}>
+              <Text style={styles.customerName}>{item.name}</Text>
+
+              <Text style={styles.numOfVisits}>
+                {item.num_of_visits ? `${item.num_of_visits}` : "0"}
+              </Text>
+            </View>
+            <View style={styles.infoBox}>
+              <Text style={styles.detail} numberOfLines={1}>
+                {item.detail}
+              </Text>
+              <Text style={styles.detail}>{item.phone_number}</Text>
+            </View>
+          </TouchableOpacity>
+        )}
+        contentContainerStyle={{ paddingVertical: 4 }}
+        ItemSeparatorComponent={() => <View style={styles.divideLine} />}
+        keyboardShouldPersistTaps="handled"
+        refreshControl={refreshControl}
+      />
+    </View>
   );
 };
 
@@ -200,7 +196,6 @@ const styles = StyleSheet.create({
   pageContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
   contentContainer: {
     flex: 1,
-    paddingVertical: 4,
     justifyContent: "flex-start",
   },
 
@@ -212,21 +207,31 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 8,
   },
+  customerNameContainer: {
+    flexDirection: "row",
+    gap: 3,
+  },
   customerName: {
     color: colors.purple,
-    fontFamily: "gamtanDotumR",
+    fontFamily: "nanumSquareB",
     fontSize: normalizeFont(16),
-    letterSpacing: -0.5,
+    letterSpacing: -1,
     marginBottom: 2,
   },
   numOfVisits: {
-    color: colors.purple,
-    fontFamily: "nanumSquareR",
-    fontSize: normalizeFont(8),
+    color: "#fff",
+    fontFamily: "nanumSquareB",
+    fontSize: normalizeFont(10),
     letterSpacing: -0.5,
+    alignSelf: "flex-end",
+    backgroundColor: colors.opacityPurple,
+    borderRadius: 4,
+    paddingHorizontal: 4,
+    paddingVertical: 2,
+    textAlign: "center",
   },
   emptyText: {
-    fontFamily: "gamtanDotumB",
+    fontFamily: "nanumSquareB",
     fontSize: normalizeFont(16),
     letterSpacing: -0.5,
     color: colors.lightPurple,
@@ -241,7 +246,20 @@ const styles = StyleSheet.create({
   },
   divideLine: {
     height: 1,
-    backgroundColor: colors.purple,
+    backgroundColor: colors.backgroundPurple,
     marginHorizontal: 16,
+  },
+  numOfCustomers: {
+    width: "100%",
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    backgroundColor: `${colors.purple}12`,
+  },
+
+  numOfCustomersText: {
+    fontFamily: "nanumSquareB",
+    fontSize: normalizeFont(16),
+    color: colors.purple,
+    letterSpacing: -1,
   },
 });

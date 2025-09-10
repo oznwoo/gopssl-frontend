@@ -1,18 +1,24 @@
 import { useNavigation } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  Platform,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import FormHeader from "../components/FormHeader";
 import SaleForm from "../components/SaleForm";
 import colors from "../styles/color";
 import { useDispatch } from "react-redux";
 import { getSaleById } from "../actions/saleActions";
 import { normalizeFont } from "../utils/responsive";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const SaleScreen = ({ route }) => {
+  const insets = useSafeAreaInsets();
   const dispatch = useDispatch();
   const navigation = useNavigation();
-  const saleDateString = route.params?.saleDate;
-  const saleDate = saleDateString ? new Date(saleDateString) : null;
   const saleId = route.params?.itemId;
   const [saleData, setSaleData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -42,10 +48,17 @@ const SaleScreen = ({ route }) => {
   };
 
   return (
-    <View style={styles.pageContainer}>
+    <View style={[styles.pageContainer, { paddingTop: insets.top }]}>
       <FormHeader title={headerTitle} onGoBack={handleGoBack} />
 
-      <View style={styles.contentContainer}>
+      <View
+        style={[
+          styles.contentContainer,
+          Platform.OS === "android"
+            ? { paddingBottom: insets.bottom }
+            : { paddingBottom: 20 },
+        ]}
+      >
         {isLoading ? (
           <ActivityIndicator color={colors.purple} />
         ) : mode === "register" ? (
@@ -70,15 +83,17 @@ export default SaleScreen;
 const styles = StyleSheet.create({
   pageContainer: {
     flex: 1,
+    backgroundColor: colors.purple,
   },
   contentContainer: {
     flex: 1,
     width: "100%",
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "#fff",
   },
   emptyText: {
-    fontFamily: "gamtanDotumB",
+    fontFamily: "nanumSquareB",
     fontSize: normalizeFont(16),
     letterSpacing: -0.5,
     color: colors.lightPurple,
