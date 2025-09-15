@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Text,
   TextInput,
@@ -10,6 +10,7 @@ import { formatNumber } from "../utils/format";
 import { normalizeFont } from "../utils/responsive";
 import colors from "../styles/color";
 import { useSelector } from "react-redux";
+import TreatmentForm from "./TreatmentForm";
 
 const TreatmentMenu = ({
   selectedTreatments = [],
@@ -18,14 +19,17 @@ const TreatmentMenu = ({
   extraPrices = {},
   onExtraPriceChange,
   mode = "input", // 기본값: input 모드
+  onAddTreatment, // 새 시술 추가 콜백
   onEdit,
   onDelete,
 }) => {
   const { treatments } = useSelector((state) => state.treatment);
 
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const emptyTreatment = { name: "", price: "", category: "" };
+
   const groupTreatmentsByCategory = (treatments) => {
     return treatments.reduce((acc, treatment) => {
-      // 카테고리를 그대로 사용
       const category = treatment.category || "etc";
       if (!acc[category]) acc[category] = [];
       acc[category].push(treatment);
@@ -34,6 +38,16 @@ const TreatmentMenu = ({
   };
 
   const grouped = groupTreatmentsByCategory(treatments);
+
+  const handleSaveTreatment = (newTreatment) => {
+    // 부모 콜백 호출
+    onAddTreatment?.({
+      name: newTreatment.name,
+      default_price: Number(newTreatment.price),
+      category: newTreatment.category,
+    });
+    setIsModalVisible(false); // Modal 닫기
+  };
 
   return (
     <View style={styles.treatmentInputContainer}>
@@ -91,9 +105,13 @@ const TreatmentMenu = ({
               );
             })}
 
+            {/* 관리 모드에서 + 버튼 */}
             {mode === "manage" && (
-              <TouchableOpacity style={styles.treatmentItem}>
-                <Text>+</Text>
+              <TouchableOpacity
+                style={[styles.treatmentItem, { justifyContent: "center" }]}
+                onPress={() => setIsModalVisible(true)}
+              >
+                <Text style={{ fontSize: 24 }}>+</Text>
               </TouchableOpacity>
             )}
           </View>
@@ -116,10 +134,16 @@ const TreatmentMenu = ({
           )}
         </View>
       ))}
+
+      {/* Modal */}
       {mode === "manage" && (
-        <View>
-          <Text>안녕</Text>
-        </View>
+        <TreatmentForm
+          mode={mode}
+          isVisible={isModalVisible}
+          onClose={() => setIsModalVisible(false)}
+          onSave={handleSaveTreatment}
+          initialData={emptyTreatment}
+        />
       )}
     </View>
   );
