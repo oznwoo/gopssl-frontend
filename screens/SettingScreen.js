@@ -5,7 +5,6 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
 import colors from "../styles/color";
@@ -13,6 +12,7 @@ import SubmitButton from "../components/SubmitButton";
 import { commonStyles } from "../styles/commonStyles";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import Fontisto from "@expo/vector-icons/Fontisto";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../actions/authActions";
 import { useNavigation } from "@react-navigation/native";
@@ -21,19 +21,15 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import logoURL from "../assets/Gopssl.png";
 import SettingItem from "../components/SettingItem";
 
-const SettingScreen = (props) => {
+const SettingScreen = () => {
   const insets = useSafeAreaInsets();
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
   const { name } = useSelector((state) => state.auth.user);
 
-  const handleProfile = () => {
-    navigation.navigate("Profile");
-  };
-
-  const handleDetail = () => {
-    navigation.navigate("Detail");
+  const handleNavigate = (target) => {
+    navigation.navigate(target);
   };
 
   const handleLogout = () => {
@@ -79,10 +75,17 @@ const SettingScreen = (props) => {
             <SettingItem
               title={"프로필"}
               icon={<Ionicons name="person" size={16} color={colors.purple} />}
-              onPress={handleProfile}
+              onPress={() => handleNavigate("Profile")}
             />
             <SettingItem
-              title={"상세정보"}
+              title={"시술 관리"}
+              icon={
+                <Fontisto name="scissors" size={16} color={colors.purple} />
+              }
+              onPress={() => handleNavigate("Treatment")}
+            />
+            <SettingItem
+              title={"상세 정보"}
               icon={
                 <FontAwesome6
                   name="circle-exclamation"
@@ -90,7 +93,7 @@ const SettingScreen = (props) => {
                   color={colors.purple}
                 />
               }
-              onPress={handleDetail}
+              onPress={() => handleNavigate("Detail")}
             />
           </View>
         </View>

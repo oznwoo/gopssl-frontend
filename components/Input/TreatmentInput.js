@@ -1,35 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
-import {
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { StyleSheet } from "react-native";
 import BaseInput from "./BaseInput";
 import colors from "../../styles/color";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { fetchTreatmentsThunk } from "../../actions/treatmentActions";
-import { formatNumber } from "../../utils/format";
 import { normalizeFont } from "../../utils/responsive";
-
-const CATEGORY_KR_MAP = {
-  cut: "커트",
-  perm: "펌",
-  color: "염색",
-  elderly: "경로",
-  product: "제품",
-};
-
-const groupTreatmentsByCategory = (treatments) => {
-  return treatments.reduce((acc, treatment) => {
-    const originalCategory = treatment.category || "etc";
-    const category = CATEGORY_KR_MAP[originalCategory] || "기타";
-    if (!acc[category]) acc[category] = [];
-    acc[category].push(treatment);
-    return acc;
-  }, {});
-};
+import TreatmentMenu from "../TreatmentMenu";
 
 // 💡 총액 계산 함수 분리
 const calculateTotalAmount = (treatmentList, extraPrices) => {
@@ -51,7 +27,6 @@ const TreatmentInput = ({
   ...rest
 }) => {
   const dispatch = useDispatch();
-  const { treatments } = useSelector((state) => state.treatment);
 
   // 내부 상태
   const [selectedTreatments, setSelectedTreatments] = useState([]);
@@ -155,91 +130,16 @@ const TreatmentInput = ({
     }));
   };
 
-  const grouped = groupTreatmentsByCategory(treatments);
-
   return (
     <BaseInput {...rest} portraitMode={true}>
-      <View style={styles.treatmentInputContainer}>
-        {Object.keys(grouped).map((category, index, array) => (
-          <View key={category} style={styles.categoryGroup}>
-            <Text style={styles.categoryTitle}>{category}</Text>
-
-            <View style={styles.treatmentGrid}>
-              {grouped[category].map((treatment) => {
-                const isSelected = selectedTreatments.some(
-                  (t) => t.treatment_id === treatment.id
-                );
-                return category !== "제품" ? (
-                  <TouchableOpacity
-                    key={treatment.id}
-                    style={[
-                      styles.treatmentItem,
-                      isSelected && styles.treatmentItemSelected,
-                    ]}
-                    onPress={() => toggleTreatment(treatment)}
-                  >
-                    <Text
-                      style={[
-                        styles.treatmentName,
-                        isSelected && styles.treatmentTextSelected,
-                      ]}
-                    >
-                      {treatment.name}
-                    </Text>
-                    <Text
-                      style={[
-                        styles.treatmentPrice,
-                        isSelected && styles.treatmentTextSelected,
-                      ]}
-                    >
-                      {formatNumber(treatment.default_price)}원
-                    </Text>
-                  </TouchableOpacity>
-                ) : (
-                  <View
-                    key={treatment.id}
-                    style={[styles.treatmentItem, styles.plusOption]}
-                  >
-                    <Text style={styles.treatmentName}>가격</Text>
-                    <TextInput
-                      placeholder="가격 입력"
-                      keyboardType="numeric"
-                      style={styles.optionInput}
-                      onChangeText={(text) => {
-                        handleProductPriceChange(treatment, text);
-                      }}
-                      value={
-                        selectedTreatments
-                          .find((t) => t.treatment_id === treatment.id)
-                          ?.price?.toString() || ""
-                      }
-                    />
-                  </View>
-                );
-              })}
-            </View>
-
-            {category !== "제품" && (
-              <View style={[styles.treatmentItem, styles.plusOption]}>
-                <Text style={styles.treatmentName}>기장추가</Text>
-                <TextInput
-                  placeholder="가격 입력"
-                  keyboardType="numeric"
-                  style={styles.optionInput}
-                  onChangeText={(text) =>
-                    handleExtraPriceChange(category, text)
-                  }
-                  value={extraPrices[category]?.toString() || ""}
-                />
-              </View>
-            )}
-
-            {index !== array.length - 1 && (
-              <View style={styles.horizonalLine} />
-            )}
-          </View>
-        ))}
-      </View>
+      <TreatmentMenu
+        mode="input"
+        selectedTreatments={selectedTreatments}
+        onSelect={toggleTreatment}
+        onPriceChange={handleProductPriceChange}
+        extraPrices={extraPrices}
+        onExtraPriceChange={handleExtraPriceChange}
+      />
     </BaseInput>
   );
 };
@@ -295,8 +195,8 @@ const styles = StyleSheet.create({
     color: "#fff",
   },
   treatmentName: {
-    fontFamily: "gamtanDotumB",
-    fontSize: normalizeFont(9),
+    fontFamily: "nanumSquareB",
+    fontSize: normalizeFont(10),
     letterSpacing: -0.5,
   },
   treatmentPrice: {
