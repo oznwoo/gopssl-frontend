@@ -18,15 +18,11 @@ const refreshToken = async () => {
   try {
     const currentToken = store.getState().auth.token;
 
-    const response = await axios.post(
-      `${BASE_URL}/auth/refresh`,
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${currentToken}`,
-        },
-      }
-    );
+    const response = await axios.post(`${BASE_URL}/auth/refresh`, {
+      headers: {
+        Authorization: `Bearer ${currentToken}`,
+      },
+    });
 
     const newToken = response.data.access_token;
 

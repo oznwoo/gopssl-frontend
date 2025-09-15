@@ -471,7 +471,7 @@ const styles = StyleSheet.create({
   totalText: {
     fontFamily: "nanumSquareEB",
     fontSize: normalizeFont(20),
-    letterSpacing: -0.5,
+    letterSpacing: -1,
     color: colors.purple,
   },
   submitButtons: {

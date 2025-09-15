@@ -3,12 +3,18 @@ import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import colors from "../styles/color";
 import { normalizeFont } from "../utils/responsive";
-import { commonStyles } from "../styles/commonStyles";
+import { useNavigation } from "@react-navigation/native";
 
 const FormHeader = (props) => {
+  const navigation = useNavigation();
+
+  const handleGoBack = () => {
+    navigation.goBack();
+  };
+
   return (
     <View style={styles.headerContainer}>
-      <TouchableOpacity onPress={props.onGoBack} style={styles.goBackButton}>
+      <TouchableOpacity onPress={handleGoBack} style={styles.goBackButton}>
         <FontAwesome5 name="arrow-left" size={16} color="#fff" />
       </TouchableOpacity>
 
