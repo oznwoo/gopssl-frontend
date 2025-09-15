@@ -249,6 +249,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   salesContainer: {
+    flexGrow: 1,
     alignItems: "center",
     paddingHorizontal: 20,
     paddingVertical: 64,
