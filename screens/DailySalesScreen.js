@@ -249,7 +249,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   salesContainer: {
-    flexGrow: 1,
     alignItems: "center",
     paddingHorizontal: 20,
     paddingVertical: 64,
@@ -282,7 +281,7 @@ const styles = StyleSheet.create({
   totalText: {
     fontFamily: "nanumSquareEB",
     fontSize: normalizeFont(20),
-    letterSpacing: -1.5,
+    letterSpacing: -1,
     color: colors.purple,
   },
 });

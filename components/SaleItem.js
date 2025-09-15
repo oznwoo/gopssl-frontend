@@ -99,7 +99,7 @@ export default SaleItem;
 const styles = StyleSheet.create({
   itemContainer: {
     width: "100%",
-    minHeight: "10%",
+    minHeight: 64,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
@@ -113,7 +113,11 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   customerInfo: { gap: 8 },
-  customerTitle: { flex: 1, flexShrink: 1, gap: 4, alignSelf: "flex-start" },
+  customerTitle: {
+    flexShrink: 1,
+    gap: 4,
+    alignSelf: "flex-start",
+  },
   customerName: {
     fontFamily: "nanumSquareR",
     fontSize: normalizeFont(16),
