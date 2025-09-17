@@ -23,21 +23,27 @@ const TreatmentMenu = ({
   onEdit,
   onDelete,
 }) => {
-  const { treatments } = useSelector((state) => state.treatment);
+  const { treatments, categories } = useSelector((state) => state.treatment);
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const emptyTreatment = { name: "", price: "", category: "" };
 
-  const groupTreatmentsByCategory = (treatments) => {
+  const groupTreatmentsByCategory = (treatments, categories) => {
+    const categoryMap = categories.reduce((acc, c) => {
+      acc[c.id] = c.name;
+      return acc;
+    }, {});
+
     return treatments.reduce((acc, treatment) => {
-      const category = treatment.category || "etc";
-      if (!acc[category]) acc[category] = [];
-      acc[category].push(treatment);
+      const categoryName = categoryMap[treatment.category_id] || "etc";
+      if (!acc[categoryName]) acc[categoryName] = [];
+      acc[categoryName].push(treatment);
       return acc;
     }, {});
   };
 
-  const grouped = groupTreatmentsByCategory(treatments);
+  // 사용 예시
+  const grouped = groupTreatmentsByCategory(treatments, categories);
 
   const handleSaveTreatment = (newTreatment) => {
     // 부모 콜백 호출

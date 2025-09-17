@@ -4,14 +4,17 @@ import {
   fetchTreatmentsStart,
   fetchTreatmentsSuccess,
   fetchTreatmentsFailure,
+  fetchTreatmentCategoriesSuccess,
 } from "../store/treatmentSlice";
 
 export const fetchTreatmentsThunk = () => async (dispatch) => {
   dispatch(fetchTreatmentsStart());
 
   try {
-    const response = await apiClient.get(`/treatments/`);
-    dispatch(fetchTreatmentsSuccess(response.data));
+    const response1 = await apiClient.get(`/treatments/`);
+    dispatch(fetchTreatmentsSuccess(response1.data));
+    const response2 = await apiClient.get(`/categories/`);
+    dispatch(fetchTreatmentCategoriesSuccess(response2.data));
   } catch (error) {
     dispatch(fetchTreatmentsFailure(error.message));
   }
