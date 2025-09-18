@@ -26,7 +26,9 @@ const TreatmentMenu = ({
   const { treatments, categories } = useSelector((state) => state.treatment);
 
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const emptyTreatment = { name: "", price: "", category: "" };
+  const [currentTreatment, setCurrentTreatment] = useState(emptyTreatment);
+  const [formMode, setFormMode] = useState("register");
+  const emptyTreatment = { name: "", default_price: 0, category_id: "" };
 
   const groupTreatmentsByCategory = (treatments, categories) => {
     const categoryMap = categories.reduce((acc, c) => {
@@ -67,14 +69,22 @@ const TreatmentMenu = ({
                 (t) => t.treatment_id === treatment.id
               );
 
-              return category !== "product" ? (
+              return (
                 <TouchableOpacity
                   key={treatment.id}
                   style={[
                     styles.treatmentItem,
                     isSelected && styles.treatmentItemSelected,
                   ]}
-                  onPress={() => onSelect?.(treatment)}
+                  onPress={
+                    mode === "manage"
+                      ? () => {
+                          setFormMode("view");
+                          setIsModalVisible(true);
+                          setCurrentTreatment(treatment);
+                        }
+                      : () => onSelect?.(treatment)
+                  }
                 >
                   <Text
                     style={[
@@ -93,21 +103,6 @@ const TreatmentMenu = ({
                     {formatNumber(treatment.default_price)}원
                   </Text>
                 </TouchableOpacity>
-              ) : (
-                <View key={treatment.id} style={styles.productOption}>
-                  <Text style={styles.treatmentName}>가격</Text>
-                  <TextInput
-                    placeholder="가격 입력"
-                    keyboardType="numeric"
-                    style={styles.optionInput}
-                    onChangeText={(text) => onPriceChange?.(treatment, text)}
-                    value={
-                      selectedTreatments
-                        .find((t) => t.treatment_id === treatment.id)
-                        ?.price?.toString() || ""
-                    }
-                  />
-                </View>
               );
             })}
 
@@ -115,14 +110,18 @@ const TreatmentMenu = ({
             {mode === "manage" && (
               <TouchableOpacity
                 style={[styles.treatmentItem, { justifyContent: "center" }]}
-                onPress={() => setIsModalVisible(true)}
+                onPress={() => {
+                  setFormMode("register");
+                  setIsModalVisible(true);
+                  setCurrentTreatment(emptyTreatment);
+                }}
               >
                 <Text style={{ fontSize: 24 }}>+</Text>
               </TouchableOpacity>
             )}
           </View>
 
-          {category !== "product" && (
+          {
             <View style={styles.plusOption}>
               <Text style={styles.treatmentName}>기장추가</Text>
               <TextInput
@@ -133,22 +132,20 @@ const TreatmentMenu = ({
                 value={extraPrices[category]?.toString() || ""}
               />
             </View>
-          )}
+          }
 
-          {(mode === "manage" || index !== array.length - 1) && (
-            <View style={styles.horizonalLine} />
-          )}
+          {index !== array.length - 1 && <View style={styles.horizonalLine} />}
         </View>
       ))}
 
       {/* Modal */}
       {mode === "manage" && (
         <TreatmentForm
-          mode={mode}
+          mode={formMode}
           isVisible={isModalVisible}
           onClose={() => setIsModalVisible(false)}
           onSave={handleSaveTreatment}
-          initialData={emptyTreatment}
+          data={currentTreatment}
         />
       )}
     </View>

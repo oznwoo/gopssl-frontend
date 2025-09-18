@@ -4,7 +4,7 @@ import FormHeader from "../components/FormHeader";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import colors from "../styles/color";
 import TreatmentMenu from "../components/TreatmentMenu";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { fetchTreatmentsThunk } from "../actions/treatmentActions";
 
 const TreatmentSettingScreen = () => {

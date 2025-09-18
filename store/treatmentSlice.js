@@ -12,12 +12,14 @@ const treatmentSlice = createSlice({
   name: "treatment",
   initialState,
   reducers: {
+    // 📌 조회 관련
     fetchTreatmentsStart: (state) => {
       state.loading = true;
       state.error = null;
     },
     fetchTreatmentsSuccess: (state, action) => {
       state.treatments = action.payload;
+      state.loading = false;
     },
     fetchTreatmentCategoriesSuccess: (state, action) => {
       state.categories = action.payload;
@@ -27,6 +29,21 @@ const treatmentSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
+
+    // 📌 추가된 부분 (create / update / delete 성공 시 Redux state 갱신)
+    addTreatment: (state, action) => {
+      state.treatments.push(action.payload);
+    },
+    updateTreatmentSuccess: (state, action) => {
+      state.treatments = state.treatments.map((t) =>
+        t.id === action.payload.id ? action.payload : t
+      );
+    },
+    deleteTreatmentSuccess: (state, action) => {
+      state.treatments = state.treatments.filter(
+        (t) => t.id !== action.payload
+      );
+    },
   },
 });
 
@@ -35,6 +52,9 @@ export const {
   fetchTreatmentsSuccess,
   fetchTreatmentsFailure,
   fetchTreatmentCategoriesSuccess,
+  addTreatment,
+  updateTreatmentSuccess,
+  deleteTreatmentSuccess,
 } = treatmentSlice.actions;
 
 export default treatmentSlice.reducer;
