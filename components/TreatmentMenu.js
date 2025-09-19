@@ -9,9 +9,10 @@ import {
 import { formatNumber } from "../utils/format";
 import { normalizeFont } from "../utils/responsive";
 import colors from "../styles/color";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import ModalWrapper from "./ModalWrapper";
 import TreatmentForm from "./TreatmentForm";
+import TreatmentCategoryForm from "./TreatmentCategoryForm";
 import { commonStyles } from "../styles/commonStyles";
 import Entypo from "@expo/vector-icons/Entypo";
 
@@ -23,11 +24,12 @@ const TreatmentMenu = ({
   mode = "input", // 기본값: input 모드
 }) => {
   const { treatments, categories } = useSelector((state) => state.treatment);
-  const dispatch = useDispatch();
 
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [currentTreatment, setCurrentTreatment] = useState(null);
-  const [formMode, setFormMode] = useState("register");
+  const [modalInfo, setModalInfo] = useState({
+    type: null, // 'treatment', 'category', or null
+    mode: "register", // 'register' or 'view'
+    data: null,
+  });
 
   const getGroupedData = (treatments, categories, mode) => {
     // 1. 카테고리 ID를 이름으로 매핑하는 맵 생성 (효율적 조회를 위해)
@@ -60,15 +62,27 @@ const TreatmentMenu = ({
 
   const grouped = getGroupedData(treatments, categories, mode);
 
+  const handleCategoryPress = (categoryName) => {
+    if (mode !== "manage") return;
+    const categoryData = categories.find((c) => c.name === categoryName);
+    if (categoryData) {
+      setModalInfo({ type: "category", mode: "view", data: categoryData });
+    }
+  };
+
+  const closeModal = () => setModalInfo({ type: null });
+
   return (
     <View style={styles.treatmentInputContainer}>
       {Object.keys(grouped).map((category, index, array) => (
         <View key={category} style={styles.categoryGroup}>
-          <View
+          <TouchableOpacity
             style={[
               mode === "manage" && styles.categoryBar,
               { marginBottom: 8 },
             ]}
+            onPress={() => handleCategoryPress(category)}
+            disabled={mode !== "manage"}
           >
             <Text style={styles.categoryTitle}>{category}</Text>
             {mode === "manage" && (
@@ -76,7 +90,7 @@ const TreatmentMenu = ({
                 <Entypo name="menu" size={16} color={"#000"} />
               </TouchableOpacity>
             )}
-          </View>
+          </TouchableOpacity>
 
           <View style={styles.treatmentGrid}>
             {grouped[category].map((treatment) => {
@@ -94,9 +108,11 @@ const TreatmentMenu = ({
                   onPress={
                     mode === "manage"
                       ? () => {
-                          setFormMode("view");
-                          setIsModalVisible(true);
-                          setCurrentTreatment(treatment);
+                          setModalInfo({
+                            type: "treatment",
+                            mode: "view",
+                            data: treatment,
+                          });
                         }
                       : () => onSelect?.(treatment)
                   }
@@ -126,12 +142,13 @@ const TreatmentMenu = ({
               <TouchableOpacity
                 style={[styles.treatmentItem, { justifyContent: "center" }]}
                 onPress={() => {
-                  setFormMode("register");
-                  setIsModalVisible(true);
-                  // 현재 카테고리 정보를 포함한 초기 데이터 설정
-                  setCurrentTreatment({
-                    name: "",
-                    category_name: category,
+                  setModalInfo({
+                    type: "treatment",
+                    mode: "register",
+                    data: {
+                      name: "",
+                      category_name: category,
+                    },
                   });
                 }}
               >
@@ -157,16 +174,22 @@ const TreatmentMenu = ({
       ))}
 
       {/* Modal */}
-      {mode === "manage" && (
-        <ModalWrapper
-          isVisible={isModalVisible}
-          onClose={() => setIsModalVisible(false)}
-        >
-          <TreatmentForm
-            mode={formMode}
-            data={currentTreatment}
-            onClose={() => setIsModalVisible(false)}
-          />
+      {mode === "manage" && modalInfo.type && (
+        <ModalWrapper isVisible={!!modalInfo.type} onClose={closeModal}>
+          {modalInfo.type === "treatment" && (
+            <TreatmentForm
+              mode={modalInfo.mode}
+              data={modalInfo.data}
+              onClose={closeModal}
+            />
+          )}
+          {modalInfo.type === "category" && (
+            <TreatmentCategoryForm
+              mode={modalInfo.mode}
+              data={modalInfo.data}
+              onClose={closeModal}
+            />
+          )}
         </ModalWrapper>
       )}
     </View>
