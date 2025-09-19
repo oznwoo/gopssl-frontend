@@ -5,9 +5,12 @@ import {
   fetchTreatmentsSuccess,
   fetchTreatmentsFailure,
   fetchTreatmentCategoriesSuccess,
+  addCategory,
   addTreatment,
   updateTreatmentSuccess,
   deleteTreatmentSuccess,
+  updateCategorySuccess,
+  deleteCategorySuccess,
 } from "../store/treatmentSlice";
 
 // 📌 전체 조회 (시술 + 카테고리)
@@ -90,6 +93,61 @@ export const deleteTreatment = (treatment_id) => {
       dispatch(deleteTreatmentSuccess(treatment_id));
 
       return treatment_id;
+    } catch (e) {
+      console.log("Error:", e.response?.data || e.message);
+      throw e;
+    }
+  };
+};
+
+// 📌 카테고리 등록
+export const createTreatmentCategory =
+  ({ name }) =>
+  async (dispatch) => {
+    try {
+      const response = await apiClient.post(`/categories/`, {
+        name,
+      });
+
+      // Redux 상태 즉시 반영
+      dispatch(addCategory(response.data));
+
+      return response.data;
+    } catch (error) {
+      console.error("Treatment category post error:", error);
+      throw error;
+    }
+  };
+
+// 📌 카테고리 수정
+export const updateTreatmentCategory =
+  ({ category_id, name }) =>
+  async (dispatch) => {
+    try {
+      const response = await apiClient.put(`/categories/${category_id}`, {
+        name,
+      });
+
+      // Redux 상태 즉시 반영
+      dispatch(updateCategorySuccess(response.data));
+
+      return response.data;
+    } catch (error) {
+      console.error("Category update error:", error);
+      throw error;
+    }
+  };
+
+// 📌 카테고리 삭제
+export const deleteTreatmentCategory = (category_id) => {
+  return async (dispatch) => {
+    try {
+      await apiClient.delete(`/categories/${category_id}`);
+
+      // Redux 상태 즉시 반영
+      dispatch(deleteCategorySuccess(category_id));
+
+      return category_id;
     } catch (e) {
       console.log("Error:", e.response?.data || e.message);
       throw e;

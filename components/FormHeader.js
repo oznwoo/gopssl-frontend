@@ -21,6 +21,12 @@ const FormHeader = (props) => {
       <View style={styles.headerTitleContainer}>
         <Text style={styles.headerTitle}>{props.title}</Text>
       </View>
+      <TouchableOpacity
+        onPress={props.onRightButtonPress}
+        style={styles.rightButton}
+      >
+        {props.rightButton}
+      </TouchableOpacity>
     </View>
   );
 };
@@ -43,6 +49,7 @@ const styles = StyleSheet.create({
     top: 12,
     left: 20,
   },
+  rightButton: { position: "absolute", top: 14, right: 20 },
   headerTitleContainer: {
     flex: 1,
     pointerEvents: "none",

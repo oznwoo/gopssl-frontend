@@ -9,59 +9,74 @@ import {
 import { formatNumber } from "../utils/format";
 import { normalizeFont } from "../utils/responsive";
 import colors from "../styles/color";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import ModalWrapper from "./ModalWrapper";
 import TreatmentForm from "./TreatmentForm";
+import { commonStyles } from "../styles/commonStyles";
+import Entypo from "@expo/vector-icons/Entypo";
 
 const TreatmentMenu = ({
   selectedTreatments = [],
   onSelect,
-  onPriceChange,
   extraPrices = {},
   onExtraPriceChange,
   mode = "input", // 기본값: input 모드
-  onAddTreatment, // 새 시술 추가 콜백
-  onEdit,
-  onDelete,
 }) => {
   const { treatments, categories } = useSelector((state) => state.treatment);
+  const dispatch = useDispatch();
 
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [currentTreatment, setCurrentTreatment] = useState(emptyTreatment);
+  const [currentTreatment, setCurrentTreatment] = useState(null);
   const [formMode, setFormMode] = useState("register");
-  const emptyTreatment = { name: "", default_price: 0, category_id: "" };
 
-  const groupTreatmentsByCategory = (treatments, categories) => {
-    const categoryMap = categories.reduce((acc, c) => {
-      acc[c.id] = c.name;
+  const getGroupedData = (treatments, categories, mode) => {
+    // 1. 카테고리 ID를 이름으로 매핑하는 맵 생성 (효율적 조회를 위해)
+    const categoryIdToNameMap = categories.reduce((acc, category) => {
+      acc[category.id] = category.name;
       return acc;
     }, {});
 
-    return treatments.reduce((acc, treatment) => {
-      const categoryName = categoryMap[treatment.category_id] || "etc";
+    // 2. 시술 목록을 카테고리 이름으로 그룹화 (시술이 있는 카테고리만 포함됨)
+    const treatmentsGrouped = treatments.reduce((acc, treatment) => {
+      const categoryName = categoryIdToNameMap[treatment.category_id] || "etc";
       if (!acc[categoryName]) acc[categoryName] = [];
       acc[categoryName].push(treatment);
       return acc;
     }, {});
+
+    if (mode === "manage") {
+      // 3. "manage" 모드: 모든 카테고리를 기준으로 데이터 재구성
+      const allCategoriesGrouped = categories.reduce((acc, category) => {
+        // 시술이 있으면 해당 목록을, 없으면 빈 배열을 할당
+        acc[category.name] = treatmentsGrouped[category.name] || [];
+        return acc;
+      }, {});
+      return allCategoriesGrouped;
+    } else {
+      // 4. "input" 모드: 기존과 동일하게 시술이 있는 카테고리만 반환
+      return treatmentsGrouped;
+    }
   };
 
-  // 사용 예시
-  const grouped = groupTreatmentsByCategory(treatments, categories);
-
-  const handleSaveTreatment = (newTreatment) => {
-    // 부모 콜백 호출
-    onAddTreatment?.({
-      name: newTreatment.name,
-      default_price: Number(newTreatment.price),
-      category: newTreatment.category,
-    });
-    setIsModalVisible(false); // Modal 닫기
-  };
+  const grouped = getGroupedData(treatments, categories, mode);
 
   return (
     <View style={styles.treatmentInputContainer}>
       {Object.keys(grouped).map((category, index, array) => (
         <View key={category} style={styles.categoryGroup}>
-          <Text style={styles.categoryTitle}>{category}</Text>
+          <View
+            style={[
+              mode === "manage" && styles.categoryBar,
+              { marginBottom: 8 },
+            ]}
+          >
+            <Text style={styles.categoryTitle}>{category}</Text>
+            {mode === "manage" && (
+              <TouchableOpacity style={{ padding: 2 }}>
+                <Entypo name="menu" size={16} color={"#000"} />
+              </TouchableOpacity>
+            )}
+          </View>
 
           <View style={styles.treatmentGrid}>
             {grouped[category].map((treatment) => {
@@ -113,7 +128,11 @@ const TreatmentMenu = ({
                 onPress={() => {
                   setFormMode("register");
                   setIsModalVisible(true);
-                  setCurrentTreatment(emptyTreatment);
+                  // 현재 카테고리 정보를 포함한 초기 데이터 설정
+                  setCurrentTreatment({
+                    name: "",
+                    category_name: category,
+                  });
                 }}
               >
                 <Text style={{ fontSize: 24 }}>+</Text>
@@ -121,18 +140,17 @@ const TreatmentMenu = ({
             )}
           </View>
 
-          {
-            <View style={styles.plusOption}>
-              <Text style={styles.treatmentName}>기장추가</Text>
-              <TextInput
-                placeholder="가격 입력"
-                keyboardType="numeric"
-                style={styles.optionInput}
-                onChangeText={(text) => onExtraPriceChange?.(category, text)}
-                value={extraPrices[category]?.toString() || ""}
-              />
-            </View>
-          }
+          <View style={styles.plusOption}>
+            <Text style={styles.treatmentName}>기장추가</Text>
+            <TextInput
+              placeholder="가격 입력"
+              keyboardType="numeric"
+              style={styles.optionInput}
+              onChangeText={(text) => onExtraPriceChange?.(category, text)}
+              value={extraPrices[category]?.toString() || ""}
+              readOnly={mode === "manage"}
+            />
+          </View>
 
           {index !== array.length - 1 && <View style={styles.horizonalLine} />}
         </View>
@@ -140,13 +158,16 @@ const TreatmentMenu = ({
 
       {/* Modal */}
       {mode === "manage" && (
-        <TreatmentForm
-          mode={formMode}
+        <ModalWrapper
           isVisible={isModalVisible}
           onClose={() => setIsModalVisible(false)}
-          onSave={handleSaveTreatment}
-          data={currentTreatment}
-        />
+        >
+          <TreatmentForm
+            mode={formMode}
+            data={currentTreatment}
+            onClose={() => setIsModalVisible(false)}
+          />
+        </ModalWrapper>
       )}
     </View>
   );
@@ -171,9 +192,26 @@ const styles = StyleSheet.create({
     fontFamily: "nanumSquareB",
     fontSize: normalizeFont(16),
     letterSpacing: -0.5,
-    marginBottom: 8,
+  },
+  categoryBar: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+
+    ...commonStyles.lightDropShadow,
+  },
+  categoryEditText: {
+    fontSize: normalizeFont(12),
+    fontFamily: "nanumSquareB",
+    letterSpacing: -0.5,
+    color: colors.opacityPurple,
   },
   treatmentGrid: {
+    width: "100%",
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 4,
@@ -183,7 +221,7 @@ const styles = StyleSheet.create({
     minWidth: "23%",
     minHeight: 40,
     borderWidth: 1,
-    borderColor: "#000",
+    borderColor: "#00000033",
     borderRadius: 8,
     paddingHorizontal: 4,
     gap: 4,
@@ -209,7 +247,7 @@ const styles = StyleSheet.create({
     letterSpacing: -0.5,
   },
   horizonalLine: {
-    backgroundColor: "#000",
+    backgroundColor: "#00000033",
     height: 1,
     marginTop: 4,
     marginBottom: 12,
@@ -233,7 +271,7 @@ const styles = StyleSheet.create({
     gap: 8,
     minHeight: 40,
     borderWidth: 1,
-    borderColor: "#000",
+    borderColor: "#00000033",
     borderRadius: 8,
     backgroundColor: "#fff",
     width: "100%",
@@ -243,5 +281,14 @@ const styles = StyleSheet.create({
     minHeight: 36,
     fontFamily: "nanumSquareB",
     fontSize: normalizeFont(10),
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContentWrapper: {
+    width: "80%",
   },
 });

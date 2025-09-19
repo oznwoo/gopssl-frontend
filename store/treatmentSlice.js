@@ -34,6 +34,9 @@ const treatmentSlice = createSlice({
     addTreatment: (state, action) => {
       state.treatments.push(action.payload);
     },
+    addCategory: (state, action) => {
+      state.categories.push(action.payload);
+    },
     updateTreatmentSuccess: (state, action) => {
       state.treatments = state.treatments.map((t) =>
         t.id === action.payload.id ? action.payload : t
@@ -42,6 +45,16 @@ const treatmentSlice = createSlice({
     deleteTreatmentSuccess: (state, action) => {
       state.treatments = state.treatments.filter(
         (t) => t.id !== action.payload
+      );
+    },
+    updateCategorySuccess: (state, action) => {
+      state.categories = state.categories.map((c) =>
+        c.id === action.payload.id ? action.payload : c
+      );
+    },
+    deleteCategorySuccess: (state, action) => {
+      state.categories = state.categories.filter(
+        (c) => c.id !== action.payload
       );
     },
   },
@@ -53,8 +66,11 @@ export const {
   fetchTreatmentsFailure,
   fetchTreatmentCategoriesSuccess,
   addTreatment,
+  addCategory,
   updateTreatmentSuccess,
   deleteTreatmentSuccess,
+  updateCategorySuccess,
+  deleteCategorySuccess,
 } = treatmentSlice.actions;
 
 export default treatmentSlice.reducer;

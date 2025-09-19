@@ -1,14 +1,6 @@
 import { Formik } from "formik";
 import React from "react";
-import {
-  Modal,
-  StyleSheet,
-  View,
-  ActivityIndicator,
-  TouchableWithoutFeedback,
-  Pressable,
-  Alert,
-} from "react-native";
+import { StyleSheet, View, ActivityIndicator, Alert } from "react-native";
 import { BaseInput, TypeInput } from "./Input";
 import SubmitButton from "../components/SubmitButton";
 import { TreatmentSchema } from "../schemas/TreatmentSchema";
@@ -153,117 +145,94 @@ const TreatmentForm = ({
   };
 
   return (
-    <Modal
-      animationType="slide"
-      transparent={true}
-      visible={isVisible}
-      onRequestClose={onClose}
-    >
-      <TouchableWithoutFeedback onPress={onClose}>
-        <View style={styles.modalOverlay}>
-          {/* 안쪽 눌렀을 땐 닫히지 않도록 Pressable 추가 */}
-          <Pressable style={styles.modalContentWrapper} onPress={() => {}}>
-            <View style={styles.modalContent}>
-              <Formik
-                initialValues={initialValues}
-                validationSchema={TreatmentSchema}
-                onSubmit={mode === "view" ? handleUpdate : handleRegister}
-                enableReinitialize
-              >
-                {({
-                  handleChange,
-                  handleBlur,
-                  handleSubmit,
-                  setFieldValue,
-                  values,
-                  errors,
-                  touched,
-                  isSubmitting,
-                  isValid,
-                  dirty,
-                }) => {
-                  return (
-                    <>
-                      <BaseInput
-                        id="name"
-                        label="시술명"
-                        value={values.name}
-                        onChangeText={handleChange("name")}
-                        useBlur={false}
-                        onBlur={handleBlur("name")}
-                      />
-                      <BaseInput
-                        id="price"
-                        label="가격"
-                        keyboardType="numeric"
-                        value={values.price ? String(values.price) : ""}
-                        onChangeText={handleChange("price")}
-                        useBlur={false}
-                        onBlur={handleBlur("price")}
-                      />
-                      <TypeInput
-                        id="category"
-                        label="카테고리"
-                        value={values.category}
-                        options={typeOptions}
-                        onChange={(val) => setFieldValue("category", val)}
-                        useBlur={false}
-                        onBlur={handleBlur("category")}
-                      />
+    <View style={styles.modalContent}>
+      <Formik
+        initialValues={initialValues}
+        validationSchema={TreatmentSchema}
+        onSubmit={mode === "view" ? handleUpdate : handleRegister}
+        enableReinitialize
+      >
+        {({
+          handleChange,
+          handleBlur,
+          handleSubmit,
+          setFieldValue,
+          values,
+          errors,
+          touched,
+          isSubmitting,
+          isValid,
+          dirty,
+        }) => {
+          return (
+            <>
+              <BaseInput
+                id="name"
+                label="시술명"
+                value={values.name}
+                onChangeText={handleChange("name")}
+                useBlur={false}
+                onBlur={handleBlur("name")}
+              />
+              <BaseInput
+                id="price"
+                label="가격"
+                keyboardType="numeric"
+                value={values.price ? String(values.price) : ""}
+                onChangeText={handleChange("price")}
+                useBlur={false}
+                onBlur={handleBlur("price")}
+              />
+              <TypeInput
+                id="category"
+                label="카테고리"
+                value={values.category}
+                options={typeOptions}
+                onChange={(val) => setFieldValue("category", val)}
+                useBlur={false}
+                onBlur={handleBlur("category")}
+              />
 
-                      <View style={styles.submitContainer}>
-                        {isSubmitting ? (
-                          <ActivityIndicator
-                            size="small"
-                            color={colors.purple}
-                            style={{ marginTop: 10 }}
-                          />
-                        ) : mode === "view" ? (
-                          <View style={styles.submitButtons}>
-                            <SubmitButton
-                              title={"수정"}
-                              onPress={handleSubmit}
-                              size={"small"}
-                              disable={!isValid || !dirty}
-                            />
-                            <SubmitButton
-                              title={"삭제"}
-                              size={"small"}
-                              onDelete={handleDelete}
-                            />
-                          </View>
-                        ) : (
-                          <SubmitButton
-                            title={"등록"}
-                            onPress={handleSubmit}
-                            disable={!isValid || !dirty}
-                          />
-                        )}
-                      </View>
-                    </>
-                  );
-                }}
-              </Formik>
-            </View>
-          </Pressable>
-        </View>
-      </TouchableWithoutFeedback>
-    </Modal>
+              <View style={styles.submitContainer}>
+                {isSubmitting ? (
+                  <ActivityIndicator
+                    size="small"
+                    color={colors.purple}
+                    style={{ marginTop: 10 }}
+                  />
+                ) : mode === "view" ? (
+                  <View style={styles.submitButtons}>
+                    <SubmitButton
+                      title={"수정"}
+                      onPress={handleSubmit}
+                      size={"small"}
+                      disable={!isValid || !dirty}
+                    />
+                    <SubmitButton
+                      title={"삭제"}
+                      size={"small"}
+                      onDelete={handleDelete}
+                    />
+                  </View>
+                ) : (
+                  <SubmitButton
+                    title={"등록"}
+                    onPress={handleSubmit}
+                    disable={!isValid || !dirty}
+                  />
+                )}
+              </View>
+            </>
+          );
+        }}
+      </Formik>
+    </View>
   );
 };
 
 export default TreatmentForm;
 
 const styles = StyleSheet.create({
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  modalContentWrapper: {
-    width: "80%",
-  },
   modalContent: {
     backgroundColor: colors.backgroundPurple,
     borderRadius: 12,
