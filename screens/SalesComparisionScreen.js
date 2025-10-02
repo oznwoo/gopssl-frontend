@@ -95,7 +95,7 @@ const SalesComparisionScreen = (props) => {
               <Text style={styles.monthTotal}>
                 {thisMonthData ? formatNumber(thisMonthData.total) : 0}원
               </Text>
-              {lastMonthSale !== 0 && (
+              {date.getMonth() == new Date().getMonth() && (
                 <View style={[styles.comparisonContainer]}>
                   <AnimatedText
                     texts={[
