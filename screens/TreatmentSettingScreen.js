@@ -1,37 +1,42 @@
 import React, { useEffect, useState } from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import FormHeader from "../components/FormHeader";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import colors from "../styles/color";
-import TreatmentMenu from "../components/TreatmentMenu";
+import TreatmentManageMenu from "../components/TreatmentManageMenu";
 import { useDispatch } from "react-redux";
 import { fetchTreatmentsThunk } from "../actions/treatmentActions";
 import TreatmentCategoryForm from "../components/TreatmentCategoryForm";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import ModalWrapper from "../components/ModalWrapper";
 import { normalizeFont } from "../utils/responsive";
+import { useNavigation } from "@react-navigation/native";
 
 const TreatmentSettingScreen = () => {
   const insets = useSafeAreaInsets();
   const dispatch = useDispatch();
+  const navigation = useNavigation();
   const [isCategoryModalVisible, setIsCategoryModalVisible] = useState(false);
 
   const handleAddCategory = () => setIsCategoryModalVisible(true);
+  const handleGoBack = () => navigation.goBack();
 
   useEffect(() => {
     dispatch(fetchTreatmentsThunk());
   }, [dispatch, isCategoryModalVisible]);
 
   return (
-    <View style={[styles.pageContainer, { paddingTop: insets.top }]}>
+    <GestureHandlerRootView
+      style={[styles.pageContainer, { paddingTop: insets.top }]}
+    >
       <FormHeader
+        onGoBack={handleGoBack}
         title={"시술 관리"}
         onRightButtonPress={handleAddCategory}
         rightButton={<Text style={styles.categotyPlusText}>카테고리 추가</Text>}
       />
       <View style={styles.contentContainer}>
-        <ScrollView contentContainerStyle={styles.treatmentList}>
-          <TreatmentMenu mode="manage" />
-        </ScrollView>
+        <TreatmentManageMenu />
       </View>
 
       {/* 카테고리 추가 모달 */}
@@ -43,7 +48,7 @@ const TreatmentSettingScreen = () => {
           onClose={() => setIsCategoryModalVisible(false)}
         />
       </ModalWrapper>
-    </View>
+    </GestureHandlerRootView>
   );
 };
 
@@ -56,8 +61,6 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     flex: 1,
-    alignItems: "center",
-
     backgroundColor: colors.backgroundPurple,
   },
   categotyPlusText: {
@@ -65,10 +68,5 @@ const styles = StyleSheet.create({
     fontSize: normalizeFont(12),
     color: colors.backgroundPurple,
     letterSpacing: -0.5,
-  },
-  treatmentList: {
-    width: "100%",
-    paddingHorizontal: 24,
-    paddingVertical: 16,
   },
 });

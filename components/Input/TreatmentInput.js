@@ -1,11 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
-import { StyleSheet } from "react-native";
 import BaseInput from "./BaseInput";
-import colors from "../../styles/color";
 import { useDispatch } from "react-redux";
 import { fetchTreatmentsThunk } from "../../actions/treatmentActions";
-import { normalizeFont } from "../../utils/responsive";
-import TreatmentMenu from "../TreatmentMenu";
+import TreatmentRegisterMenu from "../TreatmentRegisterMenu";
 
 // 💡 총액 계산 함수 분리
 const calculateTotalAmount = (treatmentList, extraPrices) => {
@@ -132,8 +129,7 @@ const TreatmentInput = ({
 
   return (
     <BaseInput {...rest} portraitMode={true}>
-      <TreatmentMenu
-        mode="input"
+      <TreatmentRegisterMenu
         selectedTreatments={selectedTreatments}
         onSelect={toggleTreatment}
         onPriceChange={handleProductPriceChange}
@@ -145,80 +141,3 @@ const TreatmentInput = ({
 };
 
 export default TreatmentInput;
-
-const styles = StyleSheet.create({
-  treatmentInputContainer: {
-    width: "100%",
-    borderRadius: 16,
-    paddingHorizontal: 16,
-    paddingBottom: 8,
-    paddingTop: 16,
-    backgroundColor: colors.backgroundPurple,
-  },
-  textInput: {
-    fontFamily: "nanumSquareR",
-    fontSize: normalizeFont(12),
-  },
-  categoryGroup: {
-    width: "100%",
-    gap: 4,
-  },
-  categoryTitle: {
-    fontFamily: "nanumSquareB",
-    fontSize: normalizeFont(16),
-    letterSpacing: -0.5,
-    marginBottom: 8,
-  },
-  treatmentGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 4,
-  },
-  treatmentItem: {
-    flex: 1,
-    minWidth: "23%",
-    height: 40,
-    borderWidth: 1,
-    borderColor: "#000",
-    borderRadius: 8,
-    paddingHorizontal: 4,
-    gap: 4,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#fff",
-  },
-  treatmentItemSelected: {
-    backgroundColor: colors.purple,
-    borderColor: colors.purple,
-  },
-  treatmentTextSelected: {
-    color: "#fff",
-  },
-  treatmentName: {
-    fontFamily: "nanumSquareB",
-    fontSize: normalizeFont(10),
-    letterSpacing: -0.5,
-  },
-  treatmentPrice: {
-    fontFamily: "nanumSquareB",
-    fontSize: normalizeFont(8),
-    letterSpacing: -0.5,
-  },
-  horizonalLine: {
-    backgroundColor: "#000",
-    height: 1,
-    marginTop: 4,
-    marginBottom: 12,
-  },
-  plusOption: {
-    paddingHorizontal: 16,
-    flexDirection: "row",
-    gap: 8,
-  },
-  optionInput: {
-    flex: 1,
-    fontFamily: "nanumSquareB",
-    letterSpacing: -0.5,
-    fontSize: normalizeFont(8),
-  },
-});

@@ -16,6 +16,7 @@ const BaseInput = ({
   specialButton,
   textStyle,
   onFocus,
+  style,
   ...rest
 }) => {
   const Container = useBlur && Platform.OS === "ios" ? BlurView : View;
@@ -34,6 +35,7 @@ const BaseInput = ({
               backgroundColor: "rgba(255,255,255,0.9)",
             },
           portraitMode && styles.portraitMode,
+          style,
         ]}
         {...(useBlur &&
           Platform.OS === "ios" && { tint: "xlight", intensity: 30 })}

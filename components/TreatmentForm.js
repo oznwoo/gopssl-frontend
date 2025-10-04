@@ -1,6 +1,6 @@
 import { Formik } from "formik";
 import React from "react";
-import { StyleSheet, View, ActivityIndicator, Alert } from "react-native";
+import { StyleSheet, View, ActivityIndicator, Alert, Text } from "react-native";
 import { BaseInput, TypeInput } from "./Input";
 import SubmitButton from "../components/SubmitButton";
 import { TreatmentSchema } from "../schemas/TreatmentSchema";
@@ -172,6 +172,7 @@ const TreatmentForm = ({
                 value={values.name}
                 onChangeText={handleChange("name")}
                 useBlur={false}
+                errorText={touched.name && errors.name}
                 onBlur={handleBlur("name")}
               />
               <BaseInput
@@ -181,6 +182,7 @@ const TreatmentForm = ({
                 value={values.price ? String(values.price) : ""}
                 onChangeText={handleChange("price")}
                 useBlur={false}
+                errorText={touched.price && errors.price}
                 onBlur={handleBlur("price")}
               />
               <TypeInput
@@ -190,8 +192,12 @@ const TreatmentForm = ({
                 options={typeOptions}
                 onChange={(val) => setFieldValue("category", val)}
                 useBlur={false}
+                errorText={touched.category && errors.category}
                 onBlur={handleBlur("category")}
               />
+              {errors.submit && (
+                <Text style={styles.errorText}>{errors.submit}</Text>
+              )}
 
               <View style={styles.submitContainer}>
                 {isSubmitting ? (
@@ -257,5 +263,11 @@ const styles = StyleSheet.create({
     gap: 12,
     justifyContent: "center",
     alignItems: "center",
+  },
+  errorText: {
+    color: colors.alert,
+    fontSize: 12,
+    marginTop: 4,
+    textAlign: "center",
   },
 });

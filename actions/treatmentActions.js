@@ -10,6 +10,8 @@ import {
   updateTreatmentSuccess,
   deleteTreatmentSuccess,
   updateCategorySuccess,
+  updateCategoriesOrderSuccess,
+  updateTreatmentsOrderSuccess,
   deleteCategorySuccess,
 } from "../store/treatmentSlice";
 
@@ -100,6 +102,57 @@ export const deleteTreatment = (treatment_id) => {
   };
 };
 
+// 📌 카테고리 내 시술 순서 업데이트
+export const updateTreatmentsOrder = (categoryId, orderedTreatments) => {
+  return async (dispatch) => {
+    // 전체 시술 목록을 가져와서 해당 카테고리의 시술만 교체
+    const allTreatments = store.getState().treatment.treatments;
+    const otherCategoryTreatments = allTreatments.filter(
+      (t) => t.category_id !== categoryId
+    );
+    const newTotalTreatments = [
+      ...otherCategoryTreatments,
+      ...orderedTreatments,
+    ];
+
+    // Redux 상태를 먼저 낙관적으로 업데이트
+    dispatch(updateTreatmentsOrderSuccess(newTotalTreatments));
+
+    try {
+      // API에 보낼 데이터 포맷팅: [{id: 1, display_order: 0}, {id: 2, display_order: 1}]
+      const payload = orderedTreatments.map((treatment, index) => ({
+        id: treatment.id,
+        display_order: index,
+      }));
+      // API 경로를 카테고리별로 명확하게 지정
+      await apiClient.put(
+        `/categories/${categoryId}/treatments/update-order`,
+        payload
+      );
+    } catch (e) {
+      console.log("Error:", e.response?.data || e.message);
+      // TODO: 에러 발생 시 원래 순서로 되돌리는 로직 추가
+      throw e;
+    }
+  };
+};
+
+// 📌 카테고리 순서 업데이트
+export const updateCategoriesOrder = (orderedCategories) => {
+  return async (dispatch) => {
+    dispatch(updateCategoriesOrderSuccess(orderedCategories));
+    try {
+      const payload = orderedCategories.map((category, index) => ({
+        id: category.id,
+        display_order: index,
+      }));
+      await apiClient.put(`/categories/update-order`, payload);
+    } catch (e) {
+      console.log("Error:", e.response?.data || e.message);
+      throw e;
+    }
+  };
+};
 // 📌 카테고리 등록
 export const createTreatmentCategory =
   ({ name }) =>
