@@ -83,7 +83,7 @@ const SalesBarChart = ({ data }) => {
           labelTextStyle: styles.referenceText,
           width: normalizeSize(containerWidth - 100),
         }}
-        referenceLinesOverChartContent={false}
+        referenceLinesOverChartContent={true}
         showValuesOnTopOfBars={false}
       />
     </View>
@@ -127,5 +127,8 @@ const styles = StyleSheet.create({
     fontFamily: "nanumSquareB",
     fontSize: normalizeFont(10),
     marginVertical: 4,
+    backgroundColor: "#ffffff99",
+    borderRadius: 4,
+    padding: 4,
   },
 });
