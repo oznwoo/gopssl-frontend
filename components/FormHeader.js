@@ -3,18 +3,30 @@ import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import colors from "../styles/color";
 import { normalizeFont } from "../utils/responsive";
-import { commonStyles } from "../styles/commonStyles";
+import { useNavigation } from "@react-navigation/native";
 
 const FormHeader = (props) => {
+  const navigation = useNavigation();
+
+  const handleGoBack = () => {
+    navigation.goBack();
+  };
+
   return (
     <View style={styles.headerContainer}>
-      <TouchableOpacity onPress={props.onGoBack} style={styles.goBackButton}>
+      <TouchableOpacity onPress={handleGoBack} style={styles.goBackButton}>
         <FontAwesome5 name="arrow-left" size={16} color="#fff" />
       </TouchableOpacity>
 
       <View style={styles.headerTitleContainer}>
         <Text style={styles.headerTitle}>{props.title}</Text>
       </View>
+      <TouchableOpacity
+        onPress={props.onRightButtonPress}
+        style={styles.rightButton}
+      >
+        {props.rightButton}
+      </TouchableOpacity>
     </View>
   );
 };
@@ -37,6 +49,7 @@ const styles = StyleSheet.create({
     top: 12,
     left: 20,
   },
+  rightButton: { position: "absolute", top: 14, right: 20 },
   headerTitleContainer: {
     flex: 1,
     pointerEvents: "none",

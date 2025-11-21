@@ -3,7 +3,7 @@ import { store } from "../store/store";
 import { signInSuccess, logout } from "../store/authSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export const BASE_URL = "https://gopssl-backend.onrender.com";
+export const BASE_URL = "http://144.24.147.125:8000";
 
 // JWT 토큰을 자동으로 포함하는 axios 인스턴스
 export const apiClient = axios.create({
@@ -18,15 +18,11 @@ const refreshToken = async () => {
   try {
     const currentToken = store.getState().auth.token;
 
-    const response = await axios.post(
-      `${BASE_URL}/auth/refresh`,
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${currentToken}`,
-        },
-      }
-    );
+    const response = await axios.post(`${BASE_URL}/auth/refresh`, {
+      headers: {
+        Authorization: `Bearer ${currentToken}`,
+      },
+    });
 
     const newToken = response.data.access_token;
 

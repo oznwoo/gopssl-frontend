@@ -3,7 +3,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import colors from "../styles/color";
 import { commonStyles } from "../styles/commonStyles";
 import { formatNumber } from "../utils/format";
-import { normalizeFont } from "../utils/responsive";
+import { normalizeFont, normalizeSize } from "../utils/responsive";
 
 const SaleItem = ({ saleData, transitionSale, transitionCustomer }) => {
   const isFirstVisit = saleData.num_of_visits === 1;
@@ -99,7 +99,7 @@ export default SaleItem;
 const styles = StyleSheet.create({
   itemContainer: {
     width: "100%",
-    minHeight: 64,
+    minHeight: normalizeSize(64),
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
