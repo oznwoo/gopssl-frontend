@@ -5,6 +5,7 @@ import {
   View,
   StyleSheet,
   FlatList,
+  ActivityIndicator,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import DraggableFlatList from "react-native-draggable-flatlist";
@@ -25,6 +26,7 @@ const TreatmentManageMenu = () => {
   const { treatments, categories } = useSelector((state) => state.treatment);
   const [menuData, setMenuData] = useState([]);
   const [isDragging, setIsDragging] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
 
   // 'list', 'grid', null 중 하나의 값을 가지는 드래그 상태
@@ -93,29 +95,45 @@ const TreatmentManageMenu = () => {
   const closeModal = () => setModalInfo({ type: null });
 
   // 카테고리 순서 변경 핸들러
-  const handleCategoryDragEnd = ({ data }) => {
+  const handleCategoryDragEnd = async ({ data }) => {
     const newMenuData = data.map((category, index) => {
       return { ...category, display_order: index };
     });
     setMenuData(newMenuData);
-    dispatch(updateCategoriesOrder(newMenuData));
+
+    setIsLoading(true);
+    try {
+      await dispatch(updateCategoriesOrder(newMenuData));
+    } catch (error) {
+      console.error("카테고리 순서 변경 실패:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // 카테고리 내 시술 순서 변경 핸들러
-  const handleTreatmentDragEnd = (categoryId, reorderedData) => {
-    const treatmentsToUpdate = reorderedData.map((treatment, index) => {
-      return { ...treatment, display_order: index };
-    });
+  const handleTreatmentDragEnd = async (categoryId, reorderedData) => {
+    // '추가' 버튼을 제외하고 실제 시술 데이터만 필터링
+    const treatmentsToUpdate = reorderedData
+      .filter((t) => !t.isAddButton)
+      .map((treatment, index) => ({ ...treatment, display_order: index }));
 
     const newMenuData = menuData.map((category) => {
       if (category.id === categoryId) {
-        return { ...category, treatments: treatmentsToUpdate };
+        return { ...category, treatments: reorderedData };
       }
       return category;
     });
-
     setMenuData(newMenuData);
-    dispatch(updateTreatmentsOrder(treatmentsToUpdate));
+
+    setIsLoading(true);
+    try {
+      await dispatch(updateTreatmentsOrder(treatmentsToUpdate));
+    } catch (error) {
+      console.error("시술 순서 변경 실패:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // 카테고리 아이템 렌더링 (내부에 시술 리스트 포함)
@@ -123,41 +141,56 @@ const TreatmentManageMenu = () => {
     // 카테고리 목록(list) 드래그 시에만 drag 함수를 전달합니다.
     const onLongPressDrag = activeDragTarget === "grid" ? undefined : drag;
 
-    return (
-      <View style={styles.categoryGroup}>
-        <TouchableOpacity
-          style={[
-            styles.categoryBar,
-            // DraggableFlatList의 isActive와 activeDragTarget 상태를 모두 고려하여 스타일 적용
-            { backgroundColor: isActive ? colors.lightPurple : "#fff" },
-          ]}
-          onLongPress={onLongPressDrag}
-          onPress={() => handleCategoryPress(category.name)}
+    if (isLoading)
+      return (
+        <View
+          style={{
+            minHeight: 100,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
         >
-          <Text style={styles.categoryTitle}>{category.name}</Text>
-        </TouchableOpacity>
+          <ActivityIndicator color={colors.purple} />
+        </View>
+      );
 
-        <DraggableTreatmentGrid
-          treatments={category.treatments}
-          onDragEnd={(reorderedData) =>
-            handleTreatmentDragEnd(category.id, reorderedData)
-          }
-          onAddPress={() =>
-            setModalInfo({
-              type: "treatment",
-              mode: "register",
-              data: { category_id: category.id, category: category.name },
-            })
-          }
-          onTreatmentPress={(treatment) =>
-            setModalInfo({ type: "treatment", mode: "view", data: treatment })
-          }
-          // 제스처 충돌 방지를 위한 상태와 상태 변경 함수 전달
-          activeDragTarget={activeDragTarget}
-          setActiveDragTarget={setActiveDragTarget}
-          setIsDragging={setIsDragging}
-        />
-      </View>
+    return (
+      !isLoading && (
+        <View style={styles.categoryGroup}>
+          <TouchableOpacity
+            style={[
+              styles.categoryBar,
+              // DraggableFlatList의 isActive와 activeDragTarget 상태를 모두 고려하여 스타일 적용
+              { backgroundColor: isActive ? colors.lightPurple : "#fff" },
+            ]}
+            onLongPress={onLongPressDrag}
+            onPress={() => handleCategoryPress(category.name)}
+          >
+            <Text style={styles.categoryTitle}>{category.name}</Text>
+          </TouchableOpacity>
+
+          <DraggableTreatmentGrid
+            treatments={category.treatments}
+            onDragEnd={(reorderedData) =>
+              handleTreatmentDragEnd(category.id, reorderedData)
+            }
+            onAddPress={() =>
+              setModalInfo({
+                type: "treatment",
+                mode: "register",
+                data: { category_id: category.id, category: category.name },
+              })
+            }
+            onTreatmentPress={(treatment) =>
+              setModalInfo({ type: "treatment", mode: "view", data: treatment })
+            }
+            // 제스처 충돌 방지를 위한 상태와 상태 변경 함수 전달
+            activeDragTarget={activeDragTarget}
+            setActiveDragTarget={setActiveDragTarget}
+            setIsDragging={setIsDragging}
+          />
+        </View>
+      )
     );
   };
 
