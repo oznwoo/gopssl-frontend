@@ -102,21 +102,19 @@ const TreatmentManageMenu = () => {
 
   // 카테고리 내 시술 순서 변경 핸들러
   const handleTreatmentDragEnd = (categoryId, reorderedData) => {
+    const treatmentsToUpdate = reorderedData.map((treatment, index) => {
+      return { ...treatment, display_order: index };
+    });
+
     const newMenuData = menuData.map((category) => {
       if (category.id === categoryId) {
-        return { ...category, treatments: reorderedData };
+        return { ...category, treatments: treatmentsToUpdate };
       }
       return category;
     });
-    setMenuData(newMenuData);
 
-    const treatmentsToUpdate = reorderedData.filter(
-      (item) => !item.isAddButton
-    );
-    // const dummy = async () => {
-    //   await dispatch(updateTreatmentsOrder(treatmentsToUpdate));
-    // };
-    // dummy();
+    setMenuData(newMenuData);
+    dispatch(updateTreatmentsOrder(treatmentsToUpdate));
   };
 
   // 카테고리 아이템 렌더링 (내부에 시술 리스트 포함)

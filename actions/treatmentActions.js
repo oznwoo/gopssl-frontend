@@ -106,17 +106,21 @@ export const deleteTreatment = (treatment_id) => {
 
 // 📌 카테고리 내 시술 순서 업데이트
 export const updateTreatmentsOrder = (orderedTreatments) => {
+  const treatmentsToPost = orderedTreatments.filter(
+    (treatment) => !treatment.isAddButton
+  );
+
   return async (dispatch, getState) => {
     // 롤백을 위해 현재 상태 저장
     const originalTreatments = getState().treatment.treatments;
 
     // Redux 상태를 먼저 낙관적으로 업데이트
-    dispatch(updateTreatmentsOrderSuccess(orderedTreatments));
+    dispatch(updateTreatmentsOrderSuccess(treatmentsToPost));
 
     try {
       // API에 보낼 데이터 포맷팅: {treatment_id: new_order}
-      const payload = orderedTreatments.reduce((acc, treatment, index) => {
-        acc[treatment.id] = index;
+      const payload = treatmentsToPost.reduce((acc, treatment, index) => {
+        acc[treatment?.id] = index;
         return acc;
       }, {});
 
