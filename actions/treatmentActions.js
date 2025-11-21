@@ -1,5 +1,6 @@
 // src/actions/treatmentActions.js
 import { apiClient } from "../constants/baseURL";
+import { store } from "../store/store";
 import {
   fetchTreatmentsStart,
   fetchTreatmentsSuccess,
@@ -14,6 +15,7 @@ import {
   updateTreatmentsOrderSuccess,
   deleteCategorySuccess,
 } from "../store/treatmentSlice";
+import { Alert } from "react-native";
 
 // 📌 전체 조회 (시술 + 카테고리)
 export const fetchTreatmentsThunk = () => async (dispatch) => {
@@ -103,35 +105,31 @@ export const deleteTreatment = (treatment_id) => {
 };
 
 // 📌 카테고리 내 시술 순서 업데이트
-export const updateTreatmentsOrder = (categoryId, orderedTreatments) => {
-  return async (dispatch) => {
-    // 전체 시술 목록을 가져와서 해당 카테고리의 시술만 교체
-    const allTreatments = store.getState().treatment.treatments;
-    const otherCategoryTreatments = allTreatments.filter(
-      (t) => t.category_id !== categoryId
-    );
-    const newTotalTreatments = [
-      ...otherCategoryTreatments,
-      ...orderedTreatments,
-    ];
+export const updateTreatmentsOrder = (orderedTreatments) => {
+  return async (dispatch, getState) => {
+    // 롤백을 위해 현재 상태 저장
+    const originalTreatments = getState().treatment.treatments;
 
     // Redux 상태를 먼저 낙관적으로 업데이트
-    dispatch(updateTreatmentsOrderSuccess(newTotalTreatments));
+    dispatch(updateTreatmentsOrderSuccess(orderedTreatments));
 
     try {
-      // API에 보낼 데이터 포맷팅: [{id: 1, display_order: 0}, {id: 2, display_order: 1}]
-      const payload = orderedTreatments.map((treatment, index) => ({
-        id: treatment.id,
-        display_order: index,
-      }));
-      // API 경로를 카테고리별로 명확하게 지정
-      await apiClient.put(
-        `/categories/${categoryId}/treatments/update-order`,
-        payload
-      );
+      // API에 보낼 데이터 포맷팅: {treatment_id: new_order}
+      const payload = orderedTreatments.reduce((acc, treatment, index) => {
+        acc[treatment.id] = index;
+        return acc;
+      }, {});
+
+      // API 경로 수정
+      await apiClient.post(`/treatments/reorder`, payload);
     } catch (e) {
-      console.log("Error:", e.response?.data || e.message);
-      // TODO: 에러 발생 시 원래 순서로 되돌리는 로직 추가
+      console.error(
+        "Error updating treatments order:",
+        e.response?.data || e.message
+      );
+      // 에러 발생 시 원래 순서로 롤백
+      dispatch(updateTreatmentsOrderSuccess(originalTreatments));
+      Alert.alert("오류", "시술 순서 변경에 실패했습니다. 다시 시도해주세요.");
       throw e;
     }
   };
@@ -139,15 +137,29 @@ export const updateTreatmentsOrder = (categoryId, orderedTreatments) => {
 
 // 📌 카테고리 순서 업데이트
 export const updateCategoriesOrder = (orderedCategories) => {
-  return async (dispatch) => {
+  return async (dispatch, getState) => {
+    // 롤백을 위해 현재 상태 저장
+    const originalCategories = getState().treatment.categories;
+
+    // Redux 상태를 먼저 낙관적으로 업데이트
     dispatch(updateCategoriesOrderSuccess(orderedCategories));
     try {
-      const payload = orderedCategories.map((category, index) => ({
-        id: category.id,
-        display_order: index,
-      }));
-      await apiClient.put(`/categories/update-order`, payload);
+      const payload = orderedCategories.reduce((acc, category, index) => {
+        acc[category.id] = index;
+        return acc;
+      }, {});
+      await apiClient.post(`/categories/reorder`, payload);
     } catch (e) {
+      console.error(
+        "Error updating categories order:",
+        e.response?.data || e.message
+      );
+      // 에러 발생 시 원래 순서로 롤백
+      dispatch(updateCategoriesOrderSuccess(originalCategories));
+      Alert.alert(
+        "오류",
+        "카테고리 순서 변경에 실패했습니다. 다시 시도해주세요."
+      );
       console.log("Error:", e.response?.data || e.message);
       throw e;
     }

@@ -57,6 +57,30 @@ const treatmentSlice = createSlice({
         (c) => c.id !== action.payload
       );
     },
+    // 📌 순서 변경 성공 시 Redux state 갱신
+    updateTreatmentsOrderSuccess: (state, action) => {
+      // action.payload는 순서가 변경된 일부 시술 목록 또는 롤백을 위한 전체 목록입니다.
+      const updatedTreatments = action.payload;
+      const updatedIds = new Set(updatedTreatments.map((t) => t.id));
+
+      // 기존 목록에서 변경된 시술들을 제외한 나머지 시술들
+      const otherTreatments = state.treatments.filter(
+        (t) => !updatedIds.has(t.id)
+      );
+
+      // 두 목록을 합쳐서 새로운 전체 시술 목록 생성
+      const newTreatments = [...otherTreatments, ...updatedTreatments];
+
+      state.treatments = newTreatments;
+    },
+    updateCategoriesOrderSuccess: (state, action) => {
+      // action.payload는 순서가 변경된 카테고리 목록입니다.
+      // display_order를 새로 부여하며 상태를 업데이트합니다.
+      state.categories = action.payload.map((category, index) => ({
+        ...category,
+        display_order: index,
+      }));
+    },
   },
 });
 
@@ -71,6 +95,8 @@ export const {
   deleteTreatmentSuccess,
   updateCategorySuccess,
   deleteCategorySuccess,
+  updateTreatmentsOrderSuccess,
+  updateCategoriesOrderSuccess,
 } = treatmentSlice.actions;
 
 export default treatmentSlice.reducer;

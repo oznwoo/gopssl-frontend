@@ -19,93 +19,94 @@ const TreatmentRegisterMenu = ({
 }) => {
   const { treatments, categories } = useSelector((state) => state.treatment);
 
-  const getGroupedData = (treatments, categories, mode) => {
-    // 1. 카테고리 ID를 이름으로 매핑하는 맵 생성 (효율적 조회를 위해)
-    const categoryIdToNameMap = categories.reduce((acc, category) => {
-      acc[category.id] = category.name;
-      return acc;
-    }, {});
+  const getGroupedData = (treatments, categories) => {
+    // 1. display_order에 따라 카테고리 정렬
+    const sortedCategories = [...categories].sort(
+      (a, b) => a.display_order - b.display_order
+    );
 
-    // 2. 시술 목록을 카테고리 이름으로 그룹화 (시술이 있는 카테고리만 포함됨)
+    // 2. 시술 목록을 카테고리 ID로 그룹화
     const treatmentsGrouped = treatments.reduce((acc, treatment) => {
-      const categoryName = categoryIdToNameMap[treatment.category_id] || "etc";
-      if (!acc[categoryName]) acc[categoryName] = [];
-      acc[categoryName].push(treatment);
+      const categoryId = treatment.category_id;
+      if (!acc[categoryId]) acc[categoryId] = [];
+      acc[categoryId].push(treatment);
       return acc;
     }, {});
 
-    if (mode === "manage") {
-      // 3. "manage" 모드: 모든 카테고리를 기준으로 데이터 재구성
-      const allCategoriesGrouped = categories.reduce((acc, category) => {
-        // 시술이 있으면 해당 목록을, 없으면 빈 배열을 할당
-        acc[category.name] = treatmentsGrouped[category.name] || [];
-        return acc;
-      }, {});
-      return allCategoriesGrouped;
-    } else {
-      // 4. "input" 모드: 기존과 동일하게 시술이 있는 카테고리만 반환
-      return treatmentsGrouped;
-    }
+    // 3. 정렬된 카테고리 배열과 그룹화된 시술 객체를 함께 반환
+    return { sortedCategories, treatmentsGrouped };
   };
 
-  const grouped = getGroupedData(treatments, categories, "input");
+  const { sortedCategories, treatmentsGrouped } = getGroupedData(
+    treatments,
+    categories
+  );
 
   return (
     <View style={styles.treatmentInputContainer}>
-      {Object.keys(grouped).map((category, index, array) => (
-        <View key={category}>
-          <View style={styles.categoryGroup}>
-            <Text style={styles.categoryTitle}>{category}</Text>
+      {sortedCategories.map((category, index, array) => {
+        const categoryTreatments = treatmentsGrouped[category.id] || [];
+        if (categoryTreatments.length === 0) return null; // 시술이 없는 카테고리는 렌더링하지 않음
 
-            <View style={styles.treatmentGrid}>
-              {grouped[category].map((treatment) => {
-                const isSelected = selectedTreatments.some(
-                  (t) => t.treatment_id === treatment.id
-                );
-                return (
-                  <TouchableOpacity
-                    key={treatment.id}
-                    style={[
-                      styles.treatmentItem,
-                      isSelected && styles.treatmentItemSelected,
-                    ]}
-                    onPress={() => onSelect?.(treatment)}
-                  >
-                    <Text
-                      style={[
-                        styles.treatmentName,
-                        isSelected && styles.treatmentTextSelected,
-                      ]}
-                    >
-                      {treatment.name}
-                    </Text>
-                    <Text
-                      style={[
-                        styles.treatmentPrice,
-                        isSelected && styles.treatmentTextSelected,
-                      ]}
-                    >
-                      {formatNumber(treatment.default_price)}원
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </View>
+        return (
+          <View key={category.id}>
+            <View style={styles.categoryGroup}>
+              <Text style={styles.categoryTitle}>{category.name}</Text>
 
-            <View style={styles.plusOption}>
-              <Text style={styles.treatmentName}>기장추가</Text>
-              <TextInput
-                placeholder="가격 입력"
-                keyboardType="numeric"
-                style={styles.optionInput}
-                onChangeText={(text) => onExtraPriceChange?.(category, text)}
-                value={extraPrices[category]?.toString() || ""}
-              />
+              <View style={styles.treatmentGrid}>
+                {categoryTreatments.map((treatment) => {
+                  const isSelected = selectedTreatments.some(
+                    (t) => t.treatment_id === treatment.id
+                  );
+                  return (
+                    <TouchableOpacity
+                      key={treatment.id}
+                      style={[
+                        styles.treatmentItem,
+                        isSelected && styles.treatmentItemSelected,
+                      ]}
+                      onPress={() => onSelect?.(treatment)}
+                    >
+                      <Text
+                        style={[
+                          styles.treatmentName,
+                          isSelected && styles.treatmentTextSelected,
+                        ]}
+                      >
+                        {treatment.name}
+                      </Text>
+                      <Text
+                        style={[
+                          styles.treatmentPrice,
+                          isSelected && styles.treatmentTextSelected,
+                        ]}
+                      >
+                        {formatNumber(treatment.default_price)}원
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+
+              <View style={styles.plusOption}>
+                <Text style={styles.treatmentName}>기장추가</Text>
+                <TextInput
+                  placeholder="가격 입력"
+                  keyboardType="numeric"
+                  style={styles.optionInput}
+                  onChangeText={(text) =>
+                    onExtraPriceChange?.(category.name, text)
+                  }
+                  value={extraPrices[category.name]?.toString() || ""}
+                />
+              </View>
             </View>
+            {index !== array.length - 1 && (
+              <View style={styles.horizonalLine} />
+            )}
           </View>
-          {index !== array.length - 1 && <View style={styles.horizonalLine} />}
-        </View>
-      ))}
+        );
+      })}
     </View>
   );
 };

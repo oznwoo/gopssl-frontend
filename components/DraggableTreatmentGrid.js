@@ -12,7 +12,6 @@ const DraggableTreatmentGrid = React.memo(
     onAddPress,
     onTreatmentPress,
     activeDragTarget, // 현재 드래그 중인 대상 ('list', 'grid', or null)
-    setActiveDragTarget, // 드래그 대상 상태 변경 함수
   }) => {
     const [data, setData] = useState(treatments);
 
@@ -81,8 +80,6 @@ const DraggableTreatmentGrid = React.memo(
           setData(reorderedData);
           onDragEnd(reorderedData);
         }}
-        // 이 옵션은 더 이상 필요 없으므로 제거합니다.
-        // dragOptions={{ simultaneousHandlers: outerDrag }}
       />
     );
   }

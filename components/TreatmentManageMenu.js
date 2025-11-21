@@ -93,11 +93,11 @@ const TreatmentManageMenu = () => {
 
   // 카테고리 순서 변경 핸들러
   const handleCategoryDragEnd = ({ data }) => {
-    setMenuData(data);
-
-    // 드래그 상태 초기화
-    setActiveDragTarget(null);
-    dispatch(updateCategoriesOrder(data));
+    const newMenuData = data.map((category, index) => {
+      return { ...category, display_order: index };
+    });
+    setMenuData(newMenuData);
+    dispatch(updateCategoriesOrder(newMenuData));
   };
 
   // 카테고리 내 시술 순서 변경 핸들러
@@ -113,7 +113,10 @@ const TreatmentManageMenu = () => {
     const treatmentsToUpdate = reorderedData.filter(
       (item) => !item.isAddButton
     );
-    dispatch(updateTreatmentsOrder(categoryId, treatmentsToUpdate));
+    // const dummy = async () => {
+    //   await dispatch(updateTreatmentsOrder(treatmentsToUpdate));
+    // };
+    // dummy();
   };
 
   // 카테고리 아이템 렌더링 (내부에 시술 리스트 포함)
