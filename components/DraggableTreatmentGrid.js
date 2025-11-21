@@ -12,6 +12,7 @@ const DraggableTreatmentGrid = React.memo(
     onAddPress,
     onTreatmentPress,
     activeDragTarget, // 현재 드래그 중인 대상 ('list', 'grid', or null)
+    setIsDragging,
   }) => {
     const [data, setData] = useState(treatments);
 
@@ -76,9 +77,13 @@ const DraggableTreatmentGrid = React.memo(
         data={data}
         numColumns={4}
         renderItem={renderItem}
+        onDragStart={() => {
+          setIsDragging(true);
+        }}
         onDragRelease={(reorderedData) => {
           setData(reorderedData);
           onDragEnd(reorderedData);
+          setIsDragging(false);
         }}
       />
     );

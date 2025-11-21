@@ -24,6 +24,7 @@ import { TypeInput } from "./Input";
 const TreatmentManageMenu = () => {
   const { treatments, categories } = useSelector((state) => state.treatment);
   const [menuData, setMenuData] = useState([]);
+  const [isDragging, setIsDragging] = useState(false);
   const dispatch = useDispatch();
 
   // 'list', 'grid', null 중 하나의 값을 가지는 드래그 상태
@@ -154,6 +155,7 @@ const TreatmentManageMenu = () => {
           // 제스처 충돌 방지를 위한 상태와 상태 변경 함수 전달
           activeDragTarget={activeDragTarget}
           setActiveDragTarget={setActiveDragTarget}
+          setIsDragging={setIsDragging}
         />
       </View>
     );
@@ -195,6 +197,7 @@ const TreatmentManageMenu = () => {
             : undefined
         }
         ItemSeparatorComponent={() => <View style={styles.horizonalLine} />}
+        scrollEnabled={!isDragging}
       />
 
       {/* Modal */}
