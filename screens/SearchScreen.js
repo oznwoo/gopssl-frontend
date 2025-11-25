@@ -23,6 +23,7 @@ const SearchScreen = ({ navigation }) => {
   const insets = useSafeAreaInsets();
   const dispatch = useDispatch();
   const customers = useSelector((state) => state.customer.list);
+
   const [searchText, setSearchText] = useState("");
   const [refreshing, setRefreshing] = useState(false);
   const inputRef = useRef(null);

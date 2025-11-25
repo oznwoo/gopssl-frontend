@@ -9,6 +9,7 @@ import { getAllCustomer } from "../actions/customerActions";
 import { ActivityIndicator, Text, View } from "react-native";
 import colors from "../styles/color";
 import { normalizeFont } from "../utils/responsive";
+import { setCustomers } from "../store/customerSlice";
 
 const AppNavigator = () => {
   const [loading, setLoading] = useState(true);
@@ -22,8 +23,18 @@ const AppNavigator = () => {
         const user = await AsyncStorage.getItem("user");
 
         if (token && user) {
-          // 토큰 만료 여부는 서버 요청 시 확인
+          // 1. AsyncStorage의 정보로 우선 로그인 처리
           dispatch(signInSuccess({ token, user: JSON.parse(user) }));
+
+          // 2. 고객 정보 처리
+          const localCustomers = await AsyncStorage.getItem("customers");
+          if (localCustomers) {
+            // 2-1. 로컬 데이터가 있으면 먼저 화면에 보여줌 (UX 향상)
+            dispatch(setCustomers(JSON.parse(localCustomers)));
+          }
+
+          // 3. 항상 서버에서 최신 고객 정보를 가져와 업데이트 (데이터 동기화)
+          // 로컬 데이터가 없으면 새로 가져오고, 있어도 최신 정보로 덮어쓰게 됨
           dispatch(getAllCustomer());
         }
       } catch (e) {

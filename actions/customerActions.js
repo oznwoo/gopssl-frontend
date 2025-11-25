@@ -66,6 +66,7 @@ export const getAllCustomer = () => {
     try {
       const response = await apiClient.get("/customers/");
       dispatch(setCustomers(response.data));
+      await AsyncStorage.setItem("customers", JSON.stringify(response.data));
       return response.data;
     } catch (e) {
       console.error(e);
