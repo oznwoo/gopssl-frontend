@@ -1,7 +1,6 @@
 import { apiClient } from "../constants/baseURL";
-import { registerSuccess } from "../store/authSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { setCustomers } from "../store/customerSlice";
+import { setCustomers, setIsLoadingCustomers } from "../store/customerSlice";
 
 export const registerCustomer = ({ user_id, name, phone_number, detail }) => {
   return async (dispatch) => {
@@ -64,6 +63,7 @@ export const getCustomerbyId = (customerId) => {
 export const getAllCustomer = () => {
   return async (dispatch) => {
     try {
+      dispatch(setIsLoadingCustomers());
       const response = await apiClient.get("/customers/");
       dispatch(setCustomers(response.data));
       await AsyncStorage.setItem("customers", JSON.stringify(response.data));

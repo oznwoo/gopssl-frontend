@@ -9,6 +9,7 @@ import {
   Platform,
   RefreshControl,
   Text,
+  ActivityIndicator,
 } from "react-native";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
@@ -23,6 +24,7 @@ const SearchScreen = ({ navigation }) => {
   const insets = useSafeAreaInsets();
   const dispatch = useDispatch();
   const customers = useSelector((state) => state.customer.list);
+  const isLoading = useSelector((state) => state.customer.isLoading);
 
   const [searchText, setSearchText] = useState("");
   const [refreshing, setRefreshing] = useState(false);
@@ -70,23 +72,30 @@ const SearchScreen = ({ navigation }) => {
       </View>
 
       <View style={styles.contentContainer}>
-        {/* 📋 고객 리스트 */}
-        <CustomerList
-          customers={customers}
-          searchText={searchText}
-          onItemPress={(id) =>
-            navigation.navigate("Customer", { mode: "view", itemId: id })
-          }
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={onRefresh}
-              tintColor={colors.purple} // iOS 인디케이터 색상
-              colors={[colors.purple, colors.green]} // Android 인디케이터 색상
-              progressBackgroundColor="#fff" // Android 배경색
-            />
-          }
-        />
+        {isLoading ? (
+          <ActivityIndicator color={colors.purple} />
+        ) : customers.length === 0 ? (
+          <View style={{ flex: 1, justifyContent: "center" }}>
+            <Text style={styles.emptyText}>등록된 고객이 없습니다.</Text>
+          </View>
+        ) : (
+          <CustomerList
+            customers={customers}
+            searchText={searchText}
+            onItemPress={(id) =>
+              navigation.navigate("Customer", { mode: "view", itemId: id })
+            }
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+                tintColor={colors.purple} // iOS 인디케이터 색상
+                colors={[colors.purple, colors.green]} // Android 인디케이터 색상
+                progressBackgroundColor="#fff" // Android 배경색
+              />
+            }
+          />
+        )}
       </View>
       {/* ➕ 플로팅 버튼 */}
       <FloatingExpandedButton style={styles.plusButton} />
@@ -134,5 +143,12 @@ const styles = StyleSheet.create({
     position: "absolute",
     right: 20,
     bottom: 20,
+  },
+  emptyText: {
+    textAlign: "center",
+    fontFamily: "nanumSquareB",
+    fontSize: normalizeFont(16),
+    letterSpacing: -0.5,
+    color: colors.lightPurple,
   },
 });
