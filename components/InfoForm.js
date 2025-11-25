@@ -28,6 +28,8 @@ const InfoForm = ({ setFormType }) => {
           address_detail: values.addressDetail,
         })
       );
+
+      navigation.navigate("OnboardingScreen");
     } catch (error) {
       console.log("에러 상태코드:", error.message); // 여기서 접근 가능!
 

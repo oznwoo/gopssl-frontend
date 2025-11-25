@@ -25,15 +25,22 @@ export const authSlice = createSlice({
     registerSuccess: (state, action) => {
       state.user = action.payload.user;
     },
+    onboardingSuccess: (state) => {
+      state.isFirst = false;
+    },
     logout: (state, action) => {
       state.user = null;
       state.token = null;
       state.isAuthenticated = false;
-      state.isFirst = false;
     },
   },
 });
 
-export const { signUpSuccess, signInSuccess, logout, registerSuccess } =
-  authSlice.actions;
+export const {
+  signUpSuccess,
+  signInSuccess,
+  logout,
+  registerSuccess,
+  onboardingSuccess,
+} = authSlice.actions;
 export default authSlice.reducer;
