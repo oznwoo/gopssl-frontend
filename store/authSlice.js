@@ -4,6 +4,7 @@ const initialState = {
   user: null,
   token: null,
   isAuthenticated: false,
+  isFirst: false,
 };
 
 export const authSlice = createSlice({
@@ -13,6 +14,8 @@ export const authSlice = createSlice({
     signUpSuccess: (state, action) => {
       state.user = action.payload.user;
       state.token = action.payload.token;
+      state.isAuthenticated = true;
+      state.isFirst = true;
     },
     signInSuccess: (state, action) => {
       state.user = action.payload.user;
@@ -21,12 +24,12 @@ export const authSlice = createSlice({
     },
     registerSuccess: (state, action) => {
       state.user = action.payload.user;
-      state.isAuthenticated = true;
     },
     logout: (state, action) => {
       state.user = null;
       state.token = null;
       state.isAuthenticated = false;
+      state.isFirst = false;
     },
   },
 });

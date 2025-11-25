@@ -13,6 +13,7 @@ import { normalizeFont } from "../utils/responsive";
 const AppNavigator = () => {
   const [loading, setLoading] = useState(true);
   const isAuth = useSelector((state) => state.auth.isAuthenticated);
+  const isFirst = useSelector((state) => state.auth.isFirst);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -70,7 +71,7 @@ const AppNavigator = () => {
 
   return (
     <NavigationContainer>
-      {isAuth ? <MainNavigator /> : <AuthNavigator />}
+      {isAuth && !isFirst ? <MainNavigator /> : <AuthNavigator />}
     </NavigationContainer>
   );
 };
