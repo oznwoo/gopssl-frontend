@@ -185,6 +185,9 @@ const CustomerList = ({
         sections={sections}
         keyExtractor={(item) => item.id.toString()}
         stickySectionHeadersEnabled={true}
+        initialNumToRender={30}
+        windowSize={100}
+        maxToRenderPerBatch={10}
         renderSectionHeader={({ section: { title, count } }) => (
           <SectionHeader
             title={title}
