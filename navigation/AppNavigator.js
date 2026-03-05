@@ -5,7 +5,7 @@ import AuthNavigator from "./AuthNavigator";
 import { useSelector, useDispatch } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { signInSuccess, logout as logoutAction } from "../store/authSlice";
-import { getAllCustomer } from "../actions/customerActions";
+import { getAllCustomer, loadCustomersFromStorage } from "../actions/customerActions";
 import { ActivityIndicator, Text, View } from "react-native";
 import colors from "../styles/color";
 import { normalizeFont } from "../utils/responsive";
@@ -25,6 +25,9 @@ const AppNavigator = () => {
         if (token && user) {
           // 토큰 만료 여부는 서버 요청 시 확인
           dispatch(signInSuccess({ token, user: JSON.parse(user) }));
+          // 1) 캐시를 먼저 적용해서 앱 진입 시 즉시 목록 표시
+          await dispatch(loadCustomersFromStorage());
+          // 2) 서버와 동기화(백그라운드 갱신)
           dispatch(getAllCustomer());
         }
       } catch (e) {
@@ -39,7 +42,7 @@ const AppNavigator = () => {
     };
 
     checkAutoLogin();
-  }, []);
+  }, [dispatch]);
 
   // 로딩 중에는 스플래시 화면이나 ActivityIndicator 표시 가능
   if (loading)
