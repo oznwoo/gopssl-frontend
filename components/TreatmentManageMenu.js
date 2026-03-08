@@ -235,7 +235,11 @@ const TreatmentManageMenu = () => {
 
       {/* Modal */}
       {modalInfo.type && (
-        <ModalWrapper isVisible={!!modalInfo.type} onClose={closeModal}>
+        <ModalWrapper
+          isVisible={!!modalInfo.type}
+          onClose={closeModal}
+          animationType={"slide"}
+        >
           {modalInfo.type === "treatment" && (
             <TreatmentForm
               // TreatmentForm이 category_id 대신 category 이름으로 받고 있어서,

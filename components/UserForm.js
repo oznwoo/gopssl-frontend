@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import {
   ActivityIndicator,
   StyleSheet,
@@ -28,14 +28,17 @@ const UserForm = () => {
   const user = useSelector((state) => state.auth.user);
 
   // 초기값 세팅
-  const initialValues = {
-    name: user?.name || "",
-    email: user?.email || "",
-    storeName: user?.store_name || "",
-    address: user?.address || "",
-    addressDetail: user?.address_detail || "",
-    zipCode: user?.zip_code || "",
-  };
+  const initialValues = useMemo(
+    () => ({
+      name: user?.name || "",
+      email: user?.email || "",
+      storeName: user?.store_name || "",
+      address: user?.address || "",
+      addressDetail: user?.address_detail || "",
+      zipCode: user?.zip_code || "",
+    }),
+    [user]
+  );
 
   // 업데이트 핸들러
   const handleUpdate = async (values, { setSubmitting, setErrors }) => {

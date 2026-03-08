@@ -117,6 +117,7 @@ const styles = StyleSheet.create({
   treatmentInputContainer: {
     flex: 1,
     width: "100%",
+    minHeight: "100",
     borderRadius: 16,
     paddingHorizontal: 16,
     paddingBottom: 8,

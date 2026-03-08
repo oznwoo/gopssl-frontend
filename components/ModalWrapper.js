@@ -7,16 +7,22 @@ import {
   StyleSheet,
 } from "react-native";
 
-const ModalWrapper = ({ isVisible, onClose, children }) => {
+const ModalWrapper = ({
+  isVisible,
+  onClose,
+  children,
+  animationType,
+  style,
+}) => {
   return (
     <Modal
-      animationType="slide"
+      animationType={animationType}
       transparent={true}
       visible={isVisible}
       onRequestClose={onClose}
     >
       <TouchableWithoutFeedback onPress={onClose}>
-        <View style={styles.modalOverlay}>
+        <View style={[styles.modalOverlay, style]}>
           {/* Pressable로 감싸서 모달 컨텐츠 클릭 시 닫히지 않도록 함 */}
           <Pressable style={styles.modalContentWrapper} onPress={() => {}}>
             {children}

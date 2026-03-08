@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,
   ScrollView,
@@ -9,6 +9,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Dimensions,
+  TouchableOpacity,
 } from "react-native";
 import SubmitButton from "./SubmitButton";
 import colors from "../styles/color";
@@ -83,28 +84,31 @@ const SaleForm = ({ saleDate, data, mode }) => {
     return newItem;
   });
 
-  const initialValues =
-    mode === "view" && data
-      ? {
-          customerId: data.customer_id || -1,
-          name: data.customer_name || "",
-          saleDate: new Date(data.sale_date) || new Date(),
-          paymentType: data.payment_type || "",
-          detail: data.detail || "",
-          treatmentList: reshapedTreatments || [],
-          extraPrices: data.extra_prices || {},
-          totalAmount: data.total_amount,
-        }
-      : {
-          customerId: -1,
-          name: "",
-          saleDate: saleDate || new Date(),
-          paymentType: "",
-          detail: "",
-          treatmentList: [],
-          extraPrices: {},
-          totalAmount: 0,
-        };
+  const initialValues = useMemo(
+    () =>
+      mode === "view" && data
+        ? {
+            customerId: data.customer_id || -1,
+            name: data.customer_name || "",
+            saleDate: new Date(data.sale_date) || new Date(),
+            paymentType: data.payment_type || "",
+            detail: data.detail || "",
+            treatmentList: reshapedTreatments || [],
+            extraPrices: data.extra_prices || {},
+            totalAmount: data.total_amount,
+          }
+        : {
+            customerId: -1,
+            name: "",
+            saleDate: saleDate || new Date(),
+            paymentType: "",
+            detail: "",
+            treatmentList: [],
+            extraPrices: {},
+            totalAmount: 0,
+          },
+    [data, mode, saleDate]
+  );
 
   // 등록 핸들러
   const handleRegister = (values, formikHelpers) => {
@@ -300,10 +304,7 @@ const SaleForm = ({ saleDate, data, mode }) => {
                         setFieldValue("customerId", customerId);
                         setFieldValue("name", name);
                       }}
-                      onBlur={handleBlur("name")}
-                      onFocus={() => scrollToInput("name")}
                       errorText={touched.name && errors.name}
-                      editable={true}
                       mode={mode}
                     />
                   </View>
@@ -315,7 +316,9 @@ const SaleForm = ({ saleDate, data, mode }) => {
                       label="시술일"
                       useBlur={false}
                       value={values.saleDate}
-                      onChangeDate={(date) => setFieldValue("saleDate", date)}
+                      onChangeDate={(date) => {
+                        setFieldValue("saleDate", date);
+                      }}
                       onBlur={handleBlur("saleDate")}
                       onFocus={() => scrollToInput("saleDate")}
                       errorText={touched.saleDate && errors.saleDate}

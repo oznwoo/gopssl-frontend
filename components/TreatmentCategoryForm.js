@@ -1,5 +1,5 @@
 import { Formik } from "formik";
-import React from "react";
+import React, { useMemo } from "react";
 import { StyleSheet, View, ActivityIndicator, Alert } from "react-native";
 import { BaseInput } from "./Input";
 import SubmitButton from "../components/SubmitButton";
@@ -20,7 +20,10 @@ const TreatmentCategoryForm = ({ onClose, mode = "register", data }) => {
   const dispatch = useDispatch();
   const { treatments } = useSelector((state) => state.treatment);
 
-  const initialValues = data ? { name: data.name || "" } : { name: "" };
+  const initialValues = useMemo(
+    () => (data ? { name: data.name || "" } : { name: "" }),
+    [data]
+  );
 
   const handleRegister = (values, formikHelpers) => {
     const { setSubmitting, setErrors, resetForm } = formikHelpers;

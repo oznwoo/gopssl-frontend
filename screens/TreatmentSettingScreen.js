@@ -43,6 +43,7 @@ const TreatmentSettingScreen = () => {
       <ModalWrapper
         isVisible={isCategoryModalVisible}
         onClose={() => setIsCategoryModalVisible(false)}
+        animationType={"slide"}
       >
         <TreatmentCategoryForm
           onClose={() => setIsCategoryModalVisible(false)}

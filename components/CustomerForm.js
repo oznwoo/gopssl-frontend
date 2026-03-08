@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import {
   ActivityIndicator,
   StyleSheet,
@@ -29,14 +29,17 @@ const CustomerForm = ({ data, mode }) => {
   const { id } = useSelector((state) => state.auth.user);
 
   // 초깃값 설정: view 모드든 edit/등록 모드든 기본적으로 수정 가능한 값으로 세팅
-  const initialValues =
-    mode === "view" && data
-      ? {
-          name: data.name,
-          phoneNumber: data.phone_number ? data.phone_number : "",
-          detail: data.detail ? data.detail : "",
-        }
-      : { name: "", phoneNumber: "", detail: "" };
+  const initialValues = useMemo(
+    () =>
+      mode === "view" && data
+        ? {
+            name: data.name,
+            phoneNumber: data.phone_number ? data.phone_number : "",
+            detail: data.detail ? data.detail : "",
+          }
+        : { name: "", phoneNumber: "", detail: "" },
+    [data, mode]
+  );
 
   // 등록 핸들러
   const handleRegister = (values, { setSubmitting, setErrors, resetForm }) => {
