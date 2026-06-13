@@ -14,7 +14,7 @@ export const authSlice = createSlice({
     signUpSuccess: (state, action) => {
       state.user = action.payload.user;
       state.token = action.payload.token;
-      state.isAuthenticated = true;
+      state.isAuthenticated = false;
       state.isFirst = true;
     },
     signInSuccess: (state, action) => {
@@ -27,11 +27,13 @@ export const authSlice = createSlice({
     },
     onboardingSuccess: (state) => {
       state.isFirst = false;
+      state.isAuthenticated = true;
     },
     logout: (state, action) => {
       state.user = null;
       state.token = null;
       state.isAuthenticated = false;
+      state.isFirst = false;
     },
   },
 });

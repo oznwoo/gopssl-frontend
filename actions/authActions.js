@@ -213,11 +213,12 @@ export const signIn = ({ email, password, rememberMe }) => {
 export const logout = () => {
   return async (dispatch) => {
     try {
-      // Redux 상태 초기화
+      await AsyncStorage.removeItem("token");
+      await AsyncStorage.removeItem("user");
+      // @viewedOnboarding은 유지 (재로그인 시 온보딩 재표시 불필요)
       dispatch(logoutAction());
     } catch (e) {
       console.error("로그아웃 중 오류 발생:", e);
-      // 필요시 에러 처리 추가
     }
   };
 };
