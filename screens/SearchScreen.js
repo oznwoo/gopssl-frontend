@@ -9,6 +9,7 @@ import {
   Platform,
   RefreshControl,
   Text,
+  ActivityIndicator,
 } from "react-native";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
@@ -25,7 +26,30 @@ const SearchScreen = ({ navigation }) => {
   const customers = useSelector((state) => state.customer.list);
   const [searchText, setSearchText] = useState("");
   const [refreshing, setRefreshing] = useState(false);
+  const [loading, setLoading] = useState(false);
   const inputRef = useRef(null);
+
+  useEffect(() => {
+    const fetchCustomers = async () => {
+      // 이미 고객 목록이 있다면 재요청하지 않음 (체감 속도 개선)
+      if (customers && customers.length > 0) {
+        return;
+      }
+
+      console.time("getAllCustomer_initial");
+      setLoading(true);
+      try {
+        await dispatch(getAllCustomer());
+      } catch (err) {
+        console.log("고객 목록 초기 로딩 실패:", err);
+      } finally {
+        setLoading(false);
+        console.timeEnd("getAllCustomer_initial");
+      }
+    };
+
+    fetchCustomers();
+  }, [dispatch, customers]);
 
   const handleClearText = () => setSearchText("");
 
@@ -69,23 +93,37 @@ const SearchScreen = ({ navigation }) => {
       </View>
 
       <View style={styles.contentContainer}>
-        {/* 📋 고객 리스트 */}
-        <CustomerList
-          customers={customers}
-          searchText={searchText}
-          onItemPress={(id) =>
-            navigation.navigate("Customer", { mode: "view", itemId: id })
-          }
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={onRefresh}
-              tintColor={colors.purple} // iOS 인디케이터 색상
-              colors={[colors.purple, colors.green]} // Android 인디케이터 색상
-              progressBackgroundColor="#fff" // Android 배경색
+        {loading && customers.length === 0 ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color={colors.purple} />
+            <Text style={styles.loadingText}>고객 목록을 불러오는 중...</Text>
+          </View>
+        ) : (
+          <>
+            {/* 📋 고객 리스트 */}
+            <CustomerList
+              customers={customers}
+              searchText={searchText}
+              onItemPress={(id) =>
+                navigation.navigate("Customer", { mode: "view", itemId: id })
+              }
+              refreshControl={
+                <RefreshControl
+                  refreshing={refreshing}
+                  onRefresh={onRefresh}
+                  tintColor={colors.purple} // iOS 인디케이터 색상
+                  colors={[colors.purple, colors.green]} // Android 인디케이터 색상
+                  progressBackgroundColor="#fff" // Android 배경색
+                />
+              }
             />
-          }
-        />
+            {loading && (
+              <View style={styles.loadingOverlay}>
+                <ActivityIndicator size="small" color={colors.purple} />
+              </View>
+            )}
+          </>
+        )}
       </View>
       {/* ➕ 플로팅 버튼 */}
       <FloatingExpandedButton style={styles.plusButton} />
@@ -129,6 +167,23 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
   },
   contentContainer: { flex: 1, justifyContent: "center" },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    marginTop: 12,
+    fontFamily: "nanumSquareB",
+    fontSize: normalizeFont(14),
+    color: colors.purple,
+  },
+  loadingOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#FFFFFF80",
+  },
   plusButton: {
     position: "absolute",
     right: 20,

@@ -7,6 +7,7 @@ import { InfoSchema } from "../schemas/InfoSchema";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
 import { registerUserInfo } from "../actions/userActions";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AddressSearchInput, BaseInput, DetailInput } from "./Input";
 import { normalizeFont } from "../utils/responsive";
 
@@ -28,6 +29,9 @@ const InfoForm = ({ setFormType }) => {
           address_detail: values.addressDetail,
         })
       );
+
+      await AsyncStorage.setItem("@viewedOnboarding", "true");
+      navigation.navigate("OnboardingScreen");
     } catch (error) {
       console.log("에러 상태코드:", error.message); // 여기서 접근 가능!
 

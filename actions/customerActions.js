@@ -3,6 +3,8 @@ import { registerSuccess } from "../store/authSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { setCustomers } from "../store/customerSlice";
 
+const CUSTOMER_CACHE_KEY = "customers_cache";
+
 export const registerCustomer = ({ user_id, name, phone_number, detail }) => {
   return async (dispatch) => {
     try {
@@ -65,11 +67,45 @@ export const getAllCustomer = () => {
   return async (dispatch) => {
     try {
       const response = await apiClient.get("/customers/");
-      dispatch(setCustomers(response.data));
-      return response.data;
+      const customers = response.data;
+
+      // Redux 상태 업데이트
+      dispatch(setCustomers(customers));
+
+      // 디바이스 로컬(AsyncStorage)에 캐시 저장
+      try {
+        await AsyncStorage.setItem(
+          CUSTOMER_CACHE_KEY,
+          JSON.stringify(customers)
+        );
+      } catch (storageError) {
+        console.log("고객 캐시 저장 실패:", storageError);
+      }
+
+      return customers;
     } catch (e) {
       console.error(e);
       throw e;
+    }
+  };
+};
+
+// 앱 시작 시: AsyncStorage에 저장된 고객 리스트를 먼저 불러오는 thunk
+export const loadCustomersFromStorage = () => {
+  return async (dispatch) => {
+    try {
+      const cached = await AsyncStorage.getItem(CUSTOMER_CACHE_KEY);
+      if (!cached) return null;
+
+      const customers = JSON.parse(cached);
+      if (Array.isArray(customers)) {
+        dispatch(setCustomers(customers));
+      }
+
+      return customers;
+    } catch (e) {
+      console.log("고객 캐시 로딩 실패:", e);
+      return null;
     }
   };
 };

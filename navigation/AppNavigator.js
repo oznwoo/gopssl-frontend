@@ -1,76 +1,71 @@
 import React, { useEffect, useState } from "react";
+import { View, ActivityIndicator } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import MainNavigator from "./MainNavigator";
 import AuthNavigator from "./AuthNavigator";
+import OnboardingNavigator from "./OnboardingNavigator";
 import { useSelector, useDispatch } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { signInSuccess, logout as logoutAction } from "../store/authSlice";
-import { getAllCustomer } from "../actions/customerActions";
-import { ActivityIndicator, Text, View } from "react-native";
+import { signInSuccess, signUpSuccess } from "../store/authSlice";
+import { getAllCustomer, loadCustomersFromStorage } from "../actions/customerActions";
+import { fetchTreatmentsThunk } from "../actions/treatmentActions";
 import colors from "../styles/color";
-import { normalizeFont } from "../utils/responsive";
 
 const AppNavigator = () => {
-  const [loading, setLoading] = useState(true);
-  const isAuth = useSelector((state) => state.auth.isAuthenticated);
   const dispatch = useDispatch();
+  const isAuth = useSelector((state) => state.auth.isAuthenticated);
+  const isFirst = useSelector((state) => state.auth.isFirst);
+  const [isBootstrapping, setIsBootstrapping] = useState(true);
 
   useEffect(() => {
-    const checkAutoLogin = async () => {
+    const bootstrap = async () => {
       try {
-        const token = await AsyncStorage.getItem("token");
-        const user = await AsyncStorage.getItem("user");
+        const [token, userJson, viewedOnboarding] = await Promise.all([
+          AsyncStorage.getItem("token"),
+          AsyncStorage.getItem("user"),
+          AsyncStorage.getItem("@viewedOnboarding"),
+        ]);
 
-        if (token && user) {
-          // 토큰 만료 여부는 서버 요청 시 확인
-          dispatch(signInSuccess({ token, user: JSON.parse(user) }));
-          dispatch(getAllCustomer());
+        if (token && userJson) {
+          const user = JSON.parse(userJson);
+
+          if (viewedOnboarding) {
+            dispatch(signInSuccess({ token, user }));
+            await dispatch(loadCustomersFromStorage());
+            dispatch(getAllCustomer());
+            dispatch(fetchTreatmentsThunk());
+          } else {
+            // 온보딩 미완료: InfoForm 복원
+            dispatch(signUpSuccess({ token, user }));
+          }
         }
       } catch (e) {
-        console.log("자동 로그인 실패:", e);
-        // 혹시 오류 발생 시 안전하게 로그아웃 처리
-        await AsyncStorage.removeItem("token");
-        await AsyncStorage.removeItem("user");
-        dispatch(logoutAction());
+        console.error("앱 초기화 실패:", e);
       } finally {
-        setLoading(false);
+        setIsBootstrapping(false);
       }
     };
 
-    checkAutoLogin();
+    bootstrap();
   }, []);
 
-  // 로딩 중에는 스플래시 화면이나 ActivityIndicator 표시 가능
-  if (loading)
+  if (isBootstrapping) {
     return (
-      <View
-        style={{
-          flex: 1,
-          width: "100%",
-          justifyContent: "center",
-          alignItems: "center",
-          gap: 20,
-        }}
-      >
-        <ActivityIndicator color={colors.purple} size={48} />
-        <Text
-          style={{
-            width: "100%",
-            textAlign: "center",
-            fontFamily: "nanumSquareB",
-            fontSize: normalizeFont(20),
-            letterSpacing: -0.5,
-            color: colors.purple,
-          }}
-        >
-          자동 로그인 진행 중...
-        </Text>
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" color={colors.purple} />
       </View>
     );
+  }
 
   return (
     <NavigationContainer>
-      {isAuth ? <MainNavigator /> : <AuthNavigator />}
+      {isAuth ? (
+        <MainNavigator />
+      ) : isFirst ? (
+        <OnboardingNavigator />
+      ) : (
+        <AuthNavigator />
+      )}
     </NavigationContainer>
   );
 };

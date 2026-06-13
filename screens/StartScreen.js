@@ -21,7 +21,7 @@ import logoImage from "../assets/Gopssl.png";
 
 const StartScreen = () => {
   const route = useRoute();
-  const [formType, setFormType] = useState(FORM_TYPES.START);
+  const [formType, setFormType] = useState(route.params?.formType || FORM_TYPES.START);
 
   useEffect(() => {
     if (route.params?.formType) {

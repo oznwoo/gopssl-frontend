@@ -63,7 +63,7 @@ const CustomerList = ({
           (c) =>
             c.name.toLowerCase().includes(searchText.toLowerCase()) ||
             c.phone_number?.includes(searchText) ||
-            c.detail?.toLowerCase().includes(searchText.toLowerCase())
+            c.detail?.toLowerCase().includes(searchText.toLowerCase()),
         );
     return [...result].sort((a, b) => a.name.localeCompare(b.name, "ko"));
   }, [customers, searchText]);
@@ -81,10 +81,42 @@ const CustomerList = ({
       .sort()
       .map((key) => ({
         title: key,
-        data: collapsedSections[key] ? [] : grouped[key], // 접힘 상태면 data 비움
+        data: grouped[key], // 접힘 상태면 data 비움
         count: grouped[key].length, // 👈 고객 수 추가
       }));
-  }, [filteredCustomers, searchText, collapsedSections]);
+  }, [filteredCustomers, searchText]);
+
+  const renderItem = ({ item, index, section }) => {
+    if (collapsedSections[section.title]) return null;
+
+    const isLastItem = index === section.data.length - 1;
+
+    return (
+      <View>
+        <TouchableOpacity
+          style={[styles.customerItem, { backgroundColor: "#fff" }]}
+          onPress={() => onItemPress(item.id)}
+        >
+          <View style={styles.customerNameContainer}>
+            <Text style={styles.customerName}>{item.name}</Text>
+
+            <Text style={styles.numOfVisits}>
+              {item.num_of_visits ? `${item.num_of_visits}` : "0"}
+            </Text>
+          </View>
+          <View style={styles.infoBox}>
+            <Text style={styles.detail} numberOfLines={1}>
+              {item.detail}
+            </Text>
+            <Text style={styles.detail}>{item.phone_number}</Text>
+          </View>
+        </TouchableOpacity>
+
+        {/* 구분선을 renderItem 안으로 이동: 마지막 아이템이 아닐 때만 표시 */}
+        {!isLastItem && <View style={styles.divideLine} />}
+      </View>
+    );
+  };
 
   const toggleSection = (title) => {
     setCollapsedSections((prev) => ({
@@ -125,7 +157,7 @@ const CustomerList = ({
                 <Text style={styles.detail} numberOfLines={1}>
                   {highlightMatchedText(
                     getSnippetWithKeyword(item.detail || "", searchText),
-                    searchText
+                    searchText,
                   )}
                 </Text>
                 <Text style={styles.detail}>
@@ -153,6 +185,9 @@ const CustomerList = ({
         sections={sections}
         keyExtractor={(item) => item.id.toString()}
         stickySectionHeadersEnabled={true}
+        initialNumToRender={30}
+        windowSize={100}
+        maxToRenderPerBatch={10}
         renderSectionHeader={({ section: { title, count } }) => (
           <SectionHeader
             title={title}
@@ -161,28 +196,8 @@ const CustomerList = ({
             onToggle={() => toggleSection(title)}
           />
         )}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={[styles.customerItem, { backgroundColor: "#fff" }]}
-            onPress={() => onItemPress(item.id)}
-          >
-            <View style={styles.customerNameContainer}>
-              <Text style={styles.customerName}>{item.name}</Text>
-
-              <Text style={styles.numOfVisits}>
-                {item.num_of_visits ? `${item.num_of_visits}` : "0"}
-              </Text>
-            </View>
-            <View style={styles.infoBox}>
-              <Text style={styles.detail} numberOfLines={1}>
-                {item.detail}
-              </Text>
-              <Text style={styles.detail}>{item.phone_number}</Text>
-            </View>
-          </TouchableOpacity>
-        )}
+        renderItem={renderItem}
         contentContainerStyle={{ paddingVertical: 4 }}
-        ItemSeparatorComponent={() => <View style={styles.divideLine} />}
         keyboardShouldPersistTaps="handled"
         refreshControl={refreshControl}
       />
