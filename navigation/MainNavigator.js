@@ -13,6 +13,7 @@ import ProfileScreen from "../screens/ProfileScreen";
 import AddressSearchScreen from "../screens/AddressSearchScreen";
 import DetailScreen from "../screens/DetailScreen";
 import TreatmentSettingScreen from "../screens/TreatmentSettingScreen";
+import DeletedCustomersScreen from "../screens/DeletedCustomersScreen";
 
 import { Ionicons } from "@expo/vector-icons";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
@@ -122,6 +123,11 @@ const StackNavigator = () => (
     <Stack.Screen
       name="AddressSearch"
       component={AddressSearchScreen}
+      options={{ headerShown: false }}
+    />
+    <Stack.Screen
+      name="DeletedCustomers"
+      component={DeletedCustomersScreen}
       options={{ headerShown: false }}
     />
   </Stack.Navigator>
