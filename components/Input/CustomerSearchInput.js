@@ -30,6 +30,8 @@ const CustomerSearchInput = ({
   minLength = 1,
   errorText,
   mode,
+  readOnly = false,
+  onFocus,
 }) => {
   const inputRef = useRef(null);
   const [searchText, setSearchText] = useState(value);
@@ -83,29 +85,45 @@ const CustomerSearchInput = ({
       accessible={false}
     >
       <View style={styles.container}>
+        {readOnly && (
+          <TouchableOpacity
+            style={styles.readOnlyOverlay}
+            onPress={() => onFocus?.()}
+            activeOpacity={0.7}
+          />
+        )}
         <View style={{ flexDirection: "row" }}>
           <BaseInput
             label={label}
             errorText={errorText}
             useBlur={false}
-            readOnly={isNew}
+            readOnly={isNew || readOnly}
             inputProps={{
               ref: inputRef,
               value: searchText,
-              onChangeText: setSearchText,
-              onFocus: () => setIsActive(true),
+              onChangeText: (text) => {
+                if (readOnly) return;
+                setSearchText(text);
+              },
+              onFocus: () => {
+                if (readOnly) {
+                  onFocus?.();
+                  return;
+                }
+                setIsActive(true);
+              },
               placeholder,
               style: styles.input,
             }}
             rightIcon={
-              searchText.length > 0 && (
+              !readOnly && searchText.length > 0 && (
                 <TouchableOpacity onPress={() => setSearchText("")}>
                   <Ionicons name="close" size={20} color={colors.purple} />
                 </TouchableOpacity>
               )
             }
             specialButton={
-              mode !== "view" && (
+              mode !== "view" && !readOnly && (
                 <View
                   style={[
                     styles.specialButtonContainer,
@@ -132,7 +150,7 @@ const CustomerSearchInput = ({
             }
           />
         </View>
-        {isActive && results.length > 0 && (
+        {!readOnly && isActive && results.length > 0 && (
           <View>
             <FlatList
               data={results}
@@ -266,4 +284,12 @@ const styles = StyleSheet.create({
     alignSelf: "flex-end",
   },
   divideLine: { height: 1, backgroundColor: colors.purple, marginVertical: 8 },
+  readOnlyOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 10,
+  },
 });
