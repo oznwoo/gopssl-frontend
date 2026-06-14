@@ -85,6 +85,17 @@ const SettingScreen = () => {
               onPress={() => handleNavigate("Treatment")}
             />
             <SettingItem
+              title={"삭제된 고객"}
+              icon={
+                <Ionicons
+                  name="trash-outline"
+                  size={16}
+                  color={colors.purple}
+                />
+              }
+              onPress={() => handleNavigate("DeletedCustomers")}
+            />
+            <SettingItem
               title={"상세 정보"}
               icon={
                 <FontAwesome6
