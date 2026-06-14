@@ -83,7 +83,7 @@ const SaleForm = ({ saleDate, data, mode }) => {
         return newItem;
     });
 
-    const isDeletedCustomer = mode === "view" && data && !data.customer_id;
+    const isDeletedCustomer = mode === "view" && data?.is_customer_deleted;
 
     const initialValues =
         mode === "view" && data

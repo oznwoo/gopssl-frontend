@@ -41,7 +41,7 @@ const SaleItem = ({ saleData, transitionSale, transitionCustomer }) => {
               style={[
                 styles.customerName,
                 { fontFamily: "nanumSquareEB" },
-                !saleData.customer_id && { color: colors.lightPurple },
+                saleData.is_customer_deleted && { color: colors.lightPurple },
               ]}
             >
               {saleData.customer_name}
