@@ -44,7 +44,11 @@ const CustomerForm = ({ data, mode }) => {
       "등록 확인",
       "고객을 등록하시겠습니까?",
       [
-        { text: "취소", style: "cancel", onPress: () => setSubmitting(false) },
+        {
+          text: "취소",
+          style: "cancel",
+          onPress: () => setSubmitting(false),
+        },
         {
           text: "등록",
           style: "default",
@@ -56,7 +60,7 @@ const CustomerForm = ({ data, mode }) => {
                   name: values.name,
                   phone_number: values.phoneNumber,
                   detail: values.detail,
-                })
+                }),
               );
               Alert.alert("알림", "고객 등록이 완료되었습니다.");
               dispatch(getAllCustomer());
@@ -64,16 +68,18 @@ const CustomerForm = ({ data, mode }) => {
             } catch (error) {
               console.log(
                 "에러 상태코드:",
-                error?.response?.status || error.message
+                error?.response?.status || error.message,
               );
-              setErrors({ submit: "등록 중 문제가 발생했습니다." });
+              setErrors({
+                submit: "등록 중 문제가 발생했습니다.",
+              });
             } finally {
               setSubmitting(false);
             }
           },
         },
       ],
-      { cancelable: true }
+      { cancelable: true },
     );
   };
 
@@ -83,7 +89,11 @@ const CustomerForm = ({ data, mode }) => {
       "수정 확인",
       "수정하시겠습니까?",
       [
-        { text: "취소", style: "cancel", onPress: () => setSubmitting(false) },
+        {
+          text: "취소",
+          style: "cancel",
+          onPress: () => setSubmitting(false),
+        },
         {
           text: "수정",
           style: "default",
@@ -96,23 +106,25 @@ const CustomerForm = ({ data, mode }) => {
                   name: values.name,
                   phone_number: values.phoneNumber,
                   detail: values.detail,
-                })
+                }),
               );
+              await dispatch(getAllCustomer());
               Alert.alert("알림", "고객 정보 수정이 완료되었습니다.");
-              dispatch(getAllCustomer());
             } catch (error) {
               console.log(
                 "에러 상태코드:",
-                error?.response?.status || error.message
+                error?.response?.status || error.message,
               );
-              setErrors({ submit: "수정 중 문제가 발생했습니다." });
+              setErrors({
+                submit: "수정 중 문제가 발생했습니다.",
+              });
             } finally {
               setSubmitting(false);
             }
           },
         },
       ],
-      { cancelable: true }
+      { cancelable: true },
     );
   };
 
@@ -135,14 +147,14 @@ const CustomerForm = ({ data, mode }) => {
             } catch (error) {
               console.log(
                 "에러 상태코드:",
-                error?.response?.status || error.message
+                error?.response?.status || error.message,
               );
               Alert.alert("오류", "삭제 중 문제가 발생했습니다.");
             }
           },
         },
       ],
-      { cancelable: true }
+      { cancelable: true },
     );
   };
 
@@ -155,7 +167,7 @@ const CustomerForm = ({ data, mode }) => {
 
       navigation.navigate("Sale", { ...baseParams, itemId });
     },
-    [navigation]
+    [navigation],
   );
   return (
     <Formik
