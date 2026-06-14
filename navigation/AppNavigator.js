@@ -32,13 +32,16 @@ const AppNavigator = () => {
         if (token && userJson) {
           const user = JSON.parse(userJson);
 
-          if (viewedOnboarding) {
+          if (viewedOnboarding || user?.store_name) {
+            if (!viewedOnboarding && user?.store_name) {
+              await AsyncStorage.setItem("@viewedOnboarding", "true");
+            }
             dispatch(signInSuccess({ token, user }));
             await dispatch(loadCustomersFromStorage());
             dispatch(getAllCustomer());
             dispatch(fetchTreatmentsThunk());
           } else {
-            // 온보딩 미완료: InfoForm 복원
+            // store_name도 없는 온보딩 미완료 신규 유저
             dispatch(signUpSuccess({ token, user }));
           }
         }
