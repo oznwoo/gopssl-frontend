@@ -122,3 +122,27 @@ export const deleteCustomerById = (customerId) => {
     }
   };
 };
+
+export const permanentDeleteCustomer = (customerId) => {
+  return async (dispatch) => {
+    try {
+      const response = await apiClient.delete(`/customers/${customerId}/permanent`);
+      return response.data;
+    } catch (e) {
+      console.log("Error:", e.response?.data || e.message);
+      throw e;
+    }
+  };
+};
+
+export const restoreCustomer = (customerId) => {
+  return async (dispatch) => {
+    try {
+      const response = await apiClient.post(`/customers/${customerId}/restore`);
+      return response.data;
+    } catch (e) {
+      console.log("Error:", e.response?.data || e.message);
+      throw e;
+    }
+  };
+};

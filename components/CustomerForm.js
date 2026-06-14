@@ -16,6 +16,7 @@ import {
   deleteCustomerById,
   getAllCustomer,
   registerCustomer,
+  restoreCustomer,
   updateCustomer,
 } from "../actions/customerActions";
 import { useNavigation } from "@react-navigation/native";
@@ -23,7 +24,7 @@ import { normalizeFont } from "../utils/responsive";
 import CustomerSaleItem from "./CustomerSaleItem";
 import { Text } from "react-native";
 
-const CustomerForm = ({ data, mode }) => {
+const CustomerForm = ({ data, mode, isDeleted = false }) => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const { id } = useSelector((state) => state.auth.user);
@@ -128,12 +129,37 @@ const CustomerForm = ({ data, mode }) => {
     );
   };
 
+  const handleRestore = () => {
+    Alert.alert(
+      "복구 확인",
+      "고객을 복구하시겠습니까?",
+      [
+        { text: "취소", style: "cancel" },
+        {
+          text: "복구",
+          style: "default",
+          onPress: async () => {
+            try {
+              await dispatch(restoreCustomer(data.id));
+              await dispatch(getAllCustomer());
+              Alert.alert("알림", "고객이 복구되었습니다.");
+              navigation.goBack();
+            } catch (error) {
+              Alert.alert("오류", "복구 중 문제가 발생했습니다.");
+            }
+          },
+        },
+      ],
+      { cancelable: true }
+    );
+  };
+
   const handleDelete = () => {
     const customerId = data?.id;
 
     Alert.alert(
       "삭제 확인",
-      "고객 정보를 삭제하시겠습니까?\n⚠️ 고객을 삭제하시면 해당 고객으로 등록된 모든 매출이 함께 삭제됩니다. ⚠️",
+      "고객 정보를 삭제하시겠습니까?\n삭제된 고객은 설정 > 삭제된 고객에서 복구하거나 영구 삭제할 수 있습니다.",
       [
         { text: "취소", style: "cancel" },
         {
@@ -197,7 +223,7 @@ const CustomerForm = ({ data, mode }) => {
               onChangeText={handleChange("name")}
               onBlur={handleBlur("name")}
               errorText={touched.name && errors.name}
-              editable={true} // 항상 수정 가능
+              editable={!isDeleted}
             />
             <PhoneNumberInput
               id="phoneNumber"
@@ -208,7 +234,7 @@ const CustomerForm = ({ data, mode }) => {
               onBlur={handleBlur("phoneNumber")}
               errorText={touched.phoneNumber && errors.phoneNumber}
               portraitMode={true}
-              editable={true} // 수정 가능
+              editable={!isDeleted}
             />
             <DetailInput
               id="detail"
@@ -219,7 +245,7 @@ const CustomerForm = ({ data, mode }) => {
               onBlur={handleBlur("detail")}
               errorText={touched.detail && errors.detail}
               portraitMode={true}
-              editable={true} // 수정 가능
+              editable={!isDeleted}
             />
 
             {mode === "view" && (
@@ -271,19 +297,25 @@ const CustomerForm = ({ data, mode }) => {
                 style={{ marginTop: 10 }}
               />
             ) : mode === "view" ? (
-              <View style={styles.submitButtons}>
-                <SubmitButton
-                  title={"수정"}
-                  onPress={handleSubmit}
-                  size={"small"}
-                  disable={!isValid || !dirty}
-                />
-                <SubmitButton
-                  title={"삭제"}
-                  size={"small"}
-                  onDelete={handleDelete}
-                />
-              </View>
+              isDeleted ? (
+                <View style={styles.submitButtons}>
+                  <SubmitButton title={"복구"} onPress={handleRestore} size={"small"} />
+                </View>
+              ) : (
+                <View style={styles.submitButtons}>
+                  <SubmitButton
+                    title={"수정"}
+                    onPress={handleSubmit}
+                    size={"small"}
+                    disable={!isValid || !dirty}
+                  />
+                  <SubmitButton
+                    title={"삭제"}
+                    size={"small"}
+                    onDelete={handleDelete}
+                  />
+                </View>
+              )
             ) : (
               <SubmitButton
                 title={"등록"}
