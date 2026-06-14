@@ -1,23 +1,20 @@
 import React from "react";
-import { BackHandler, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import FormHeader from "../components/FormHeader";
-import { useNavigation, useRoute } from "@react-navigation/native";
-import InfoForm from "../components/InfoForm";
-import SignUpForm from "../components/SignUpForm";
-import { useSelector } from "react-redux";
+import { useNavigation } from "@react-navigation/native";
 import UserForm from "../components/UserForm";
 import colors from "../styles/color";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const ProfileScreen = () => {
+  const insets = useSafeAreaInsets();
   const navigation = useNavigation();
-  const userData = useSelector((state) => state.auth.user);
-  const route = useRoute();
 
   const handleGoBack = () => {
     navigation.goBack();
   };
   return (
-    <View style={styles.pageContainer}>
+    <View style={[styles.pageContainer, { paddingTop: insets.top }]}>
       <FormHeader title="계정" onGoBack={handleGoBack} />
       <UserForm />
     </View>
@@ -29,6 +26,6 @@ export default ProfileScreen;
 const styles = StyleSheet.create({
   pageContainer: {
     flex: 1,
-    backgroundColor: colors.backgroundPurple,
+    backgroundColor: colors.purple,
   },
 });

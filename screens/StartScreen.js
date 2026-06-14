@@ -3,24 +3,25 @@ import {
   Text,
   StyleSheet,
   View,
-  Dimensions,
   KeyboardAvoidingView,
   Platform,
   TouchableWithoutFeedback,
   Keyboard,
+  Image,
 } from "react-native";
 import StartForm from "../components/StartForm";
 import SignInForm from "../components/SignInForm";
 import SignUpForm from "../components/SignUpForm";
 import InfoForm from "../components/InfoForm";
 import { FORM_TYPES } from "../constants/formTypes";
-import { useRoute, useFocusEffect } from "@react-navigation/native";
+import { useRoute } from "@react-navigation/native";
+import { normalizeFont, normalizeSize } from "../utils/responsive"; // ✅ 폰트 & 간격 전용
 
-const screenHeight = Dimensions.get("window").height;
+import logoImage from "../assets/Gopssl.png";
 
-const StartScreen = (props) => {
+const StartScreen = () => {
   const route = useRoute();
-  const [formType, setFormType] = useState(FORM_TYPES.START);
+  const [formType, setFormType] = useState(route.params?.formType || FORM_TYPES.START);
 
   useEffect(() => {
     if (route.params?.formType) {
@@ -37,13 +38,20 @@ const StartScreen = (props) => {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={{ flex: 1 }}
+      style={{
+        flex: 1,
+        backgroundColor: "#fff",
+      }}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.pageContainer}>
           <View style={styles.logoContainer}>
-            <Text style={styles.logo}>Gopssl</Text>
-            <Text style={styles.phrase}>
+            <Image
+              source={logoImage}
+              style={styles.logo}
+              resizeMode="contain"
+            />
+            <Text style={styles.phrase} allowFontScaling={false}>
               {"무질서함에서 질서를, \n복잡함 속에서 아름다움을"}
             </Text>
           </View>
@@ -63,33 +71,30 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "flex-start",
-    paddingTop: screenHeight * 0.1, // 10% 아래
-    paddingBottom: screenHeight * 0.05, // 5% 위
-    paddingHorizontal: 40,
+    paddingTop: normalizeSize(120), // ✅ 반응형 간격
+    paddingBottom: normalizeSize(48),
+    paddingHorizontal: normalizeSize(24),
   },
   logoContainer: {
     alignItems: "center",
-    gap: 16,
-    marginBottom: 40,
+    marginTop: normalizeSize(40), // ✅ 반응형 간격
+    gap: normalizeSize(16), // ✅ 반응형 gap
+    flex: 1,
   },
   flexibleFormContainer: {
     flex: 1,
     width: "100%",
     alignItems: "center",
-    justifyContent: "flex-end", // 폼 중앙 정렬
+    justifyContent: "flex-end",
+    paddingBottom: 12,
   },
   phrase: {
     fontFamily: "gamtanBatangR",
-    fontSize: 16,
-    letterSpacing: -1.5,
-    lineHeight: 32,
+    fontSize: normalizeFont(16),
+    letterSpacing: -0.5,
+    lineHeight: normalizeFont(28),
     textAlign: "center",
     color: "#2C2E1F",
-  },
-  logo: {
-    fontFamily: "logo",
-    fontSize: 80,
-    color: "#743D7B",
   },
   formContainer: {
     width: "100%",

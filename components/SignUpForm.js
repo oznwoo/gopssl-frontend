@@ -15,6 +15,7 @@ import Input, { BaseInput, PasswordInput } from "./Input";
 import SubmitButton from "./SubmitButton";
 import { signUp } from "../actions/authActions";
 import { SignUpSchema } from "../schemas/signUpSchema";
+import { normalizeFont } from "../utils/responsive";
 
 const SignUpForm = ({ setFormType }) => {
   const dispatch = useDispatch();
@@ -125,6 +126,6 @@ const styles = StyleSheet.create({
   transitionText: {
     color: "#2E2B1C",
     fontFamily: "nanumSquareR",
-    fontSize: 12,
+    fontSize: normalizeFont(12),
   },
 });

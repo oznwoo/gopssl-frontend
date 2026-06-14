@@ -1,8 +1,9 @@
 import React from "react";
-import { TextInput, View, Text, StyleSheet } from "react-native";
+import { TextInput, View, Text, StyleSheet, Platform } from "react-native";
 import { BlurView } from "expo-blur";
 import colors from "../../styles/color";
 import { commonStyles } from "../../styles/commonStyles";
+import { normalizeFont } from "../../utils/responsive";
 
 const BaseInput = ({
   label,
@@ -13,26 +14,47 @@ const BaseInput = ({
   children,
   inputProps = {},
   specialButton,
+  textStyle,
+  onFocus,
+  style,
   ...rest
 }) => {
-  const Container = useBlur ? BlurView : View;
+  const Container = useBlur && Platform.OS === "ios" ? BlurView : View;
 
   return (
     <View style={styles.container}>
       <Container
         style={[
           styles.inputContainer,
-          useBlur && commonStyles.blurView,
+          Platform.OS === "ios" || portraitMode
+            ? { paddingVertical: 10 }
+            : { paddingVertical: 4 },
+          useBlur && Platform.OS === "ios" && commonStyles.blurView,
+          useBlur &&
+            Platform.OS === "android" && {
+              backgroundColor: "rgba(255,255,255,0.9)",
+            },
           portraitMode && styles.portraitMode,
+          style,
         ]}
-        {...(useBlur && { tint: "xlight", intensity: 30 })}
+        {...(useBlur &&
+          Platform.OS === "ios" && { tint: "xlight", intensity: 30 })}
       >
         {label && <Text style={styles.inputTitle}>{label}</Text>}
 
         {children ? (
           children
         ) : (
-          <TextInput style={styles.input} {...rest} {...inputProps} />
+          <TextInput
+            style={[styles.input, textStyle]}
+            {...rest}
+            {...inputProps}
+            onFocus={(e) => {
+              onFocus && onFocus(e);
+              inputProps.onFocus && inputProps.onFocus(e);
+              rest.onFocus && rest.onFocus(e);
+            }}
+          />
         )}
 
         {rightIcon}
@@ -60,13 +82,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#EDECF4",
     borderRadius: 8,
-    paddingVertical: 10,
     paddingHorizontal: 20,
     gap: 12,
     backgroundColor: "#fff",
   },
   inputTitle: {
-    fontSize: 16,
+    fontSize: normalizeFont(16),
     fontFamily: "nanumSquareR",
     color: colors.purple,
     letterSpacing: -0.5,
@@ -75,13 +96,14 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontFamily: "nanumSquareR",
-    fontSize: 16,
+    fontSize: normalizeFont(16),
   },
   errorContainer: {
     alignItems: "flex-end",
     marginTop: 4,
   },
   errorText: {
+    fontSize: normalizeFont(12),
     color: colors.alert,
     fontFamily: "nanumSquareR",
     letterSpacing: -0.5,

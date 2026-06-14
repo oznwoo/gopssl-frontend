@@ -1,33 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
-import {
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
 import BaseInput from "./BaseInput";
-import colors from "../../styles/color";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { fetchTreatmentsThunk } from "../../actions/treatmentActions";
-import { formatNumber } from "../../utils/format";
-
-const CATEGORY_KR_MAP = {
-  cut: "커트",
-  perm: "펌",
-  color: "염색",
-  elderly: "경로",
-};
-
-const groupTreatmentsByCategory = (treatments) => {
-  return treatments.reduce((acc, treatment) => {
-    const originalCategory = treatment.category || "etc";
-    const category = CATEGORY_KR_MAP[originalCategory] || "기타";
-    if (!acc[category]) acc[category] = [];
-    acc[category].push(treatment);
-    return acc;
-  }, {});
-};
+import TreatmentRegisterMenu from "../TreatmentRegisterMenu";
 
 // 💡 총액 계산 함수 분리
 const calculateTotalAmount = (treatmentList, extraPrices) => {
@@ -49,7 +24,6 @@ const TreatmentInput = ({
   ...rest
 }) => {
   const dispatch = useDispatch();
-  const { treatments } = useSelector((state) => state.treatment);
 
   // 내부 상태
   const [selectedTreatments, setSelectedTreatments] = useState([]);
@@ -120,6 +94,31 @@ const TreatmentInput = ({
     });
   };
 
+  const handleProductPriceChange = (treatment, text) => {
+    const price = parseInt(text, 10) || 0;
+
+    setSelectedTreatments((prev) => {
+      const exists = prev.some((t) => t.treatment_id === treatment.id);
+      let nextTreatments;
+      if (exists) {
+        // 이미 있으면 price 업데이트
+        nextTreatments = prev.map((t) =>
+          t.treatment_id === treatment.id ? { ...t, price } : t
+        );
+      } else {
+        // 없으면 새로 추가
+        nextTreatments = [...prev, { treatment_id: treatment.id, price }];
+      }
+      // 부모 콜백 호출
+      onTreatmentDataChange &&
+        onTreatmentDataChange({
+          nextTreatments,
+          extraPrices,
+        });
+      return nextTreatments;
+    });
+  };
+
   const handleExtraPriceChange = (category, text) => {
     const price = parseInt(text, 10) || 0;
     setExtraPrices((prev) => ({
@@ -128,149 +127,17 @@ const TreatmentInput = ({
     }));
   };
 
-  const grouped = groupTreatmentsByCategory(treatments);
-
   return (
     <BaseInput {...rest} portraitMode={true}>
-      <View style={styles.treatmentInputContainer}>
-        {/* 빈 TextInput으로 UI 정렬용 */}
-        <TextInput style={styles.textInput} value={""} editable={false} />
-
-        {Object.keys(grouped).map((category, index, array) => (
-          <View key={category} style={styles.categoryGroup}>
-            <Text style={styles.categoryTitle}>{category}</Text>
-
-            <View style={styles.treatmentGrid}>
-              {grouped[category].map((treatment) => {
-                const isSelected = selectedTreatments.some(
-                  (t) => t.treatment_id === treatment.id
-                );
-                return (
-                  <TouchableOpacity
-                    key={treatment.id}
-                    style={[
-                      styles.treatmentItem,
-                      isSelected && styles.treatmentItemSelected,
-                    ]}
-                    onPress={() => toggleTreatment(treatment)}
-                  >
-                    <Text
-                      style={[
-                        styles.treatmentName,
-                        isSelected && styles.treatmentTextSelected,
-                      ]}
-                    >
-                      {treatment.name}
-                    </Text>
-                    <Text
-                      style={[
-                        styles.treatmentPrice,
-                        isSelected && styles.treatmentTextSelected,
-                      ]}
-                    >
-                      {formatNumber(treatment.default_price)}원
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </View>
-
-            <View style={[styles.treatmentItem, styles.plusOption]}>
-              <Text style={styles.treatmentName}>기장추가</Text>
-              <TextInput
-                placeholder="가격 입력"
-                keyboardType="numeric"
-                style={styles.optionInput}
-                onChangeText={(text) => handleExtraPriceChange(category, text)}
-                value={extraPrices[category]?.toString() || ""}
-              />
-            </View>
-
-            {index !== array.length - 1 && (
-              <View style={styles.horizonalLine} />
-            )}
-          </View>
-        ))}
-      </View>
+      <TreatmentRegisterMenu
+        selectedTreatments={selectedTreatments}
+        onSelect={toggleTreatment}
+        onPriceChange={handleProductPriceChange}
+        extraPrices={extraPrices}
+        onExtraPriceChange={handleExtraPriceChange}
+      />
     </BaseInput>
   );
 };
 
 export default TreatmentInput;
-
-const styles = StyleSheet.create({
-  treatmentInputContainer: {
-    width: "100%",
-    borderRadius: 16,
-    paddingHorizontal: 16,
-    paddingBottom: 8,
-    backgroundColor: colors.backgroundPurple,
-  },
-  textInput: {
-    fontFamily: "nanumSquareR",
-    fontSize: 12,
-  },
-  categoryGroup: {
-    width: "100%",
-    gap: 4,
-  },
-  categoryTitle: {
-    fontFamily: "nanumSquareB",
-    fontSize: 16,
-    letterSpacing: -0.5,
-    marginBottom: 8,
-  },
-  treatmentGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 4,
-  },
-  treatmentItem: {
-    flex: 1,
-    minWidth: "23%",
-    height: 40,
-    borderWidth: 1,
-    borderColor: "#000",
-    borderRadius: 8,
-    paddingVertical: 8,
-    paddingHorizontal: 4,
-    gap: 4,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#fff",
-  },
-  treatmentItemSelected: {
-    backgroundColor: colors.purple,
-    borderColor: colors.purple,
-  },
-  treatmentTextSelected: {
-    color: "#fff",
-  },
-  treatmentName: {
-    fontFamily: "gamtanDotumB",
-    fontSize: 10,
-    letterSpacing: -0.5,
-  },
-  treatmentPrice: {
-    fontFamily: "nanumSquareB",
-    fontSize: 8,
-    letterSpacing: -0.5,
-  },
-  horizonalLine: {
-    backgroundColor: "#000",
-    height: 1,
-    marginTop: 4,
-    marginBottom: 12,
-  },
-  plusOption: {
-    paddingHorizontal: 16,
-    flexDirection: "row",
-    gap: 8,
-  },
-  optionInput: {
-    flex: 1,
-    fontFamily: "nanumSquareB",
-    letterSpacing: -0.5,
-    fontSize: 8,
-  },
-});

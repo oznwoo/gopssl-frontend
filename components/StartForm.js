@@ -3,6 +3,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import colors from "../styles/color";
 import { commonStyles } from "../styles/commonStyles";
 import { FORM_TYPES } from "../constants/formTypes";
+import { normalizeFont, normalizeSize } from "../utils/responsive";
 
 const StartForm = ({ setFormType }) => {
   const handleSignUp = () => {
@@ -43,13 +44,13 @@ export default StartForm;
 const styles = StyleSheet.create({
   formContainer: {
     flexDirection: "row",
-    gap: 16,
+    gap: 24,
   },
   button: {
     paddingVertical: 12,
     paddingHorizontal: 24,
-    width: 150,
-    height: 128,
+    width: normalizeSize(150),
+    height: normalizeSize(128),
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 24,
@@ -65,16 +66,18 @@ const styles = StyleSheet.create({
   },
   purpleButtonText: {
     color: "white",
-    fontFamily: "tjM",
-    fontSize: 20,
-    letterSpacing: -1,
+    fontFamily: "nanumSquareB",
+    fontSize: normalizeFont(20),
+    letterSpacing: -1.5,
     textAlign: "center",
+    width: "100%",
   },
   whiteButtonText: {
     color: colors.purple,
-    fontFamily: "tjM",
-    fontSize: 20,
-    letterSpacing: -1,
+    fontFamily: "nanumSquareB",
+    fontSize: normalizeFont(20),
+    letterSpacing: -1.5,
     textAlign: "center",
+    width: "100%",
   },
 });

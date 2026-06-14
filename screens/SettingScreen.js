@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import {
   ActivityIndicator,
+  Image,
+  ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
 import colors from "../styles/color";
@@ -11,22 +12,24 @@ import SubmitButton from "../components/SubmitButton";
 import { commonStyles } from "../styles/commonStyles";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
-import { useDispatch } from "react-redux";
+import Fontisto from "@expo/vector-icons/Fontisto";
+import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../actions/authActions";
 import { useNavigation } from "@react-navigation/native";
+import { normalizeFont, normalizeSize } from "../utils/responsive";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import logoURL from "../assets/Gopssl.png";
+import SettingItem from "../components/SettingItem";
 
-const SettingScreen = (props) => {
+const SettingScreen = () => {
+  const insets = useSafeAreaInsets();
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
+  const { name } = useSelector((state) => state.auth.user);
 
-  const handleProfile = () => {
-    navigation.navigate("Profile");
-  };
-
-  const handleDetail = () => {
-    navigation.navigate("Detail");
+  const handleNavigate = (target) => {
+    navigation.navigate(target);
   };
 
   const handleLogout = () => {
@@ -41,56 +44,71 @@ const SettingScreen = (props) => {
   };
 
   return (
-    <View style={styles.pageContainer}>
-      <View style={styles.headerContainer}>
-        <Text style={styles.headerTitle}>설정</Text>
-        <View style={styles.horizontalLine}></View>
+    <View style={[styles.pageContainer, { paddingTop: insets.top }]}>
+      <View style={styles.logoContainer}>
+        <Image source={logoURL} style={styles.logo} />
       </View>
-      <View style={styles.contentContainer}>
-        <View style={styles.logoContainer}>
-          <Text style={styles.logo}>Gopssl</Text>
-          <Text style={styles.userName}>
-            <Text style={{ fontFamily: "gamtanDotumB" }}>홍길동</Text> 원장님
-          </Text>
-        </View>
+      <View style={styles.userInfo}>
+        <Text style={styles.userName}>
+          <Text style={{ fontFamily: "nanumSquareEB" }}>{name}</Text> 원장님
+        </Text>
+        <Text style={styles.dDayText}>개업일로부터 D+1000 🎉</Text>
+      </View>
 
+      <ScrollView contentContainerStyle={styles.contentContainer}>
         <View style={styles.settingContainer}>
-          <TouchableOpacity style={styles.settingItem} onPress={handleProfile}>
-            <Ionicons name="person" size={20} color={colors.purple} />
-            <Text style={styles.settingText}>계정</Text>
-            <FontAwesome5
-              name="chevron-right"
-              size={20}
-              color={colors.purple}
+          <Text
+            style={{
+              fontFamily: "nanumSquareB",
+              fontSize: normalizeFont(16),
+              letterSpacing: -1,
+              color: colors.purple,
+              borderBottomColor: colors.purple,
+              borderBottomWidth: 1,
+              paddingBottom: 8,
+              paddingLeft: 8,
+            }}
+          >
+            설정
+          </Text>
+          <View style={styles.settingContainer}>
+            <SettingItem
+              title={"프로필"}
+              icon={<Ionicons name="person" size={16} color={colors.purple} />}
+              onPress={() => handleNavigate("Profile")}
             />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.settingItem} onPress={handleDetail}>
-            <FontAwesome6
-              name="circle-exclamation"
-              size={20}
-              color={colors.purple}
+            <SettingItem
+              title={"시술 관리"}
+              icon={
+                <Fontisto name="scissors" size={16} color={colors.purple} />
+              }
+              onPress={() => handleNavigate("Treatment")}
             />
-            <Text style={styles.settingText}>상세정보</Text>
-            <FontAwesome5
-              name="chevron-right"
-              size={20}
-              color={colors.purple}
+            <SettingItem
+              title={"상세 정보"}
+              icon={
+                <FontAwesome6
+                  name="circle-exclamation"
+                  size={16}
+                  color={colors.purple}
+                />
+              }
+              onPress={() => handleNavigate("Detail")}
             />
-          </TouchableOpacity>
-
-          <View style={{ marginTop: 36 }}>
-            {isLoading ? (
-              <ActivityIndicator
-                size="small"
-                color={colors.alert}
-                style={{ marginTop: 10 }}
-              />
-            ) : (
-              <SubmitButton title="로그아웃" onDelete={handleLogout} />
-            )}
           </View>
         </View>
-      </View>
+        <View style={{ paddingHorizontal: 16, paddingTop: 8 }}>
+          {isLoading ? (
+            <ActivityIndicator
+              size="small"
+              color={colors.alert}
+              style={{ marginTop: 10 }}
+            />
+          ) : (
+            <SubmitButton title="로그아웃" onDelete={handleLogout} />
+          )}
+        </View>
+      </ScrollView>
     </View>
   );
 };
@@ -100,76 +118,54 @@ export default SettingScreen;
 const styles = StyleSheet.create({
   pageContainer: {
     flex: 1,
-    backgroundColor: "#fff",
-    gap: 0,
-  },
-  headerContainer: {
-    alignItems: "center",
-    justifyContent: "center",
-
-    padding: 24,
-  },
-  headerTitle: {
-    textAlign: "center",
-    color: colors.purple,
-    fontFamily: "gamtanDotumB",
-    fontSize: 20,
-    letterSpacing: -0.5,
-  },
-  horizontalLine: {
-    width: "120%",
-    position: "absolute",
-    top: 60,
-    zIndex: 20,
-    height: 2,
-    backgroundColor: "#fff",
-    ...commonStyles.dropShadow,
+    backgroundColor: colors.backgroundPurple,
   },
   contentContainer: {
     flex: 1,
-    alignItems: "center",
-    gap: 180,
-    padding: 32,
+    padding: 16,
+    gap: 12,
   },
   logoContainer: {
-    justifyContent: "center",
-    alignItems: "center",
+    alignItems: "flex-start",
+    alignSelf: "flex-start",
+    paddingHorizontal: 12,
     gap: 8,
-    marginTop: 12,
+    width: "100%",
   },
   logo: {
-    fontFamily: "logo",
-    fontSize: 80,
-    color: colors.purple,
+    width: normalizeSize(100),
+    height: normalizeSize(50),
+    resizeMode: "contain",
+  },
+  userInfo: {
+    paddingHorizontal: 8,
+    marginHorizontal: 12,
+    marginTop: 4,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    ...commonStyles.dropShadow,
   },
   userName: {
-    fontFamily: "gamtanDotumR",
-    fontSize: 24,
-    letterSpacing: -0.5,
+    alignSelf: "flex-start",
+    fontFamily: "nanumSquareR",
+    fontSize: normalizeFont(18),
+    letterSpacing: -1,
     lineHeight: 32,
     color: colors.purple,
   },
-  settingContainer: {
-    width: "100%",
-    gap: 24,
-  },
-  settingItem: {
-    width: "100%",
-    backgroundColor: "#fff",
-
-    flexDirection: "row",
-    padding: 20,
-    borderRadius: 12,
-    gap: 16,
-    justifyContent: "center",
-    alignItems: "center",
-    ...commonStyles.dropShadow,
-  },
-  settingText: {
-    flex: 1,
+  dDayText: {
     fontFamily: "nanumSquareB",
-    fontSize: 16,
-    letterSpacing: -0.5,
-    color: colors.purple,
+    color: colors.alert,
+    letterSpacing: -1,
+  },
+  settingContainer: {
+    flex: 1,
+    justifyContent: "flex-start",
+    paddingVertical: 12,
+    width: "100%",
+    gap: 8,
   },
 });

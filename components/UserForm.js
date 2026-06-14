@@ -1,5 +1,12 @@
 import React, { useEffect } from "react";
-import { ActivityIndicator, StyleSheet, View, ScrollView } from "react-native";
+import {
+  ActivityIndicator,
+  StyleSheet,
+  View,
+  ScrollView,
+  Alert,
+  Platform,
+} from "react-native";
 import { Formik } from "formik";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -10,8 +17,10 @@ import colors from "../styles/color";
 import { commonStyles } from "../styles/commonStyles";
 import { UserSchema } from "../schemas/UserSchema";
 import { registerUserInfo } from "../actions/userActions";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const UserForm = () => {
+  const insets = useSafeAreaInsets();
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const route = useRoute();
@@ -42,7 +51,7 @@ const UserForm = () => {
           zip_code: values.zipCode,
         })
       );
-      alert("회원 정보가 수정되었습니다.");
+      Alert.alert("알림", "회원 정보가 수정되었습니다.");
       navigation.navigate("Home", {
         screen: "Setting",
       });
@@ -82,70 +91,78 @@ const UserForm = () => {
           }
         }, [selectedAddress]);
         return (
-          <ScrollView contentContainerStyle={styles.formContainer}>
-            <BaseInput
-              id="name"
-              label="이름"
-              value={values.name}
-              onChangeText={handleChange("name")}
-              onBlur={handleBlur("name")}
-              errorText={touched.name && errors.name}
-            />
+          <View
+            style={[
+              styles.formContainer,
+              Platform.OS === "android"
+                ? { paddingBottom: insets.bottom }
+                : { paddingBottom: 20 },
+            ]}
+          >
+            <ScrollView contentContainerStyle={styles.inputContainer}>
+              <BaseInput
+                id="name"
+                label="이름"
+                value={values.name}
+                onChangeText={handleChange("name")}
+                onBlur={handleBlur("name")}
+                errorText={touched.name && errors.name}
+              />
 
-            <BaseInput
-              id="email"
-              label="이메일"
-              keyboardType="email-address"
-              value={values.email}
-              onChangeText={handleChange("email")}
-              onBlur={handleBlur("email")}
-              errorText={touched.email && errors.email}
-            />
+              <BaseInput
+                id="email"
+                label="이메일"
+                keyboardType="email-address"
+                value={values.email}
+                onChangeText={handleChange("email")}
+                onBlur={handleBlur("email")}
+                errorText={touched.email && errors.email}
+              />
 
-            <BaseInput
-              id="storeName"
-              label="매장명"
-              value={values.storeName}
-              onChangeText={handleChange("storeName")}
-              onBlur={handleBlur("storeName")}
-              errorText={touched.storeName && errors.storeName}
-            />
+              <BaseInput
+                id="storeName"
+                label="매장명"
+                value={values.storeName}
+                onChangeText={handleChange("storeName")}
+                onBlur={handleBlur("storeName")}
+                errorText={touched.storeName && errors.storeName}
+              />
 
-            <AddressSearchInput
-              id="address"
-              label={"주소"}
-              autoCapitalize="none"
-              value={values.address}
-              onChangeText={handleChange("address")}
-              onBlur={handleBlur("address")}
-              errorText={touched.address && errors.address}
-              onPressIcon={() => {
-                navigation.navigate("AddressSearch", {
-                  backScreen: "Profile",
-                });
-              }}
-              readOnly
-            />
+              <AddressSearchInput
+                id="address"
+                label={"주소"}
+                autoCapitalize="none"
+                value={values.address}
+                onChangeText={handleChange("address")}
+                onBlur={handleBlur("address")}
+                errorText={touched.address && errors.address}
+                onPressIcon={() => {
+                  navigation.navigate("AddressSearch", {
+                    backScreen: "Profile",
+                  });
+                }}
+                readOnly
+              />
 
-            <BaseInput
-              id="zipCode"
-              label="우편번호"
-              value={values.zipCode}
-              onChangeText={handleChange("zipCode")}
-              onBlur={handleBlur("zipCode")}
-              errorText={touched.zipCode && errors.zipCode}
-              readOnly
-            />
+              <BaseInput
+                id="zipCode"
+                label="우편번호"
+                value={values.zipCode}
+                onChangeText={handleChange("zipCode")}
+                onBlur={handleBlur("zipCode")}
+                errorText={touched.zipCode && errors.zipCode}
+                readOnly
+              />
 
-            <BaseInput
-              id="addressDetail"
-              label="상세 주소"
-              value={values.addressDetail}
-              onChangeText={handleChange("addressDetail")}
-              onBlur={handleBlur("addressDetail")}
-              errorText={touched.addressDetail && errors.addressDetail}
-            />
-
+              <BaseInput
+                id="addressDetail"
+                label="상세 주소"
+                value={values.addressDetail}
+                onChangeText={handleChange("addressDetail")}
+                onBlur={handleBlur("addressDetail")}
+                errorText={touched.addressDetail && errors.addressDetail}
+              />
+            </ScrollView>
             <View style={styles.submitContainer}>
               {isSubmitting ? (
                 <ActivityIndicator size="small" color={colors.purple} />
@@ -157,7 +174,7 @@ const UserForm = () => {
                 />
               )}
             </View>
-          </ScrollView>
+          </View>
         );
       }}
     </Formik>
@@ -169,12 +186,21 @@ export default UserForm;
 const styles = StyleSheet.create({
   formContainer: {
     flex: 1,
+    width: "100%",
     gap: 16,
-    paddingHorizontal: 40,
+
+    backgroundColor: colors.backgroundPurple,
+    justifyContent: "space-between",
+  },
+  inputContainer: {
+    width: "100%",
+    gap: 16,
+    paddingHorizontal: 20,
     paddingVertical: 24,
   },
   submitContainer: {
-    marginTop: 24,
     ...commonStyles.dropShadow,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
   },
 });

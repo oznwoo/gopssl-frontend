@@ -7,7 +7,9 @@ import { InfoSchema } from "../schemas/InfoSchema";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
 import { registerUserInfo } from "../actions/userActions";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AddressSearchInput, BaseInput, DetailInput } from "./Input";
+import { normalizeFont } from "../utils/responsive";
 
 const InfoForm = ({ setFormType }) => {
   const dispatch = useDispatch();
@@ -27,6 +29,9 @@ const InfoForm = ({ setFormType }) => {
           address_detail: values.addressDetail,
         })
       );
+
+      await AsyncStorage.setItem("@viewedOnboarding", "true");
+      navigation.navigate("OnboardingScreen");
     } catch (error) {
       console.log("에러 상태코드:", error.message); // 여기서 접근 가능!
 
@@ -164,7 +169,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   inputTitle: {
-    fontSize: 16,
+    fontSize: normalizeFont(16),
     fontFamily: "nanumSquareR",
     color: colors.purple,
     letterSpacing: -0.5,
@@ -173,7 +178,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontFamily: "nanumSquareR",
-    fontSize: 16,
+    fontSize: normalizeFont(16),
   },
   purpleButton: {
     backgroundColor: colors.purple,
@@ -185,7 +190,7 @@ const styles = StyleSheet.create({
   purpleButtonText: {
     color: "white",
     fontFamily: "tjM",
-    fontSize: 16,
+    fontSize: normalizeFont(16),
     letterSpacing: -1,
     textAlign: "center",
   },
@@ -196,6 +201,6 @@ const styles = StyleSheet.create({
   transitionText: {
     color: "#2E2B1C",
     fontFamily: "nanumSquareR",
-    fontSize: 12,
+    fontSize: normalizeFont(12),
   },
 });

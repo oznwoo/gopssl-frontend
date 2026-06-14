@@ -2,6 +2,7 @@ import react from "react";
 import { StyleSheet, Text, TouchableOpacity } from "react-native";
 import { commonStyles } from "../styles/commonStyles";
 import colors from "../styles/color";
+import { normalizeFont } from "../utils/responsive";
 
 const SubmitButton = (props) => {
   const buttonColor = props.onDelete
@@ -37,9 +38,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   purpleButtonText: {
-    color: "white",
-    fontFamily: "tjM",
-    fontSize: 16,
+    color: "#fff",
+    fontFamily: "nanumSquareB",
+    fontSize: normalizeFont(16),
     letterSpacing: -1,
     textAlign: "center",
   },

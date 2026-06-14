@@ -1,142 +1,125 @@
-# 💈 Gopssl - 소규모 업장을 위한 무료 고객 · 매출 관리 앱
+<h1 align="center">
+  <br/>
+  Gopssl
+  <br/>
+</h1>
 
-> 구독료 없이, 부담 없이. 예약제 없이 운영하는 원장님을 위한 고객 및 매출 관리 서비스
+<p align="center">
+  미용실 원장을 위한 모바일 매출 · 고객 관리 앱
+</p>
 
-<br />
+<p align="center">
+  <img src="https://img.shields.io/badge/React_Native-0.81-61DAFB?style=flat-square&logo=react" />
+  <img src="https://img.shields.io/badge/Expo-54-000020?style=flat-square&logo=expo" />
+  <img src="https://img.shields.io/badge/Redux_Toolkit-2.x-764ABC?style=flat-square&logo=redux" />
+  <img src="https://img.shields.io/badge/Platform-iOS%20%7C%20Android-743D7B?style=flat-square" />
+</p>
 
-## 📌 프로젝트 소개
+---
 
-**Gopssl**은 예약 제도 없이 운영하는 미용실 원장님을 주요 타겟으로 기획된 **무료 고객·매출 관리 모바일 앱**입니다.
+## 소개
 
-기존 고객·매출 관리 앱 대부분은 구독형 유료 서비스로, 예약 관리가 필요 없는 소규모 업장 원장님들께는 사용하지도 않는 기능에 비용을 지불해야 하는 부담이 있었습니다. Gopssl은 이런 분들을 위해 **꼭 필요한 기능만** 담은 완전 무료 서비스를 목표로 개발했습니다.
+Gopssl은 미용실 원장이 하루 매출을 기록하고, 고객 정보를 관리하며, 월별 매출 흐름을 한눈에 파악할 수 있도록 설계된 모바일 앱입니다.
 
-미용실 특화 기능 외에도 설계 구조상 **다양한 소규모 업종에서도 활용 가능**하도록 범용적으로 구성되어 있습니다.
+### 주요 기능
 
-<br />
-
-## ✨ 핵심 가치
-
-- 🆓 **완전 무료** — 구독료, 과금 없음
-- 📵 **예약 기능 없음** — 필요 없는 기능은 과감히 제외
-- 🎯 **간편한 UX** — 비전문가도 쉽게 사용할 수 있는 UI
-- 🏪 **범용 설계** — 미용실 외 다른 소규모 업종에서도 사용 가능
-
-<br />
-
-## 📱 주요 기능
-
-**일별 매출 관리**
-달력에서 날짜를 선택해 해당 날의 매출 내역을 조회하고, 항목을 등록·수정·삭제할 수 있습니다.
-
-**고객 관리**
-고객 정보를 등록하고 관리합니다. 이름, 주소 등 고객 정보를 저장하고 매출과 연결할 수 있습니다.
-
-**검색**
-고객명 또는 시술(서비스) 항목으로 매출 데이터를 빠르게 검색할 수 있습니다.
-
-**매출 통계**
-월별 매출 막대 차트와 연도별 매출 비교 차트를 제공합니다. 한눈에 매출 흐름을 파악할 수 있습니다.
-
-**회원 인증 및 프로필**
-회원가입·로그인을 통해 데이터를 안전하게 보호하고, 프로필을 관리할 수 있습니다.
-
-<br />
-
-## 🛠️ 기술 스택
-
-| 분류 | 기술 |
+| 화면 | 기능 |
 |------|------|
-| Framework | React Native (Expo ~53.0.17) |
-| Language | JavaScript (React 19) |
-| 상태 관리 | Redux Toolkit + React-Redux |
-| 네비게이션 | React Navigation (Stack + Bottom Tabs) |
-| HTTP 통신 | Axios |
-| 폼 관리 | Formik + Yup |
+| 일별 매출 | 날짜를 선택해 당일 시술 내역 · 매출 합계 조회 |
+| 고객 관리 | 고객 등록 · 수정 · 검색 · 방문 이력 |
+| 매출 비교 | 월별 막대 차트로 매출 추이 시각화 |
+| 설정 | 프로필 · 시술 항목 · 주소 정보 관리 |
+
+---
+
+## 기술 스택
+
+| 영역 | 기술 |
+|------|------|
+| 프레임워크 | React Native 0.81 · Expo 54 (New Architecture) |
+| 언어 | JavaScript |
+| 네비게이션 | React Navigation v7 (Stack + BottomTab) |
+| 전역 상태 | Redux Toolkit + react-redux |
+| HTTP | Axios (JWT 인터셉터 · 자동 토큰 갱신) |
+| 폼 검증 | Formik + Yup |
 | 차트 | react-native-gifted-charts |
-| 캘린더 | react-native-calendars |
-| 로컬 스토리지 | AsyncStorage |
-| UI | Expo Vector Icons, Expo Linear Gradient, Expo Blur |
+| 로컬 저장소 | AsyncStorage |
+| 백엔드 | FastAPI (Render 호스팅) |
 
-<br />
+---
 
-## 📂 폴더 구조
+## 시작하기
+
+### 사전 요구사항
+
+- Node.js 18+
+- Expo CLI (`npm install -g expo-cli`)
+- iOS: Xcode 15+ / Android: Android Studio
+
+### 설치
+
+```bash
+git clone https://github.com/oh7895/Gopssl-frontend.git
+cd Gopssl-frontend
+npm install
+```
+
+### 환경변수 설정
+
+```bash
+cp .env.example .env
+```
+
+`.env` 파일을 열고 백엔드 URL을 입력합니다.
+
+```env
+EXPO_PUBLIC_BASE_URL=https://gopssl-backend.onrender.com
+```
+
+### 실행
+
+```bash
+# Expo 개발 서버 시작
+npm start
+
+# iOS 시뮬레이터
+npm run ios
+
+# Android 에뮬레이터
+npm run android
+```
+
+---
+
+## 프로젝트 구조
+
 ```
 Gopssl-frontend/
-├── actions/            # API 호출 함수 (auth, customer, sale, user 등)
-├── assets/             # 이미지, 폰트 리소스
-├── components/         # 재사용 가능한 UI 컴포넌트
-│   ├── Input/               # 커스텀 인풋 컴포넌트
-│   ├── SaleForm.js          # 매출 등록 폼
-│   ├── CustomerForm.js      # 고객 등록 폼
-│   ├── SalesBarChart.js     # 월별 막대 차트
-│   ├── YearlyComparisionChart.js  # 연도 비교 차트
-│   ├── SignInForm.js        # 로그인 폼
-│   ├── SignUpForm.js        # 회원가입 폼
-│   └── ...
-├── constants/          # 상수 정의
-├── navigation/         # 네비게이션 설정
-│   ├── AppNavigator.js      # 루트 네비게이터 (Auth / Main 분기)
-│   ├── AuthNavigator.js     # 인증 전 화면
-│   └── MainNavigator.js     # 인증 후 메인 (Bottom Tab + Stack)
-├── schemas/            # Yup 유효성 검사 스키마
-├── screens/            # 화면 컴포넌트
-│   ├── StartScreen.js            # 로그인 / 회원가입 화면
-│   ├── DailySalesScreen.js       # 일별 매출 화면
-│   ├── SearchScreen.js           # 검색 화면
-│   ├── SalesComparisionScreen.js # 매출 비교 통계 화면
-│   ├── SettingScreen.js          # 설정 화면
-│   ├── CustomerScreen.js         # 고객 관리 화면
-│   ├── SaleScreen.js             # 매출 등록 / 수정 화면
-│   ├── ProfileScreen.js          # 프로필 화면
-│   ├── DetailScreen.js           # 상세 정보 화면
-│   └── AddressSearchScreen.js    # 주소 검색 화면
-├── store/              # Redux 전역 상태 관리
-│   ├── store.js             # Redux store 설정
-│   ├── authSlice.js         # 인증 상태 slice
-│   └── treatmentSlice.js    # 시술 항목 상태 slice
-├── styles/             # 전역 스타일 및 컬러 정의
-├── utils/              # 유틸리티 함수
-└── App.js              # 앱 진입점
+├── App.js                    # 엔트리포인트 (폰트 로드, Redux Provider)
+├── navigation/               # 네비게이터 (Auth / Main 분기)
+├── screens/                  # 화면 단위 컴포넌트
+├── components/               # 재사용 컴포넌트 · 입력 필드
+├── actions/                  # Redux Thunk API 액션
+├── store/                    # Redux 슬라이스 (auth, treatment)
+├── schemas/                  # Yup 유효성 검증 스키마
+├── constants/                # axios 인스턴스 · 상수
+├── styles/                   # 컬러 팔레트 · 공통 스타일
+└── utils/                    # 숫자 · 날짜 포맷 유틸
 ```
 
-<br />
+---
 
-## 🏗️ 앱 구조
-```
-App.js
- └── Redux Provider
-      └── AppNavigator
-           ├── AuthNavigator  ← 비로그인
-           │    └── StartScreen (로그인 / 회원가입)
-           └── MainNavigator  ← 로그인 후
-                ├── Bottom Tab
-                │    ├── 일별 매출 (DailySales)
-                │    ├── 검색 (Search)
-                │    ├── 매출 통계 (Comparision)
-                │    └── 설정 (Setting)
-                └── Stack
-                     ├── 고객 관리 (Customer)
-                     ├── 매출 등록 (Sale)
-                     ├── 프로필 (Profile)
-                     ├── 상세 (Detail)
-                     └── 주소 검색 (AddressSearch)
-```
+## 로드맵
 
-<br />
+- [ ] TypeScript 마이그레이션
+- [ ] Expo Router 도입 (파일 기반 라우팅)
+- [ ] Redux → Zustand 전환
+- [ ] TanStack Query 도입 (서버 상태 캐싱)
+- [ ] NativeWind 스타일링 전환
+- [ ] Expo EAS Build · 앱스토어 배포
 
-## 🚀 실행 방법
-```bash
-# 패키지 설치
-yarn install
+---
 
-# 개발 서버 실행
-yarn start
+## 라이선스
 
-# Android 실행
-yarn android
-
-# iOS 실행
-yarn ios
-```
-
-> **요구사항:** Node.js, Expo CLI, Android Studio 또는 Xcode
+0BSD

@@ -2,23 +2,51 @@ import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import BaseInput from "./BaseInput";
 import colors from "../../styles/color";
+import { normalizeFont } from "../../utils/responsive";
+import { commonStyles } from "../../styles/commonStyles";
 
-const TypeInput = ({ value, onChange, options = [], ...rest }) => {
+const TypeInput = ({
+  value,
+  onChange,
+  options = [],
+  toggleButtonMode = false,
+  ...rest
+}) => {
   return (
-    <BaseInput {...rest} portraitMode={true}>
-      <View style={styles.container}>
+    <BaseInput
+      {...rest}
+      style={toggleButtonMode && styles.toggleButtonMode}
+      portraitMode={true}
+    >
+      <View
+        style={[
+          styles.container,
+          toggleButtonMode && {
+            ...commonStyles.lightDropShadow,
+            borderRadius: 8,
+          },
+        ]}
+      >
         {options.map((option) => {
           const isSelected = value === option;
           return (
             <TouchableOpacity
               key={option}
               onPress={() => onChange(option)}
-              style={[styles.option, isSelected && styles.optionSelected]}
+              style={[
+                styles.option,
+                isSelected && styles.optionSelected,
+                toggleButtonMode && {
+                  paddingHorizontal: 4,
+                  paddingVertical: 8,
+                },
+              ]}
             >
               <Text
                 style={[
                   styles.optionText,
                   isSelected && styles.optionTextSelected,
+                  toggleButtonMode && styles.toggleButtonModeText,
                 ]}
               >
                 {option}
@@ -54,12 +82,23 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   optionText: {
-    fontSize: 14,
+    fontSize: normalizeFont(14),
     fontFamily: "nanumSquareR",
     color: "#000",
   },
   optionTextSelected: {
     fontFamily: "nanumSquareEB",
     color: "#fff",
+  },
+  toggleButtonMode: {
+    minWidth: 120,
+    minHeight: 64,
+    zIndex: 10,
+    padding: 0,
+    backgroundColor: "transparent",
+    borderWidth: 0,
+  },
+  toggleButtonModeText: {
+    fontSize: normalizeFont(8),
   },
 });

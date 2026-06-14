@@ -6,6 +6,7 @@ import {
   registerSuccess,
 } from "../store/authSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getAllCustomer } from "./customerActions";
 import { store } from "../store/store";
 import axios from "axios";
 
@@ -98,31 +99,16 @@ export const signUp = ({ name, email, password }) => {
       });
 
       const token = response.data.access_token;
-      console.log("받은 토큰:", token);
-      console.log("토큰 타입:", typeof token);
-      console.log("토큰 길이:", token ? token.length : 0);
-
-      // JWT 토큰 페이로드 확인
-      try {
-        const payload = JSON.parse(atob(token.split(".")[1]));
-        console.log("토큰 페이로드:", payload);
-        console.log("만료 시간:", new Date(payload.exp * 1000));
-        console.log("현재 시간:", new Date());
-        console.log("토큰 만료 여부:", Date.now() > payload.exp * 1000);
-      } catch (e) {
-        console.log("토큰 디코딩 실패:", e);
-      }
 
       // 먼저 토큰을 Redux store에 저장
       dispatch(signUpSuccess({ token, user: null }));
+      dispatch(getAllCustomer());
       await AsyncStorage.setItem("token", token);
 
       // 토큰을 직접 헤더에 포함시켜서 사용자 정보 요청
       const headers = {
         Authorization: `Bearer ${token}`,
       };
-      console.log("전송할 헤더:", headers);
-      console.log("요청 URL:", `${BASE_URL}/users/me`);
 
       const userRes = await axios.get(`${BASE_URL}/users/me`, { headers });
       const user = userRes.data;
@@ -165,11 +151,11 @@ export const signUp = ({ name, email, password }) => {
   };
 };
 
-export const signIn = ({ email, password }) => {
+export const signIn = ({ email, password, rememberMe }) => {
   return async (dispatch) => {
     try {
       const params = new URLSearchParams();
-      params.append("username", email); // OAuth2PasswordRequestForm에서는 username으로 받음
+      params.append("username", email);
       params.append("password", password);
 
       // 로그인은 인증이 필요하지 않으므로 일반 axios 사용
@@ -181,9 +167,6 @@ export const signIn = ({ email, password }) => {
 
       const token = response.data.access_token;
 
-      // 먼저 토큰을 저장
-      await AsyncStorage.setItem("token", token);
-
       // 토큰을 직접 헤더에 포함시켜서 사용자 정보 요청
       const userRes = await axios.get(`${BASE_URL}/users/me`, {
         headers: {
@@ -194,7 +177,15 @@ export const signIn = ({ email, password }) => {
 
       // 토큰과 사용자 정보를 한 번에 Redux store에 저장
       dispatch(signInSuccess({ token, user }));
-      await AsyncStorage.setItem("user", JSON.stringify(user));
+      dispatch(getAllCustomer());
+
+      if (rememberMe) {
+        await AsyncStorage.setItem("token", token);
+        await AsyncStorage.setItem("user", JSON.stringify(user));
+      } else {
+        await AsyncStorage.removeItem("token");
+        await AsyncStorage.removeItem("user");
+      }
     } catch (e) {
       let errorMessage =
         "로그인에 실패했습니다. 아이디나 비밀번호를 확인해주세요.";
@@ -202,7 +193,6 @@ export const signIn = ({ email, password }) => {
 
       if (e.response) {
         const { status, data } = e.response;
-        console.log(data);
 
         statusCode = status;
 
@@ -223,15 +213,12 @@ export const signIn = ({ email, password }) => {
 export const logout = () => {
   return async (dispatch) => {
     try {
-      // AsyncStorage에서 토큰과 유저 정보 삭제
       await AsyncStorage.removeItem("token");
       await AsyncStorage.removeItem("user");
-
-      // Redux 상태 초기화
+      // @viewedOnboarding은 유지 (재로그인 시 온보딩 재표시 불필요)
       dispatch(logoutAction());
     } catch (e) {
       console.error("로그아웃 중 오류 발생:", e);
-      // 필요시 에러 처리 추가
     }
   };
 };

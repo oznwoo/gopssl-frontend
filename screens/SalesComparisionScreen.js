@@ -12,8 +12,13 @@ import DateHeader from "../components/DateHeader";
 import SalesBarChart from "../components/SalesBarChart";
 import YearlyComparisonChart from "../components/YearlyComparisionChart";
 import { getMonthlySalesSummary } from "../actions/saleStatisticsActions";
+import { normalizeFont, normalizeSize } from "../utils/responsive";
+import { formatNumber } from "../utils/format";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import AnimatedText from "../components/AnimatedText";
 
 const SalesComparisionScreen = (props) => {
+  const insets = useSafeAreaInsets();
   const [date, setDate] = useState(new Date());
   const [statisticsData, setStatisticsData] = useState({});
   const [isLoading, setIsLoading] = useState(true);
@@ -40,7 +45,9 @@ const SalesComparisionScreen = (props) => {
   const renderContent = () => {
     if (isLoading || !statisticsData) {
       return (
-        <View style={styles.pageContainer}>
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
           <ActivityIndicator size="large" color={colors.purple} />
         </View>
       );
@@ -50,16 +57,20 @@ const SalesComparisionScreen = (props) => {
       statisticsData?.monthly_comparison?.[
         statisticsData.monthly_comparison.length - 1
       ];
-    const lastMonthData =
-      statisticsData?.monthly_comparison?.[
-        statisticsData.monthly_comparison.length - 2
-      ];
-    const difference = thisMonthData.total - lastMonthData.total;
-    const comparisionTextColor =
-      difference === 0 ? "#fff" : difference > 0 ? colors.green : "#EB6051";
+    const lastMonthSale = statisticsData?.last_month_until_today_total;
+    const difference = thisMonthData.total - lastMonthSale;
+    const percentage =
+      lastMonthSale &&
+      ((Math.abs(difference) / lastMonthSale) * 100).toFixed(2);
 
-    const cashRatio = statisticsData?.payment_type_ratio?.["현금"] ?? 0;
-    const cardRatio = statisticsData?.payment_type_ratio?.["카드"] ?? 0;
+    const comparisionTextColor = difference > 0 ? colors.green : "#FF6B57";
+
+    const cashCount = statisticsData?.payment_type_count?.["현금"] ?? 0;
+    const cardCount = statisticsData?.payment_type_count?.["카드"] ?? 0;
+    const totalCount = cashCount + cardCount;
+
+    const cashRatio = cashCount / totalCount;
+    const cardRatio = cardCount / totalCount;
 
     return (
       <ScrollView
@@ -71,44 +82,71 @@ const SalesComparisionScreen = (props) => {
             <Text style={[styles.boxTitle, { color: "#fff" }]}>
               이달의 매출
             </Text>
-            <View style={styles.boxContent}>
+            <View
+              style={[
+                styles.boxContent,
+                {
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "flex-start",
+                },
+              ]}
+            >
               <Text style={styles.monthTotal}>
-                {thisMonthData ? (thisMonthData.total / 10000).toFixed(1) : 0}
-                만원
+                {thisMonthData ? formatNumber(thisMonthData.total) : 0}원
               </Text>
-
-              <Text
-                style={[
-                  styles.comparisionText,
-                  { color: comparisionTextColor },
-                ]}
-              >
-                {difference === 0
-                  ? "(지난달과 동일한 매출)"
-                  : `(지난 달 대비 ${(Math.abs(difference) / 10000).toFixed(
-                      1
-                    )}만원${difference > 0 ? "↑" : "↓"})`}
-              </Text>
+              {date.getMonth() == new Date().getMonth() && (
+                <View style={[styles.comparisonContainer]}>
+                  <AnimatedText
+                    texts={[
+                      `${percentage}% ${difference > 0 ? "↑" : "↓"}`,
+                      `${formatNumber(difference)}원 ${
+                        difference > 0 ? "↑" : "↓"
+                      }`,
+                    ]}
+                    style={[
+                      styles.comparisionText,
+                      { color: comparisionTextColor },
+                    ]}
+                    textHeight={12}
+                  />
+                </View>
+              )}
             </View>
           </View>
-          <View
-            style={[
-              styles.infoBox,
-              { backgroundColor: colors.backgroundPurple },
-            ]}
-          >
+          <View style={[styles.infoBox, { backgroundColor: "#fff" }]}>
             <Text style={styles.boxTitle}>매출 유형</Text>
-            <View style={styles.boxContent}>
+            <View style={styles.typeLegend}>
               <View
                 style={{
                   flexDirection: "row",
-                  justifyContent: "space-between",
-                  marginTop: 4,
+                  alignItems: "center",
+                  marginRight: 8,
                 }}
               >
-                <Text style={styles.typeText}>현금</Text>
-                <Text style={styles.typeText}>카드</Text>
+                <View
+                  style={[
+                    styles.legendCircle,
+                    { backgroundColor: colors.purple },
+                  ]}
+                />
+                <Text style={styles.legendText}>현금</Text>
               </View>
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <View
+                  style={[
+                    styles.legendCircle,
+                    {
+                      backgroundColor: colors.backgroundPurple,
+                      borderColor: colors.purple,
+                      borderWidth: 0.5,
+                    },
+                  ]}
+                />
+                <Text style={styles.legendText}>카드</Text>
+              </View>
+            </View>
+            <View style={styles.boxContent}>
               {cardRatio || cashRatio ? (
                 <View style={styles.typeChart}>
                   <View
@@ -117,28 +155,50 @@ const SalesComparisionScreen = (props) => {
                       {
                         flex: cashRatio,
                         backgroundColor: colors.purple,
+                        position: "relative",
                       },
                     ]}
                   >
-                    <Text style={[styles.typeRatioText, { color: "#fff" }]}>
-                      {(cashRatio * 100).toFixed(0)}%
-                    </Text>
+                    <AnimatedText
+                      texts={[
+                        `${(cashRatio * 100).toFixed(0)}%`,
+                        `${cashCount}명`,
+                      ]}
+                      style={[
+                        styles.typeRatioText,
+                        { color: "#fff", position: "absolute", left: 8 },
+                      ]}
+                      textHeight={12}
+                      numberOfLines={1}
+                    />
                   </View>
                   <View
                     style={[
                       styles.typeRatio,
                       {
                         flex: cardRatio,
-                        backgroundColor: "#fff",
+                        backgroundColor: colors.backgroundPurple,
                         alignItems: "flex-end",
+                        position: "relative",
                       },
                     ]}
                   >
-                    <Text
-                      style={[styles.typeRatioText, { color: colors.purple }]}
-                    >
-                      {(cardRatio * 100).toFixed(0)}%
-                    </Text>
+                    <AnimatedText
+                      texts={[
+                        `${(cardRatio * 100).toFixed(0)}%`,
+                        `${cardCount}명`,
+                      ]}
+                      style={[
+                        styles.typeRatioText,
+                        {
+                          color: colors.purple,
+                          position: "absolute",
+                          right: 8,
+                        },
+                      ]}
+                      textHeight={12}
+                      numberOfLines={1}
+                    />
                   </View>
                 </View>
               ) : (
@@ -203,7 +263,7 @@ const SalesComparisionScreen = (props) => {
 
   return (
     <View style={styles.pageContainer}>
-      <View style={styles.headerContainer}>
+      <View style={[styles.headerContainer, { paddingTop: insets.top }]}>
         <DateHeader
           onlyCalendar={true}
           currentDate={date}
@@ -224,11 +284,13 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#fff",
+    backgroundColor: colors.backgroundPurple,
   },
   headerContainer: {
     width: "100%",
     justifyContent: "center",
+    backgroundColor: colors.backgroundPurple,
+    ...commonStyles.lightDropShadow,
   },
   contentContainer: {
     padding: 16,
@@ -237,25 +299,33 @@ const styles = StyleSheet.create({
   },
   infoBox: {
     flex: 1,
-    borderWidth: 1,
-    borderRadius: 12,
-    borderColor: colors.lightPurple,
-    padding: 16,
-    gap: 12,
+    borderRadius: 8,
+    padding: 12,
+    gap: 8,
     ...commonStyles.dropShadow,
   },
   boxContent: { flex: 1, gap: 4, justifyContent: "center" },
-  typeText: {
-    fontFamily: "gamtanDotumR",
-    fontSize: 12,
-    letterSpacing: 1,
-    color: colors.purple,
+  typeLegend: {
+    flexDirection: "row",
+    justifyContent: "center",
+    position: "absolute",
+    right: 12,
+    top: 12,
+  },
+  legendCircle: {
+    width: normalizeSize(10),
+    height: normalizeSize(10),
+    marginRight: 4,
+    borderRadius: 12,
+  },
+  legendText: {
+    fontFamily: "nanumSquareR",
+    fontSize: normalizeFont(12),
   },
   typeChart: {
     marginTop: 4,
     height: 28,
     width: "100%",
-    backgroundColor: "#eee",
     borderRadius: 4,
     flexDirection: "row",
     overflow: "hidden",
@@ -263,47 +333,57 @@ const styles = StyleSheet.create({
   typeRatio: {
     flex: 1,
     justifyContent: "center",
-    paddingHorizontal: 10,
+    minWidth: normalizeSize(30),
   },
   typeRatioText: {
-    fontSize: 12,
+    fontSize: normalizeFont(12),
     fontFamily: "nanumSquareB",
+    letterSpacing: -0.5,
   },
   boxTitle: {
-    fontFamily: "gamtanDotumB",
-    fontSize: 16,
+    fontFamily: "nanumSquareB",
+    fontSize: normalizeFont(14),
     letterSpacing: -0.5,
     color: colors.purple,
   },
   boxDetail: {
     fontFamily: "nanumSquareB",
-    fontSize: 10,
+    fontSize: normalizeFont(10),
     letterSpacing: -0.5,
     color: "#656d72",
   },
   chartContainer: {
+    maxWidth: "100%",
+    overflow: "visible",
     justifyContent: "center",
     alignItems: "center",
     padding: 4,
   },
   monthTotal: {
-    fontFamily: "gamtanDotumB",
-    fontSize: 18,
+    fontFamily: "nanumSquareB",
+    fontSize: normalizeFont(18),
     color: "#fff",
-    letterSpacing: -0.5,
+    letterSpacing: -1,
   },
   comparisionText: {
-    fontFamily: "gamtanDotumB",
-    fontSize: 12,
-    letterSpacing: -0.5,
-    color: "#fff",
+    fontFamily: "nanumSquareEB",
+    fontSize: normalizeFont(12),
+    letterSpacing: -1,
+  },
+  comparisonContainer: {
+    paddingHorizontal: 4,
+    flexDirection: "row",
+    borderRadius: 8,
+    gap: 4,
+    justifyContent: "center",
+    height: "100%",
+    alignItems: "center",
   },
   comparisionBox: {
-    backgroundColor: colors.backgroundPurple,
-    borderWidth: 1,
-    borderColor: colors.lightPurple,
+    maxWidth: "100%",
+    backgroundColor: "#fff",
     borderRadius: 12,
-    padding: 16,
+    padding: 12,
     gap: 12,
     ...commonStyles.dropShadow,
   },

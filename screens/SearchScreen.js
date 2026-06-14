@@ -1,208 +1,133 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
-  FlatList,
-  StyleSheet,
-  Text,
+  View,
   TextInput,
   TouchableOpacity,
-  View,
+  StyleSheet,
+  Keyboard,
+  Pressable,
+  Platform,
+  RefreshControl,
+  Text,
+  ActivityIndicator,
 } from "react-native";
-import FloatingExpandedButton from "../components/FloatingExpandedButton";
-import { commonStyles } from "../styles/commonStyles";
-import colors from "../styles/color";
 import { Ionicons, Feather } from "@expo/vector-icons";
-import debounce from "lodash.debounce";
-import { searchCustomer } from "../actions/customerActions";
-import { useDispatch } from "react-redux";
-import { useNavigation } from "@react-navigation/native";
+import { useDispatch, useSelector } from "react-redux";
+import CustomerList from "../components/CustomerList";
+import FloatingExpandedButton from "../components/FloatingExpandedButton";
+import colors from "../styles/color";
+import { normalizeFont } from "../utils/responsive";
+import { getAllCustomer } from "../actions/customerActions";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-const SearchScreen = () => {
+const SearchScreen = ({ navigation }) => {
+  const insets = useSafeAreaInsets();
   const dispatch = useDispatch();
-  const navigation = useNavigation();
-  const [isFocused, setIsFocused] = useState(false);
+  const customers = useSelector((state) => state.customer.list);
   const [searchText, setSearchText] = useState("");
+  const [refreshing, setRefreshing] = useState(false);
+  const [loading, setLoading] = useState(false);
   const inputRef = useRef(null);
-  const [results, setResults] = useState([]);
-
-  const transitionCustomer = (itemId = undefined) => {
-    const baseParams = { mode: "view" };
-    navigation.navigate("Customer", { ...baseParams, itemId });
-  };
-
-  const handleClearText = () => {
-    setSearchText("");
-    setResults([]);
-  };
-
-  const handleBackPress = () => {
-    inputRef.current?.blur();
-    setIsFocused(false);
-    setSearchText("");
-    setResults([]);
-  };
-
-  const debouncedSearch = useMemo(
-    () =>
-      debounce(async (name) => {
-        if (!name.trim()) {
-          setResults([]);
-          return;
-        }
-
-        try {
-          const res = await dispatch(searchCustomer(name.trim()));
-          setResults(res);
-        } catch (e) {
-          if (e.response?.status === 404) {
-            setResults([]);
-          } else {
-            console.error("고객 검색 실패", e.message);
-          }
-        }
-      }, 500),
-    [dispatch]
-  );
-
-  const getSnippetWithKeyword = (text, keyword, contextLength = 10) => {
-    if (!text || !keyword) return text;
-
-    const lowerText = text.toLowerCase();
-    const lowerKeyword = keyword.toLowerCase();
-    const index = lowerText.indexOf(lowerKeyword);
-
-    if (index === -1)
-      return text.length > 40 ? text.slice(0, 40) + "..." : text;
-
-    const start = Math.max(index - contextLength, 0);
-    const end = Math.min(index + keyword.length + contextLength, text.length);
-
-    const prefix = start > 0 ? "..." : "";
-    const suffix = end < text.length ? "..." : "";
-
-    return prefix + text.slice(start, end) + suffix;
-  };
 
   useEffect(() => {
-    return () => {
-      debouncedSearch.cancel();
+    const fetchCustomers = async () => {
+      // 이미 고객 목록이 있다면 재요청하지 않음 (체감 속도 개선)
+      if (customers && customers.length > 0) {
+        return;
+      }
+
+      console.time("getAllCustomer_initial");
+      setLoading(true);
+      try {
+        await dispatch(getAllCustomer());
+      } catch (err) {
+        console.log("고객 목록 초기 로딩 실패:", err);
+      } finally {
+        setLoading(false);
+        console.timeEnd("getAllCustomer_initial");
+      }
     };
-  }, [debouncedSearch]);
 
-  const highlightMatchedText = (text, keyword) => {
-    if (!keyword) return <Text>{text}</Text>;
+    fetchCustomers();
+  }, [dispatch, customers]);
 
-    const regex = new RegExp(`(${keyword})`, "gi");
-    const parts = text.split(regex);
+  const handleClearText = () => setSearchText("");
 
-    return parts.map((part, index) =>
-      part.toLowerCase() === keyword.toLowerCase() ? (
-        <Text
-          key={index}
-          style={[styles.customerName, { fontFamily: "gamtanDotumB" }]}
-        >
-          {part}
-        </Text>
-      ) : (
-        <Text key={index}>{part}</Text>
-      )
-    );
-  };
+  // 새로고침 핸들러
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      await dispatch(getAllCustomer());
+    } catch (err) {
+      console.log("새로고침 실패:", err);
+    } finally {
+      setRefreshing(false);
+    }
+  }, [dispatch]);
 
   return (
-    <View style={styles.pageContainer}>
-      <View style={styles.headerContainer}>
-        <View style={styles.inputContainer}>
-          {isFocused ? (
-            <TouchableOpacity onPress={handleBackPress}>
-              <Ionicons name="arrow-back" size={24} color={colors.purple} />
-            </TouchableOpacity>
-          ) : (
-            <Feather name="search" size={24} color={colors.purple} />
-          )}
-
+    <Pressable style={styles.pageContainer} onPress={Keyboard.dismiss}>
+      <View style={[styles.headerContainer, { paddingTop: insets.top }]}>
+        <View
+          style={[
+            styles.inputContainer,
+            Platform.OS === "android" && { marginTop: 8 },
+          ]}
+        >
+          <Feather name="search" size={20} color={colors.purple} />
           <TextInput
             ref={inputRef}
             placeholder="검색어를 입력해주세요"
-            placeholderTextColor={colors.purple} // 색상만 변경 가능
+            placeholderTextColor={`${colors.purple}99`}
             style={styles.searchInput}
             value={searchText}
-            onFocus={() => setIsFocused(true)}
-            onBlur={() => setIsFocused(false)}
-            onChangeText={(text) => {
-              setSearchText(text);
-              debouncedSearch(text); // ✅ debounce 적용
-            }}
+            onChangeText={setSearchText}
           />
-
-          {isFocused && searchText.length > 0 && (
-            <TouchableOpacity
-              onPress={handleClearText}
-              style={styles.iconButton}
-            >
-              <Ionicons name="close" size={24} color={colors.purple} />
+          {searchText.length > 0 && (
+            <TouchableOpacity onPress={handleClearText}>
+              <Ionicons name="close" size={20} color={colors.purple} />
             </TouchableOpacity>
           )}
         </View>
-
         <View style={styles.horizontalLine}></View>
       </View>
 
-      <View style={styles.resultContainer}>
-        {results.length ? (
-          <FlatList
-            data={results}
-            keyExtractor={(item, index) =>
-              item.id?.toString() ?? index.toString()
-            }
-            renderItem={({ item, index }) => (
-              <>
-                <TouchableOpacity
-                  style={styles.customerItem}
-                  onPress={() => transitionCustomer(item.id)}
-                >
-                  <View style={{ gap: 4 }}>
-                    <Text style={styles.customerName}>
-                      {highlightMatchedText(`${item.name} 고객님`, searchText)}
-                    </Text>
-                    <Text style={styles.numOfVisits}>
-                      {item.num_of_visits
-                        ? `${item.num_of_visits}회 방문`
-                        : "미방문"}
-                    </Text>
-                  </View>
-                  <View style={styles.infoBox}>
-                    <Text
-                      style={styles.detail}
-                      numberOfLines={1}
-                      ellipsizeMode="tail"
-                    >
-                      {highlightMatchedText(
-                        getSnippetWithKeyword(item.detail || "", searchText),
-                        searchText
-                      )}
-                    </Text>
-
-                    <Text style={styles.detail}>
-                      {highlightMatchedText(
-                        item.phone_number || "",
-                        searchText
-                      )}
-                    </Text>
-                  </View>
-                </TouchableOpacity>
-                {index < results.length - 1 && (
-                  <View style={styles.divideLine} />
-                )}
-              </>
-            )}
-          />
+      <View style={styles.contentContainer}>
+        {loading && customers.length === 0 ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color={colors.purple} />
+            <Text style={styles.loadingText}>고객 목록을 불러오는 중...</Text>
+          </View>
         ) : (
-          <Text style={styles.emptyText}>검색된 고객이 없습니다.</Text>
+          <>
+            {/* 📋 고객 리스트 */}
+            <CustomerList
+              customers={customers}
+              searchText={searchText}
+              onItemPress={(id) =>
+                navigation.navigate("Customer", { mode: "view", itemId: id })
+              }
+              refreshControl={
+                <RefreshControl
+                  refreshing={refreshing}
+                  onRefresh={onRefresh}
+                  tintColor={colors.purple} // iOS 인디케이터 색상
+                  colors={[colors.purple, colors.green]} // Android 인디케이터 색상
+                  progressBackgroundColor="#fff" // Android 배경색
+                />
+              }
+            />
+            {loading && (
+              <View style={styles.loadingOverlay}>
+                <ActivityIndicator size="small" color={colors.purple} />
+              </View>
+            )}
+          </>
         )}
       </View>
-
+      {/* ➕ 플로팅 버튼 */}
       <FloatingExpandedButton style={styles.plusButton} />
-    </View>
+    </Pressable>
   );
 };
 
@@ -215,77 +140,53 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   headerContainer: {
-    justifyContent: "center",
+    backgroundColor: `${colors.purple}12`,
   },
   inputContainer: {
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
-    marginHorizontal: 20,
+    marginHorizontal: 12,
+    marginTop: 3,
     marginBottom: 8,
-    padding: 8,
-    borderWidth: 4,
-    borderColor: colors.purple,
+    padding: 6,
     borderRadius: 12,
-    ...commonStyles.dropShadow,
-    backgroundColor: "#fff",
+    backgroundColor: `${colors.purple}12`,
+  },
+  headerTitle: {
+    fontFamily: "nanumSquareB",
+    fontSize: normalizeFont(20),
+    letterSpacing: -0.5,
+    color: colors.purple,
   },
   searchInput: {
     flex: 1,
-    fontFamily: "NanumSquareB",
-    fontSize: 16,
-    letterSpacing: -0.5,
+    fontFamily: "nanumSquareB",
+    fontSize: normalizeFont(16),
+    letterSpacing: -1,
     paddingVertical: 4,
   },
-  horizontalLine: {
-    height: 2,
-    backgroundColor: "#fff",
-    ...commonStyles.dropShadow,
-  },
-  resultContainer: {
+  contentContainer: { flex: 1, justifyContent: "center" },
+  loadingContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    paddingHorizontal: 24,
-    paddingVertical: 16,
   },
-  customerItem: {
-    width: "100%",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  customerName: {
-    color: colors.purple,
-    fontFamily: "gamtanDotumR",
-    fontSize: 16,
-    letterSpacing: -0.5,
-  },
-  numOfVisits: {
-    color: colors.purple,
-    fontFamily: "nanumSquareR",
-    fontSize: 8,
-    letterSpacing: -0.5,
-  },
-  emptyText: {
-    fontFamily: "gamtanDotumB",
-    fontSize: 16,
-    letterSpacing: -0.5,
-    color: colors.lightPurple,
-  },
-  infoBox: { gap: 2, maxWidth: "50%" },
-  detail: {
-    color: colors.lightPurple,
+  loadingText: {
+    marginTop: 12,
     fontFamily: "nanumSquareB",
-    fontSize: 10,
-    letterSpacing: -0.5,
-    alignSelf: "flex-end",
+    fontSize: normalizeFont(14),
+    color: colors.purple,
   },
-  divideLine: { height: 1, backgroundColor: colors.purple, marginVertical: 8 },
+  loadingOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#FFFFFF80",
+  },
   plusButton: {
     position: "absolute",
     right: 20,
     bottom: 20,
-    ...commonStyles.dropShadow,
   },
 });

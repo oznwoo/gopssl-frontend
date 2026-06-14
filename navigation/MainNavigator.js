@@ -1,73 +1,91 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { TouchableOpacity, Platform } from "react-native";
+
 import DailySalesScreen from "../screens/DailySalesScreen";
 import SearchScreen from "../screens/SearchScreen";
 import SalesComparisionScreen from "../screens/SalesComparisionScreen";
 import SettingScreen from "../screens/SettingScreen";
-
-import { Ionicons } from "@expo/vector-icons";
-import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
-import colors from "../styles/color";
-import { StyleSheet } from "react-native";
 import CustomerScreen from "../screens/CustomerScreen";
 import SaleScreen from "../screens/SaleScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 import AddressSearchScreen from "../screens/AddressSearchScreen";
 import DetailScreen from "../screens/DetailScreen";
+import TreatmentSettingScreen from "../screens/TreatmentSettingScreen";
+
+import { Ionicons } from "@expo/vector-icons";
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import colors from "../styles/color";
+import { normalizeSize } from "../utils/responsive";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
-const TabNavigator = () => (
-  <Tab.Navigator
-    screenOptions={({ route }) => ({
-      tabBarIcon: ({ color, size }) => {
-        const iconData = {
-          iconFamily: null,
-          iconName: null,
-        };
+const TabNavigator = () => {
+  const insets = useSafeAreaInsets();
 
-        if (route.name === "DailySales") {
-          iconData.iconFamily = FontAwesome6;
-          iconData.iconName = "calendar";
-        } else if (route.name === "Search") {
-          iconData.iconFamily = FontAwesome5;
-          iconData.iconName = "search";
-        } else if (route.name === "Comparision") {
-          iconData.iconFamily = FontAwesome6;
-          iconData.iconName = "chart-simple";
-        } else if (route.name === "Setting") {
-          iconData.iconFamily = Ionicons;
-          iconData.iconName = "settings";
-        }
+  return (
+    <Tab.Navigator
+      screenOptions={({ route }) => ({
+        tabBarShowLabel: false,
+        tabBarActiveTintColor: colors.purple,
+        tabBarInactiveTintColor: colors.lightPurple,
+        tabBarStyle: {
+          backgroundColor: "#fff",
+          height: normalizeSize(56 + insets.bottom),
+          borderTopColor: colors.backgroundPurple,
+          borderTopWidth: Platform.OS === "android" ? 0.5 : 1,
+        },
+        tabBarItemStyle: {
+          marginHorizontal: Platform.OS === "android" ? 2 : 0,
+          marginVertical: Platform.OS === "android" ? 2 : 0,
+        },
+        headerShown: false,
+        // ✅ 전체 부모 영역을 터치 가능하게
+        tabBarButton: (props) => (
+          <TouchableOpacity
+            {...props}
+            style={[
+              props.style,
+              { paddingHorizontal: 12, paddingVertical: 16 },
+            ]}
+            activeOpacity={0.7}
+          >
+            {props.children}
+          </TouchableOpacity>
+        ),
+        tabBarIcon: ({ color, size }) => {
+          let IconComponent = null;
+          let iconName = "";
 
-        return (
-          <iconData.iconFamily
-            name={iconData.iconName}
-            size={size}
-            color={color}
-          />
-        );
-      },
-      tabBarShowLabel: false,
-      tabBarActiveTintColor: "#fff",
-      tabBarInactiveTintColor: colors.lightPurple,
-      tabBarInactiveBackgroundColor: "#fff",
-      tabBarStyle: styles.tabBar,
-      tabBarItemStyle: styles.tabBarItem,
-      tabBarIconStyle: styles.tabBarIcon,
+          if (route.name === "DailySales") {
+            IconComponent = MaterialIcons;
+            iconName = "home-filled";
+          } else if (route.name === "Search") {
+            IconComponent = Ionicons;
+            iconName = "person-circle";
+          } else if (route.name === "Comparision") {
+            IconComponent = FontAwesome6;
+            iconName = "chart-simple";
+          } else if (route.name === "Setting") {
+            IconComponent = Ionicons;
+            iconName = "settings";
+          }
 
-      headerShown: false, // 각 탭에서 헤더 숨김
-    })}
-  >
-    <Tab.Screen name="DailySales" component={DailySalesScreen} />
-    <Tab.Screen name="Search" component={SearchScreen} />
-    <Tab.Screen name="Comparision" component={SalesComparisionScreen} />
-    <Tab.Screen name="Setting" component={SettingScreen} />
-  </Tab.Navigator>
-);
+          return <IconComponent name={iconName} size={size} color={color} />;
+        },
+      })}
+    >
+      <Tab.Screen name="DailySales" component={DailySalesScreen} />
+      <Tab.Screen name="Search" component={SearchScreen} />
+      <Tab.Screen name="Comparision" component={SalesComparisionScreen} />
+      <Tab.Screen name="Setting" component={SettingScreen} />
+    </Tab.Navigator>
+  );
+};
 
 const StackNavigator = () => (
   <Stack.Navigator>
@@ -97,6 +115,11 @@ const StackNavigator = () => (
       options={{ headerShown: false }}
     />
     <Stack.Screen
+      name="Treatment"
+      component={TreatmentSettingScreen}
+      options={{ headerShown: false }}
+    />
+    <Stack.Screen
       name="AddressSearch"
       component={AddressSearchScreen}
       options={{ headerShown: false }}
@@ -109,18 +132,3 @@ const MainNavigator = () => {
 };
 
 export default MainNavigator;
-
-const styles = StyleSheet.create({
-  tabBar: { flex: 1, maxHeight: 56 },
-
-  tabBarItem: {
-    flex: 1,
-    borderRadius: 16,
-    backgroundColor: colors.purple,
-  },
-  tabBarIcon: {
-    marginVertical: "auto",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-});
