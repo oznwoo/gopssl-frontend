@@ -38,7 +38,11 @@ const SaleItem = ({ saleData, transitionSale, transitionCustomer }) => {
           </Text>
           <Text style={[styles.customerName, { color: textColor }]}>
             <Text
-              style={[styles.customerName, { fontFamily: "nanumSquareEB" }]}
+              style={[
+                styles.customerName,
+                { fontFamily: "nanumSquareEB" },
+                !saleData.customer_id && { color: colors.lightPurple },
+              ]}
             >
               {saleData.customer_name}
             </Text>
