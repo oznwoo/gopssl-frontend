@@ -9,6 +9,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { signInSuccess, signUpSuccess } from "../store/authSlice";
 import { getAllCustomer, loadCustomersFromStorage } from "../actions/customerActions";
 import { fetchTreatmentsThunk } from "../actions/treatmentActions";
+import { apiClient } from "../constants/baseURL";
 import colors from "../styles/color";
 
 const AppNavigator = () => {
@@ -34,6 +35,7 @@ const AppNavigator = () => {
             await dispatch(loadCustomersFromStorage());
             dispatch(getAllCustomer());
             dispatch(fetchTreatmentsThunk());
+            apiClient.delete("/customers/cleanup/inactive").catch(() => {});
           } else {
             // 온보딩 미완료: InfoForm 복원
             dispatch(signUpSuccess({ token, user }));
