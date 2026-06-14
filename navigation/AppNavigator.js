@@ -11,12 +11,16 @@ import { getAllCustomer, loadCustomersFromStorage } from "../actions/customerAct
 import { fetchTreatmentsThunk } from "../actions/treatmentActions";
 import { apiClient } from "../constants/baseURL";
 import colors from "../styles/color";
+import DailyReportModal from "../components/DailyReportModal";
+
+const LAST_REPORT_DATE_KEY = "@lastReportDate";
 
 const AppNavigator = () => {
   const dispatch = useDispatch();
   const isAuth = useSelector((state) => state.auth.isAuthenticated);
   const isFirst = useSelector((state) => state.auth.isFirst);
   const [isBootstrapping, setIsBootstrapping] = useState(true);
+  const [reportData, setReportData] = useState(null);
 
   useEffect(() => {
     const bootstrap = async () => {
@@ -35,7 +39,42 @@ const AppNavigator = () => {
             await dispatch(loadCustomersFromStorage());
             dispatch(getAllCustomer());
             dispatch(fetchTreatmentsThunk());
-            apiClient.delete("/customers/cleanup/inactive").catch(() => {});
+
+            const today = new Date().toISOString().split("T")[0];
+            const lastReportDate = await AsyncStorage.getItem(LAST_REPORT_DATE_KEY);
+
+            if (lastReportDate !== today) {
+              const yesterday = new Date();
+              yesterday.setDate(yesterday.getDate() - 1);
+              const yesterdayStr = yesterday.toISOString().split("T")[0];
+
+              try {
+                const [salesRes, cleanupRes] = await Promise.all([
+                  apiClient.get(`/sales/by_date?date=${yesterdayStr}`),
+                  apiClient.delete("/customers/cleanup/inactive"),
+                ]);
+
+                const sales = salesRes.data;
+                const totalAmount = sales.reduce((acc, s) => acc + (s.total_amount || 0), 0);
+                const cashCount = sales.filter((s) => s.payment_type === "현금").length;
+                const cardCount = sales.filter((s) => s.payment_type === "카드").length;
+
+                setReportData({
+                  date: yesterdayStr,
+                  totalAmount,
+                  visitCount: sales.length,
+                  cashCount,
+                  cardCount,
+                  deletedCustomers: cleanupRes.data.deleted_customers || [],
+                });
+
+                await AsyncStorage.setItem(LAST_REPORT_DATE_KEY, today);
+              } catch (e) {
+                console.error("리포트 로딩 실패:", e);
+              }
+            } else {
+              apiClient.delete("/customers/cleanup/inactive").catch(() => {});
+            }
           } else {
             // 온보딩 미완료: InfoForm 복원
             dispatch(signUpSuccess({ token, user }));
@@ -60,15 +99,22 @@ const AppNavigator = () => {
   }
 
   return (
-    <NavigationContainer>
-      {isAuth ? (
-        <MainNavigator />
-      ) : isFirst ? (
-        <OnboardingNavigator />
-      ) : (
-        <AuthNavigator />
-      )}
-    </NavigationContainer>
+    <>
+      <NavigationContainer>
+        {isAuth ? (
+          <MainNavigator />
+        ) : isFirst ? (
+          <OnboardingNavigator />
+        ) : (
+          <AuthNavigator />
+        )}
+      </NavigationContainer>
+
+      <DailyReportModal
+        reportData={reportData}
+        onClose={() => setReportData(null)}
+      />
+    </>
   );
 };
 
