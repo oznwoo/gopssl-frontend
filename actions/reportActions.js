@@ -1,6 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { apiClient } from "../constants/baseURL";
 import { store } from "../store/store";
+import { getAllCustomer } from "./customerActions";
 
 const getLastReportDateKey = () => {
   const userId = store.getState().auth.user?.id;
@@ -14,7 +15,9 @@ export const fetchDailyReport = () => {
     const lastReportDate = await AsyncStorage.getItem(key);
 
     if (lastReportDate === today) {
-      apiClient.delete("/customers/cleanup/inactive").catch(() => {});
+      apiClient.delete("/customers/cleanup/inactive")
+        .then(() => dispatch(getAllCustomer()))
+        .catch(() => {});
       return null;
     }
 
@@ -28,6 +31,8 @@ export const fetchDailyReport = () => {
     ]);
 
     const sales = salesRes.data;
+
+    dispatch(getAllCustomer());
 
     await AsyncStorage.setItem(key, today);
 

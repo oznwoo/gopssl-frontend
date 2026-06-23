@@ -2,7 +2,6 @@ import React from "react";
 import {
   ActivityIndicator,
   StyleSheet,
-  Switch,
   Text,
   TouchableOpacity,
   View,
@@ -28,7 +27,6 @@ const SignInForm = ({ setFormType }) => {
     try {
       const { email, password, rememberMe } = values;
       await dispatch(signIn({ email, password, rememberMe }));
-
       setFormType(FORM_TYPES.INFO);
     } catch (error) {
       if (error.status === 400) setErrors({ email: error.message });
