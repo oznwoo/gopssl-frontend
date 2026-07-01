@@ -17,6 +17,7 @@
 ---
 
 ## 소개
+<img width="1402" height="1122" alt="Gopssl " src="https://github.com/user-attachments/assets/b1e9d7a9-fd07-4cdd-8e8c-33e750102592" />
 
 Gopssl은 미용실 원장이 하루 매출을 즉시 기록하고, 고객 방문 이력을 관리하며, 월별 매출 추이를 확인할 수 있도록 만든 모바일 앱이다.
 
@@ -26,30 +27,50 @@ Gopssl은 미용실 원장이 하루 매출을 즉시 기록하고, 고객 방�
 
 ## 핵심 기능
 
-| 기능 | 왜 필요했는가 |
-|---|---|
-| 일별 매출 관리 | 원장이 시술 직후 매출을 바로 기록해야 정산을 위해 별도 장부를 만들 필요가 없어진다. 날짜를 선택하면 해당일 시술 내역과 합계를 바로 확인할 수 있다. |
-| 고객 관리 (소프트 삭제 · 복구) | 고객을 즉시 영구 삭제하면 매출 기록과의 연결이 끊겨 통계가 깨진다. 삭제는 목록에서 숨기는 것으로 처리하고, 복구와 영구 삭제를 별도 플로우로 분리했다. |
-| 월별 매출 비교 | "이번 달이 저번 달보다 나은지"를 감으로만 판단하고 있었다. 막대 차트로 월별 추이를 시각화해 판단 근거를 제공한다. |
-| 시술 항목 드래그 정렬 | 매장마다 자주 쓰는 시술·카테고리 순서가 다른데 고정 순서면 매번 스크롤해서 찾아야 한다. 드래그로 순서를 직접 커스터마이징할 수 있게 했다. |
-| 온보딩 | 매장 정보(store_name) 없이 가입만 마친 상태로 메인 화면에 들어가면 빈 데이터 화면만 보게 된다. 최초 실행 시 필수 정보 입력을 유도하는 온보딩을 별도 플로우로 분리했다. |
-| 데일리 리포트 모달 | 앱을 하루 한 번 열까 말까 하는 사용 패턴을 고려해, 부팅 시 어제 매출 요약(방문 수, 현금/카드 비율)을 자동으로 띄워 확인 동선을 줄였다. |
+### 홈 — 일별 매출 관리
+
+날짜를 선택하면 해당일 시술 내역과 합계를 바로 확인할 수 있다.
+상단 날짜를 누르면 달력이 열리고, 날짜별 매출을 보며 원하는 날로 이동할 수 있다.
+<img width="1200" height="1499" alt="홈 화면" src="https://github.com/user-attachments/assets/5f09cf3b-20c7-4c0f-ae54-30eae55d71f5" />
+
+### 고객 관리
+
+자모 순으로 정렬된 고객 목록에서 검색·조회가 가능하다.
+플로팅 버튼으로 매출 등록과 고객 등록을 바로 선택할 수 있다.
+<img width="1200" height="1499" alt="고객 관리 화면" src="https://github.com/user-attachments/assets/86beef44-934c-41fa-84de-0b2e3e65775c" />
+
+
+### 매출 통계 · 비교
+
+이번 달 매출과 전월 대비 증감, 결제수단 비율을 한눈에 보여준다.
+"감으로 판단하던" 매출 흐름을 데이터로 확인할 수 있게 했다.
+<img width="1200" height="1499" alt="매출 관리 화면" src="https://github.com/user-attachments/assets/309291c1-a449-4b25-8ead-a35a062634b9" />
+
+
+### 설정
+
+시술 관리, 삭제된 고객 관리 등 앱 운영에 필요한 메뉴를 모아뒀다.
+<img width="1200" height="1499" alt="설정 화면" src="https://github.com/user-attachments/assets/83eaac69-0af8-41bd-af68-6c3454abb2cf" />
+
 
 ---
 
 ## 기술 스택
+<img width="2672" height="1781" alt="Group 6" src="https://github.com/user-attachments/assets/215b68ba-7565-4936-a119-70062ad0f358" />
 
-| 영역 | 기술 | 비고 |
-|---|---|---|
-| 프레임워크 | React Native 0.81 + Expo 54 | New Architecture 활성화 |
-| 네비게이션 | React Navigation v7 (Native Stack + Bottom Tabs) | Auth / Onboarding / Main 3분기 구조 |
-| 상태 관리 | Redux Toolkit + react-redux | auth / customer / treatment 슬라이스 분리 |
-| HTTP | Axios | 요청/응답 인터셉터로 JWT 자동 첨부 및 자동 갱신 |
-| 폼 검증 | Formik + Yup | 화면별 스키마 분리 |
-| 로컬 저장 | AsyncStorage | 세션 토큰, 고객 목록 캐시, 온보딩/리포트 표시 여부 저장 |
-| 차트 | react-native-gifted-charts | 일별/월별 매출 시각화 |
-| 드래그 정렬 | react-native-draggable-flatlist, react-native-draggable-grid | 시술 항목·카테고리 순서 커스터마이징 |
-| 백엔드 | FastAPI | Oracle Cloud 인스턴스에서 systemd로 상시 구동 |
+미용실 원장이 모바일 앱에서 요청하면, React Native 앱이 JWT를 포함한
+API 요청을 FastAPI 서버로 보낸다. 서버는 PostgreSQL에서 데이터를
+조회·저장하고, 주소 검색이 필요할 때만 카카오 로컬 API를 별도로 호출해
+keyword API와 address API 결과를 조합한 통합 검색 결과를 반환한다.
+
+- **모바일 앱** (React Native + Expo): Redux Toolkit으로 상태 관리,
+Axios 인터셉터로 JWT 자동 첨부·갱신, AsyncStorage로 로컬 캐싱,
+Formik + Yup으로 폼 검증
+- **서버** (FastAPI, Oracle Cloud): JWT 인증 및 소유권 검증,
+고객/매출/시술 CRUD, 매출 통계 집계
+- **데이터베이스** (PostgreSQL, SQLAlchemy ORM): 고객·시술·매출 데이터 저장,
+트랜잭션 및 무결성 보장
+- **외부 연동**: 카카오 로컬 API로 도로명·지번·우편번호 통합 주소 검색
 
 ---
 
@@ -153,3 +174,5 @@ npm run android  # Android 에뮬레이터
 ## 라이선스
 
 0BSD
+
+
