@@ -66,11 +66,14 @@ const CustomerScreen = ({ route }) => {
           <CustomerForm mode={mode} data={customerData} />
         ) : customerData ? (
           // 등록 모드 아닐 때는 데이터 있을때만 폼 렌더링
-          <CustomerForm mode={mode} data={customerData} />
+          <CustomerForm
+            mode={mode}
+            data={customerData}
+            isDeleted={customerData.is_deleted}
+          />
         ) : (
-          // 등록 모드가 아니고 데이터도 없으면 메시지 출력
           <View style={styles.emptyText}>
-            <Text>고객 데이터를 불러올 수 없습니다.</Text>
+            <Text style={styles.emptyTextContent}>고객 데이터를 불러올 수 없습니다.</Text>
           </View>
         )}
       </View>
@@ -92,6 +95,11 @@ const styles = StyleSheet.create({
     backgroundColor: colors.backgroundPurple,
   },
   emptyText: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  emptyTextContent: {
     fontFamily: "nanumSquareB",
     fontSize: normalizeFont(16),
     letterSpacing: -0.5,

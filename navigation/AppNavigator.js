@@ -9,13 +9,16 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { signInSuccess, signUpSuccess } from "../store/authSlice";
 import { getAllCustomer, loadCustomersFromStorage } from "../actions/customerActions";
 import { fetchTreatmentsThunk } from "../actions/treatmentActions";
+import { fetchDailyReport } from "../actions/reportActions";
 import colors from "../styles/color";
+import DailyReportModal from "../components/DailyReportModal";
 
 const AppNavigator = () => {
   const dispatch = useDispatch();
   const isAuth = useSelector((state) => state.auth.isAuthenticated);
   const isFirst = useSelector((state) => state.auth.isFirst);
   const [isBootstrapping, setIsBootstrapping] = useState(true);
+  const [reportData, setReportData] = useState(null);
 
   useEffect(() => {
     const bootstrap = async () => {
@@ -29,13 +32,16 @@ const AppNavigator = () => {
         if (token && userJson) {
           const user = JSON.parse(userJson);
 
-          if (viewedOnboarding) {
+          if (viewedOnboarding || user?.store_name) {
+            if (!viewedOnboarding && user?.store_name) {
+              await AsyncStorage.setItem("@viewedOnboarding", "true");
+            }
             dispatch(signInSuccess({ token, user }));
             await dispatch(loadCustomersFromStorage());
             dispatch(getAllCustomer());
             dispatch(fetchTreatmentsThunk());
           } else {
-            // 온보딩 미완료: InfoForm 복원
+            // store_name도 없는 온보딩 미완료 신규 유저
             dispatch(signUpSuccess({ token, user }));
           }
         }
@@ -49,6 +55,20 @@ const AppNavigator = () => {
     bootstrap();
   }, []);
 
+  useEffect(() => {
+    if (isBootstrapping) return;
+    if (!isAuth) return;
+
+    const loadReport = async () => {
+      try {
+        const report = await dispatch(fetchDailyReport());
+        if (report) setReportData(report);
+      } catch (e) {}
+    };
+
+    loadReport();
+  }, [isAuth, isBootstrapping]);
+
   if (isBootstrapping) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -58,15 +78,22 @@ const AppNavigator = () => {
   }
 
   return (
-    <NavigationContainer>
-      {isAuth ? (
-        <MainNavigator />
-      ) : isFirst ? (
-        <OnboardingNavigator />
-      ) : (
-        <AuthNavigator />
-      )}
-    </NavigationContainer>
+    <>
+      <NavigationContainer>
+        {isAuth ? (
+          <MainNavigator />
+        ) : isFirst ? (
+          <OnboardingNavigator />
+        ) : (
+          <AuthNavigator />
+        )}
+      </NavigationContainer>
+
+      <DailyReportModal
+        reportData={reportData}
+        onClose={() => setReportData(null)}
+      />
+    </>
   );
 };
 

@@ -1,0 +1,21 @@
+{
+  "cli": {
+    "version": ">= 16.0.0"
+  },
+  "build": {
+    "preview": {
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_BASE_URL": "http://144.24.147.125:8000"
+      }
+    },
+    "production": {
+      "env": {
+        "EXPO_PUBLIC_BASE_URL": "http://144.24.147.125:8000"
+      }
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}
