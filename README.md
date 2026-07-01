@@ -1,8 +1,6 @@
-<h1 align="center">
-  <br/>
-  Gopssl
-  <br/>
-</h1>
+<div align="center">
+<img width="235" height="79" alt="Gopssl" src="https://github.com/user-attachments/assets/748a9cf9-51c8-48e0-a26e-0c0807f0752e" />
+</div>
 
 <p align="center">
   예약 없이 워크인으로 운영되는 소규모 미용실을 위한 매출 · 고객 관리 앱
