@@ -76,37 +76,9 @@ Formik + Yup으로 폼 검증
 
 ## 엔지니어링 하이라이트
 
-### JWT 자동 갱신 인터셉터
-
-**문제**: 세션이 만료되면 API 요청이 401로 실패한다. 화면마다 이를 감지해서 재로그인시키는 로직을 반복 작성하면 화면 수만큼 중복 코드가 생기고, 사용자는 작업 도중 갑자기 로그아웃당하게 된다.
-
-**해결**: axios 인스턴스에 요청/응답 인터셉터를 걸었다. 요청 시 Redux에 저장된 토큰을 자동으로 헤더에 붙이고, 401 응답을 받으면 `/auth/refresh`로 토큰을 갱신한 뒤 실패했던 원래 요청을 한 번 재시도한다. 갱신마저 실패하면 그때 로그아웃 액션을 디스패치한다. 화면 레벨 코드는 인증 로직을 전혀 신경 쓰지 않아도 된다.
-
-파일: [constants/baseURL.js](constants/baseURL.js)
-
-### 오프라인 우선 고객 캐시 (stale-while-revalidate)
-
-**문제**: 고객 목록 API 응답을 기다리는 동안 빈 화면이 노출되고, 네트워크가 불안정한 환경에서는 목록 자체가 뜨지 않는 경우가 있었다.
-
-**해결**: 앱 부팅 시 AsyncStorage에 저장된 고객 목록 캐시를 먼저 Redux에 반영해 즉시 렌더링하고, 그 다음 백그라운드에서 서버 최신 데이터를 받아와 캐시와 상태를 함께 갱신한다. 화면은 항상 오래된 데이터라도 먼저 보여주고, 최신화는 비동기로 따라오게 했다.
-
-파일: [actions/customerActions.js](actions/customerActions.js) (`loadCustomersFromStorage`, `getAllCustomer`), [navigation/AppNavigator.js](navigation/AppNavigator.js)
-
-### 부트스트랩 분기 로직 (Auth / Onboarding / Main)
-
-**문제**: 로그인 여부만으로 화면을 나누면 "가입은 했지만 매장 정보를 아직 입력하지 않은 유저"와 "정상 이용 중인 기존 유저"를 구분할 수 없다. 매번 온보딩을 다시 보여주거나, 반대로 필수 정보 입력 단계를 건너뛰는 문제가 실제로 발생했다.
-
-**해결**: 앱 부팅 시 토큰 존재 여부, 온보딩 시청 플래그(`@viewedOnboarding`), 유저의 `store_name` 존재 여부를 조합해 Auth / Onboarding / Main 세 갈래로 라우팅을 분기했다. 기존 유저가 앱을 재설치했을 때 온보딩 화면으로 잘못 진입하는 버그를 실제로 겪고 수정한 이력이 커밋 로그에 남아 있다.
-
-파일: [navigation/AppNavigator.js](navigation/AppNavigator.js)
-
-### 소프트 삭제 도메인 모델링
-
-**문제**: 고객을 즉시 삭제(hard delete)하면 해당 고객과 연결된 매출 기록의 참조가 끊겨 월별 통계가 어긋나고, 실수로 삭제했을 때 되돌릴 방법이 없었다.
-
-**해결**: 고객 삭제를 `is_customer_deleted` 플래그 기반의 소프트 삭제로 바꿨다. 목록에서는 숨기되 매출 데이터와의 연결은 유지하고, 별도 "삭제된 고객" 화면에서 복구 또는 영구 삭제를 선택하게 분리했다. 영구 삭제를 실행해도 매출 기록 자체는 보존해 통계가 깨지지 않게 했고, 삭제된 고객이 연결된 매출 화면은 읽기 전용(입력 오버레이, 수정 버튼 숨김)으로 전환해 오조작을 막았다.
-
-파일: [actions/customerActions.js](actions/customerActions.js), [screens/DeletedCustomersScreen.js](screens/DeletedCustomersScreen.js), [components/SaleForm.js](components/SaleForm.js), [components/CustomerForm.js](components/CustomerForm.js)
+오프라인 우선 캐싱, 부트스트랩 시 Auth/Onboarding/Main 분기 등
+클라이언트 관점에서 마주친 문제를 해결하며 개발했습니다.
+백엔드를 포함한 전체 아키텍처와 문제 해결 과정은 [포트폴리오 사이트](URL)에서 확인하실 수 있습니다.
 
 ---
 
