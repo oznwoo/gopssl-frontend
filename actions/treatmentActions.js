@@ -1,6 +1,7 @@
 // src/actions/treatmentActions.js
 import { apiClient } from "../constants/baseURL";
 import { store } from "../store/store";
+import { DEFAULT_TREATMENT_MENU } from "../constants/defaultTreatments";
 import {
   fetchTreatmentsStart,
   fetchTreatmentsSuccess,
@@ -29,6 +30,42 @@ export const fetchTreatmentsThunk = () => async (dispatch) => {
     dispatch(fetchTreatmentCategoriesSuccess(response2.data));
   } catch (error) {
     dispatch(fetchTreatmentsFailure(error.message));
+  }
+};
+
+// 📌 신규 가입 시 기본 시술 메뉴 자동 시딩
+//    - 이미 카테고리가 있으면 건너뜀 (중복 방지)
+//    - 개별 실패는 삼켜서 가입 흐름을 막지 않음
+export const seedDefaultTreatments = () => async (dispatch, getState) => {
+  try {
+    const existingCategories = getState().treatment.categories;
+    if (existingCategories && existingCategories.length > 0) return;
+
+    for (const group of DEFAULT_TREATMENT_MENU) {
+      try {
+        const category = await dispatch(
+          createTreatmentCategory({ name: group.category })
+        );
+
+        await Promise.all(
+          group.treatments.map((treatment) =>
+            dispatch(
+              createTreatment({
+                name: treatment.name,
+                category_id: category.id,
+                default_price: treatment.default_price,
+              })
+            ).catch((e) => {
+              console.log("기본 시술 생성 실패:", treatment.name, e?.message);
+            })
+          )
+        );
+      } catch (e) {
+        console.log("기본 카테고리 생성 실패:", group.category, e?.message);
+      }
+    }
+  } catch (e) {
+    console.log("기본 시술 시딩 실패:", e?.message);
   }
 };
 

@@ -7,6 +7,7 @@ import { InfoSchema } from "../schemas/InfoSchema";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
 import { registerUserInfo } from "../actions/userActions";
+import { seedDefaultTreatments } from "../actions/treatmentActions";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AddressSearchInput, BaseInput, DetailInput } from "./Input";
 import { normalizeFont } from "../utils/responsive";
@@ -29,6 +30,9 @@ const InfoForm = ({ setFormType }) => {
           address_detail: values.addressDetail,
         })
       );
+
+      // 신규 가입 시 기본 시술 메뉴 자동 등록 (실패해도 흐름은 계속)
+      await dispatch(seedDefaultTreatments());
 
       await AsyncStorage.setItem("@viewedOnboarding", "true");
       navigation.navigate("OnboardingScreen");
@@ -99,7 +103,7 @@ const InfoForm = ({ setFormType }) => {
                 errorText={touched.address && errors.address}
                 onPressIcon={() => {
                   navigation.navigate("AddressSearchScreen", {
-                    backScreen: "StartScreen",
+                    backScreen: "InfoScreen",
                     formData: values,
                   });
                 }}

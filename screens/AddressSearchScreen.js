@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   View,
   TextInput,
@@ -23,15 +23,20 @@ const AddressSearchScreen = ({ navigation }) => {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
 
-  const debouncedSearch = debounce(async (text) => {
-    try {
-      const res = await searchAddress(text);
-      setResults(res);
-    } catch (e) {
-      // 에러 핸들링
-      console.error("주소 검색 실패", e);
-    }
-  }, 300);
+  // debounce 인스턴스를 한 번만 생성 (매 렌더 재생성 시 디바운스가 동작하지 않음)
+  const debouncedSearch = useMemo(
+    () =>
+      debounce(async (text) => {
+        try {
+          const res = await searchAddress(text);
+          setResults(res);
+        } catch (e) {
+          // 에러 핸들링
+          console.error("주소 검색 실패", e);
+        }
+      }, 300),
+    []
+  );
 
   useEffect(() => {
     if (query.trim()) {
@@ -39,7 +44,10 @@ const AddressSearchScreen = ({ navigation }) => {
     } else {
       setResults([]);
     }
-  }, [query]);
+  }, [query, debouncedSearch]);
+
+  // 언마운트 시 대기 중인 호출 취소
+  useEffect(() => () => debouncedSearch.cancel(), [debouncedSearch]);
 
   const handleSelect = (item) => {
     const selected = {
