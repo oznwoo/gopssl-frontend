@@ -6,12 +6,12 @@
     "preview": {
       "distribution": "internal",
       "env": {
-        "EXPO_PUBLIC_BASE_URL": "http://144.24.147.125:8000"
+        "EXPO_PUBLIC_BASE_URL": "https://dev-api.gopssl.com"
       }
     },
     "production": {
       "env": {
-        "EXPO_PUBLIC_BASE_URL": "http://144.24.147.125:8000"
+        "EXPO_PUBLIC_BASE_URL": "https://api.gopssl.com"
       }
     }
   },
