@@ -32,7 +32,11 @@ export const getToken = async () => {
     console.log("SecureStore 읽기 실패:", e?.message);
     return await readLegacyToken();
   }
-  if (secureToken) return secureToken;
+  if (secureToken) {
+    // 이전 마이그레이션에서 평문 사본 삭제가 실패했을 수 있으므로 매번 정리 재시도
+    await removeLegacyToken();
+    return secureToken;
+  }
 
   // 1회 마이그레이션: AsyncStorage → SecureStore
   const legacyToken = await readLegacyToken();
