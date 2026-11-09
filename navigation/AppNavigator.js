@@ -6,6 +6,7 @@ import AuthNavigator from "./AuthNavigator";
 import OnboardingNavigator from "./OnboardingNavigator";
 import { useSelector, useDispatch } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getToken } from "../utils/tokenStorage";
 import { signInSuccess, signUpSuccess } from "../store/authSlice";
 import { getAllCustomer, loadCustomersFromStorage } from "../actions/customerActions";
 import { fetchTreatmentsThunk } from "../actions/treatmentActions";
@@ -24,7 +25,7 @@ const AppNavigator = () => {
     const bootstrap = async () => {
       try {
         const [token, userJson, viewedOnboarding] = await Promise.all([
-          AsyncStorage.getItem("token"),
+          getToken(),
           AsyncStorage.getItem("user"),
           AsyncStorage.getItem("@viewedOnboarding"),
         ]);

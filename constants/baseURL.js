@@ -1,7 +1,7 @@
 import axios from "axios";
 import { store } from "../store/store";
 import { signInSuccess, logout } from "../store/authSlice";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { setToken } from "../utils/tokenStorage";
 
 export const BASE_URL = process.env.EXPO_PUBLIC_BASE_URL;
 
@@ -18,7 +18,8 @@ const refreshToken = async () => {
   try {
     const currentToken = store.getState().auth.token;
 
-    const response = await axios.post(`${BASE_URL}/auth/refresh`, {
+    // body 자리에 null을 넘겨야 headers가 config로 전달된다 (기존엔 body로 가서 항상 401)
+    const response = await axios.post(`${BASE_URL}/auth/refresh`, null, {
       headers: {
         Authorization: `Bearer ${currentToken}`,
       },
@@ -34,8 +35,8 @@ const refreshToken = async () => {
       }),
     );
 
-    // AsyncStorage 업데이트
-    await AsyncStorage.setItem("token", newToken);
+    // SecureStore 업데이트
+    await setToken(newToken);
 
     return newToken;
   } catch (error) {

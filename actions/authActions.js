@@ -6,6 +6,7 @@ import {
   registerSuccess,
 } from "../store/authSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { setToken, removeToken } from "../utils/tokenStorage";
 import { getAllCustomer } from "./customerActions";
 import { store } from "../store/store";
 import axios from "axios";
@@ -25,8 +26,8 @@ export const refreshToken = () => {
         })
       );
 
-      // AsyncStorage 업데이트
-      await AsyncStorage.setItem("token", newToken);
+      // SecureStore 업데이트
+      await setToken(newToken);
 
       return newToken;
     } catch (error) {
@@ -103,7 +104,7 @@ export const signUp = ({ name, email, password }) => {
       // 먼저 토큰을 Redux store에 저장
       dispatch(signUpSuccess({ token, user: null }));
       dispatch(getAllCustomer());
-      await AsyncStorage.setItem("token", token);
+      await setToken(token);
 
       // 토큰을 직접 헤더에 포함시켜서 사용자 정보 요청
       const headers = {
@@ -180,10 +181,10 @@ export const signIn = ({ email, password, rememberMe }) => {
       dispatch(getAllCustomer());
 
       if (rememberMe) {
-        await AsyncStorage.setItem("token", token);
+        await setToken(token);
         await AsyncStorage.setItem("user", JSON.stringify(user));
       } else {
-        await AsyncStorage.removeItem("token");
+        await removeToken();
         await AsyncStorage.removeItem("user");
       }
     } catch (e) {
@@ -213,7 +214,7 @@ export const signIn = ({ email, password, rememberMe }) => {
 export const logout = () => {
   return async (dispatch) => {
     try {
-      await AsyncStorage.removeItem("token");
+      await removeToken();
       await AsyncStorage.removeItem("user");
       // @viewedOnboarding은 유지 (재로그인 시 온보딩 재표시 불필요)
       dispatch(logoutAction());
