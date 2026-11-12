@@ -12,7 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigation, useRoute } from "@react-navigation/native";
 
 import SubmitButton from "./SubmitButton";
-import { BaseInput, AddressSearchInput } from "./Input";
+import { BaseInput } from "./Input";
 import colors from "../styles/color";
 import { commonStyles } from "../styles/commonStyles";
 import { UserSchema } from "../schemas/UserSchema";
@@ -40,15 +40,20 @@ const UserForm = () => {
   // 업데이트 핸들러
   const handleUpdate = async (values, { setSubmitting, setErrors }) => {
     try {
+      const address = values.address.trim();
+      // 우편번호 칸은 숨김. 주소를 직접 바꾸면 기존(검색으로 채운) 우편번호는 맞지 않으므로 비운다
+      const zipCode =
+        address === initialValues.address.trim() ? values.zipCode : "";
       await dispatch(
         registerUserInfo({
           id: user.id,
           name: values.name,
           email: values.email,
           store_name: values.storeName,
-          address: values.address,
-          address_detail: values.addressDetail,
-          zip_code: values.zipCode,
+          // 빈 주소는 null이 아닌 ""로 보낸다 (백엔드 PUT /users/me는 null을 "변경 안 함"으로 처리)
+          address,
+          address_detail: values.addressDetail.trim(),
+          zip_code: zipCode,
         })
       );
       Alert.alert("알림", "회원 정보가 수정되었습니다.");
@@ -128,35 +133,21 @@ const UserForm = () => {
                 errorText={touched.storeName && errors.storeName}
               />
 
-              <AddressSearchInput
+              {/* 주소 검색(카카오)은 운영 키 부재로 숨김. 직접 입력만 지원.
+                  AddressSearchInput / AddressSearchScreen은 검색 API 교체 시 재사용 검토 */}
+              <BaseInput
                 id="address"
-                label={"주소"}
+                label={"주소 (선택)"}
                 autoCapitalize="none"
                 value={values.address}
                 onChangeText={handleChange("address")}
                 onBlur={handleBlur("address")}
                 errorText={touched.address && errors.address}
-                onPressIcon={() => {
-                  navigation.navigate("AddressSearch", {
-                    backScreen: "Profile",
-                  });
-                }}
-                readOnly
-              />
-
-              <BaseInput
-                id="zipCode"
-                label="우편번호"
-                value={values.zipCode}
-                onChangeText={handleChange("zipCode")}
-                onBlur={handleBlur("zipCode")}
-                errorText={touched.zipCode && errors.zipCode}
-                readOnly
               />
 
               <BaseInput
                 id="addressDetail"
-                label="상세 주소"
+                label="상세 주소 (선택)"
                 value={values.addressDetail}
                 onChangeText={handleChange("addressDetail")}
                 onBlur={handleBlur("addressDetail")}

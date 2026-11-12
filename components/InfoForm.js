@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { registerUserInfo } from "../actions/userActions";
 import { seedDefaultTreatments } from "../actions/treatmentActions";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { AddressSearchInput, BaseInput, DetailInput } from "./Input";
+import { BaseInput } from "./Input";
 import { normalizeFont } from "../utils/responsive";
 
 const InfoForm = ({ setFormType }) => {
@@ -25,9 +25,10 @@ const InfoForm = ({ setFormType }) => {
         registerUserInfo({
           ...userData,
           store_name: values.storeName,
-          address: values.address,
-          zip_code: values.zipCode,
-          address_detail: values.addressDetail,
+          // 빈 주소는 null이 아닌 ""로 보낸다 (백엔드 PUT /users/me는 null을 "변경 안 함"으로 처리)
+          address: values.address.trim(),
+          zip_code: values.zipCode.trim(),
+          address_detail: values.addressDetail.trim(),
         })
       );
 
@@ -93,34 +94,21 @@ const InfoForm = ({ setFormType }) => {
                 onBlur={handleBlur("storeName")}
                 errorText={touched.storeName && errors.storeName}
               />
-              <AddressSearchInput
+              {/* 주소 검색(카카오)은 운영 키 부재로 숨김. 직접 입력만 지원.
+                  AddressSearchInput / AddressSearchScreen은 검색 API 교체 시 재사용 검토 */}
+              <BaseInput
                 id="address"
-                label={"주소"}
+                label={"주소 (선택)"}
                 autoCapitalize="none"
                 value={values.address}
                 onChangeText={handleChange("address")}
                 onBlur={handleBlur("address")}
                 errorText={touched.address && errors.address}
-                onPressIcon={() => {
-                  navigation.navigate("AddressSearchScreen", {
-                    backScreen: "InfoScreen",
-                    formData: values,
-                  });
-                }}
-                readOnly
-              />
-
-              <BaseInput
-                id="zip_code"
-                label={"우편번호"}
-                autoCapitalize="none"
-                value={values.zipCode}
-                readOnly
               />
 
               <BaseInput
                 id="address_detail"
-                label={"상세주소"}
+                label={"상세주소 (선택)"}
                 autoCapitalize="none"
                 value={values.addressDetail}
                 onChangeText={handleChange("addressDetail")}
