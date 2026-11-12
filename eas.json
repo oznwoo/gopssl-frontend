@@ -1,6 +1,7 @@
 {
   "cli": {
-    "version": ">= 16.0.0"
+    "version": ">= 16.0.0",
+    "appVersionSource": "remote"
   },
   "build": {
     "preview": {
@@ -12,7 +13,8 @@
     "production": {
       "env": {
         "EXPO_PUBLIC_BASE_URL": "https://api.gopssl.com"
-      }
+      },
+      "autoIncrement": true
     }
   },
   "submit": {
