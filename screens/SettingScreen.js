@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   Image,
   ScrollView,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from "react-native";
 import colors from "../styles/color";
@@ -14,7 +16,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import Fontisto from "@expo/vector-icons/Fontisto";
 import { useDispatch, useSelector } from "react-redux";
-import { logout } from "../actions/authActions";
+import { logout, deleteAccount } from "../actions/authActions";
 import { useNavigation } from "@react-navigation/native";
 import { normalizeFont, normalizeSize } from "../utils/responsive";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -26,7 +28,9 @@ const SettingScreen = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
-  const { name } = useSelector((state) => state.auth.user);
+  const [isDeleting, setIsDeleting] = useState(false);
+  // 탈퇴 직후 user가 null이 되어도 화면이 전환되기 전까지 깨지지 않도록
+  const name = useSelector((state) => state.auth.user?.name);
 
   const handleNavigate = (target) => {
     navigation.navigate(target);
@@ -41,6 +45,46 @@ const SettingScreen = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const runDeleteAccount = async () => {
+    setIsDeleting(true);
+    try {
+      // 성공하면 로그아웃 상태가 되어 로그인 화면으로 넘어간다
+      await dispatch(deleteAccount());
+    } catch (error) {
+      setIsDeleting(false);
+      Alert.alert("탈퇴 실패", error.message);
+    }
+  };
+
+  // 되돌릴 수 없는 삭제라 확인을 두 번 받는다: 무엇이 지워지는지 안내 → 최종 확인
+  const handleDeleteAccount = () => {
+    if (isDeleting) return;
+    Alert.alert(
+      "회원 탈퇴 안내",
+      "탈퇴하시면 원장님 계정과 함께 등록하신 손님 정보, 매출 기록, 시술 목록이 모두 삭제됩니다.\n\n삭제된 기록은 다시 되돌릴 수 없습니다.",
+      [
+        { text: "취소", style: "cancel" },
+        {
+          text: "계속",
+          style: "destructive",
+          onPress: () =>
+            Alert.alert(
+              "정말 탈퇴하시겠어요?",
+              "확인을 누르시면 바로 계정과 모든 기록이 삭제됩니다.",
+              [
+                { text: "취소", style: "cancel" },
+                {
+                  text: "탈퇴하기",
+                  style: "destructive",
+                  onPress: runDeleteAccount,
+                },
+              ],
+            ),
+        },
+      ],
+    );
   };
 
   return (
@@ -119,6 +163,15 @@ const SettingScreen = () => {
             <SubmitButton title="로그아웃" onDelete={handleLogout} />
           )}
         </View>
+        <View style={styles.deleteAccountContainer}>
+          {isDeleting ? (
+            <ActivityIndicator size="small" color={colors.lightPurple} />
+          ) : (
+            <TouchableOpacity onPress={handleDeleteAccount} hitSlop={8}>
+              <Text style={styles.deleteAccountText}>회원 탈퇴</Text>
+            </TouchableOpacity>
+          )}
+        </View>
       </ScrollView>
     </View>
   );
@@ -178,5 +231,16 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     width: "100%",
     gap: 8,
+  },
+  deleteAccountContainer: {
+    alignItems: "center",
+    paddingVertical: 16,
+  },
+  deleteAccountText: {
+    fontFamily: "nanumSquareR",
+    fontSize: normalizeFont(13),
+    letterSpacing: -0.5,
+    color: colors.lightPurple,
+    textDecorationLine: "underline",
   },
 });

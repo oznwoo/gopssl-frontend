@@ -3,7 +3,7 @@ import { registerSuccess } from "../store/authSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { setCustomers } from "../store/customerSlice";
 
-const CUSTOMER_CACHE_KEY = "customers_cache";
+export const CUSTOMER_CACHE_KEY = "customers_cache";
 
 export const registerCustomer = ({ user_id, name, phone_number, detail }) => {
   return async (dispatch) => {
