@@ -21,8 +21,7 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.oznwoo.Gopssl",
-      "usesCleartextTraffic": true
+      "package": "com.oznwoo.Gopssl"
     },
     "web": {
       "favicon": "./assets/icon.png"
