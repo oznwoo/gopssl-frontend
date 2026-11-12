@@ -13,7 +13,8 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.oznwoo.gopssl"
     },
     "android": {
       "adaptiveIcon": {
@@ -21,11 +22,14 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.oznwoo.Gopssl"
+      "package": "com.oznwoo.gopssl"
     },
     "web": {
       "favicon": "./assets/icon.png"
     },
-    "plugins": ["expo-asset", "expo-secure-store"]
+    "plugins": [
+      "expo-asset",
+      "expo-secure-store"
+    ]
   }
 }
