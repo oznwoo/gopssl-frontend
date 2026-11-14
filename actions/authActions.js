@@ -7,7 +7,8 @@ import {
 } from "../store/authSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { setToken, removeToken } from "../utils/tokenStorage";
-import { getAllCustomer } from "./customerActions";
+import { getAllCustomer, CUSTOMER_CACHE_KEY } from "./customerActions";
+import { setCustomers } from "../store/customerSlice";
 import { store } from "../store/store";
 import axios from "axios";
 
@@ -211,15 +212,56 @@ export const signIn = ({ email, password, rememberMe }) => {
   };
 };
 
+// 기기에 남은 로그인 흔적(토큰·가게 정보·고객 캐시·리포트 날짜)을 지우고 Redux를 로그아웃 상태로 만든다.
+// 로그아웃과 회원 탈퇴가 같이 쓴다. 한 항목 삭제가 실패해도 나머지는 계속 지우고,
+// 화면은 항상 로그인 화면으로 보낸다 (탈퇴한 계정 화면에 갇히지 않도록).
+// @viewedOnboarding은 유지 (재로그인 시 온보딩 재표시 불필요)
+const clearLocalSession = async (dispatch) => {
+  const userId = store.getState().auth.user?.id;
+  const storageKeys = ["user", CUSTOMER_CACHE_KEY];
+  if (userId) storageKeys.push(`@lastReportDate_${userId}`);
+
+  const results = await Promise.allSettled([
+    removeToken(),
+    AsyncStorage.multiRemove(storageKeys),
+  ]);
+  results
+    .filter((r) => r.status === "rejected")
+    .forEach((r) => console.error("로컬 세션 정리 중 오류:", r.reason));
+
+  dispatch(setCustomers([]));
+  dispatch(logoutAction());
+};
+
 export const logout = () => {
   return async (dispatch) => {
+    await clearLocalSession(dispatch);
+  };
+};
+
+// 회원 탈퇴: 서버 계정 삭제(손님·매출 등은 서버에서 CASCADE 삭제)가 성공한 뒤에만 로컬을 정리한다.
+// 실패하면 에러를 던지고 로그인 상태는 그대로 둔다.
+const USER_NOT_FOUND_DETAIL = "사용자가 존재하지 않습니다.";
+
+export const deleteAccount = () => {
+  return async (dispatch) => {
     try {
-      await removeToken();
-      await AsyncStorage.removeItem("user");
-      // @viewedOnboarding은 유지 (재로그인 시 온보딩 재표시 불필요)
-      dispatch(logoutAction());
+      await apiClient.delete("/users/me");
     } catch (e) {
-      console.error("로그아웃 중 오류 발생:", e);
+      // 서버에 이미 계정이 없음 (예: 이전 요청은 삭제됐는데 응답만 못 받은 경우) → 탈퇴 완료로 본다.
+      // 백엔드 get_current_user의 404 문구로만 판단한다 (주소 오류 등 다른 404는 실패로 처리)
+      const alreadyDeleted =
+        e.response?.status === 404 &&
+        e.response?.data?.detail === USER_NOT_FOUND_DETAIL;
+      if (!alreadyDeleted) {
+        const customError = new Error(
+          "회원 탈퇴에 실패했습니다. 잠시 후 다시 시도해주세요."
+        );
+        customError.status = e.response?.status ?? null;
+        throw customError;
+      }
     }
+
+    await clearLocalSession(dispatch);
   };
 };
