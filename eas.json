@@ -10,6 +10,12 @@
         "EXPO_PUBLIC_BASE_URL": "https://dev-api.gopssl.com"
       }
     },
+    "beta": {
+      "env": {
+        "EXPO_PUBLIC_BASE_URL": "https://dev-api.gopssl.com"
+      },
+      "autoIncrement": true
+    },
     "production": {
       "env": {
         "EXPO_PUBLIC_BASE_URL": "https://api.gopssl.com"
@@ -18,6 +24,9 @@
     }
   },
   "submit": {
-    "production": {}
+    "production": {},
+    "beta": {
+      "android": { "track": "alpha" }
+    }
   }
 }
