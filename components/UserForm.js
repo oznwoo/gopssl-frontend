@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   StyleSheet,
@@ -12,7 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigation, useRoute } from "@react-navigation/native";
 
 import SubmitButton from "./SubmitButton";
-import { BaseInput } from "./Input";
+import { AddressSearchInput, BaseInput } from "./Input";
 import colors from "../styles/color";
 import { commonStyles } from "../styles/commonStyles";
 import { UserSchema } from "../schemas/UserSchema";
@@ -25,6 +25,9 @@ const UserForm = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const selectedAddress = route.params?.selectedAddress;
+  const manualAddressParam = route.params?.manualAddress;
+  // 검색 화면이 실패해 "직접 입력"을 고른 경우에만 주소 타이핑 허용
+  const [manualAddress, setManualAddress] = useState(false);
   const user = useSelector((state) => state.auth.user);
 
   // 초기값 세팅
@@ -41,9 +44,9 @@ const UserForm = () => {
   const handleUpdate = async (values, { setSubmitting, setErrors }) => {
     try {
       const address = values.address.trim();
-      // 우편번호 칸은 숨김. 주소를 직접 바꾸면 기존(검색으로 채운) 우편번호는 맞지 않으므로 비운다
-      const zipCode =
-        address === initialValues.address.trim() ? values.zipCode : "";
+      // 주소를 직접 타이핑하면 그 자리에서 우편번호를 비운다 (onChangeText 참고).
+      // 검색으로 고른 주소는 우편번호와 함께 저장한다
+      const zipCode = values.zipCode;
       await dispatch(
         registerUserInfo({
           id: user.id,
@@ -80,6 +83,7 @@ const UserForm = () => {
         handleBlur,
         handleSubmit,
         setFieldValue,
+        setFieldTouched,
         values,
         errors,
         touched,
@@ -91,10 +95,26 @@ const UserForm = () => {
           if (selectedAddress) {
             setFieldValue("address", selectedAddress.addressName);
             setFieldValue("zipCode", selectedAddress.zipCode);
-            // 선택 후 재선택 시 효과 적용 안 되는 문제 방지를 위해 params 초기화도 고려
+            setManualAddress(false);
+            // 선택 후 재선택 시 효과 적용 안 되는 문제 방지를 위해 params 초기화
             navigation.setParams({ selectedAddress: undefined });
           }
         }, [selectedAddress]);
+
+        useEffect(() => {
+          if (manualAddressParam) {
+            setManualAddress(true);
+            navigation.setParams({ manualAddress: undefined });
+          }
+        }, [manualAddressParam]);
+
+        const openAddressSearch = () => {
+          setFieldTouched("address", true, false);
+          navigation.navigate("AddressSearch", {
+            backScreen: route.name,
+            formData: values,
+          });
+        };
         return (
           <View
             style={[
@@ -133,16 +153,30 @@ const UserForm = () => {
                 errorText={touched.storeName && errors.storeName}
               />
 
-              {/* 주소 검색(카카오)은 운영 키 부재로 숨김. 직접 입력만 지원.
-                  AddressSearchInput / AddressSearchScreen은 검색 API 교체 시 재사용 검토 */}
-              <BaseInput
+              {/* 주소는 필수. 칸을 누르면 우편번호 검색(WebView), 검색 실패 시에만 직접 입력 */}
+              <AddressSearchInput
                 id="address"
-                label={"주소 (선택)"}
+                label={"주소"}
                 autoCapitalize="none"
+                manual={manualAddress}
                 value={values.address}
-                onChangeText={handleChange("address")}
+                onChangeText={(text) => {
+                  setFieldValue("address", text);
+                  // 직접 입력한 주소에는 기존 우편번호가 맞지 않으므로 비운다
+                  setFieldValue("zipCode", "");
+                }}
                 onBlur={handleBlur("address")}
+                onPressSearch={openAddressSearch}
                 errorText={touched.address && errors.address}
+              />
+
+              {/* 검색 결과로만 채워지는 읽기 전용 칸 (직접 입력 시 빈 채로 둠) */}
+              <BaseInput
+                id="zipCode"
+                label="우편번호"
+                value={values.zipCode}
+                placeholder="주소 검색 시 자동 입력"
+                readOnly
               />
 
               <BaseInput
