@@ -19,6 +19,15 @@ import { normalizeFont } from "../utils/responsive";
 const POSTCODE_SCRIPT_URL =
   "https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
 
+// HTML을 올려 둘 가짜 출처(origin). 실제로 이 주소에 요청하지는 않는다.
+// 우편번호 스크립트는 location.protocol + host로 iframe의 응답 대상(origin)을 정하는데,
+// baseUrl 없이 HTML을 넣으면 about:blank("about://")가 되어 선택 결과·resize 메시지가
+// 부모 페이지에 도착하지 않는다 (검색은 되는데 선택이 안 먹는 증상)
+const PAGE_BASE_URL = "https://gopssl.com/";
+
+// 우편번호 서비스가 쓰는 주소. 이 밖의 주소로는 이동시키지 않는다
+const POSTCODE_HOSTS = ["postcode.map.kakao.com", "t1.kakaocdn.net"];
+
 // 스크립트 로드 + 첫 화면 표시까지 기다리는 최대 시간
 const LOAD_TIMEOUT_MS = 15000;
 
@@ -65,6 +74,13 @@ const POSTCODE_HTML = `<!doctype html>
     new Postcode({
       width: "100%",
       height: "100%",
+      // 우편번호 화면(iframe)이 처음 그려질 때 크기를 알려 온다 → 실제로 뜬 것으로 보고 ready
+      onresize: function () {
+        if (!readySent) {
+          readySent = true;
+          send({ type: "ready" });
+        }
+      },
       oncomplete: function (data) {
         // 도로명 우선, 없으면 지번
         var road = data.roadAddress || data.autoRoadAddress || "";
@@ -80,8 +96,9 @@ const POSTCODE_HTML = `<!doctype html>
         });
       },
     }).embed(document.getElementById("wrap"), { autoClose: false });
-    send({ type: "ready" });
   }
+
+  var readySent = false;
 
   var s = document.createElement("script");
   s.src = "${POSTCODE_SCRIPT_URL}";
@@ -158,12 +175,14 @@ const AddressSearchScreen = ({ navigation }) => {
   };
 
   // 검색 결과·하단 링크가 다른 페이지나 외부 브라우저로 나가지 않게 막는다.
-  // 최상위 프레임은 처음 넣은 HTML(about:blank / data:)만 허용하고,
-  // 우편번호 서비스가 쓰는 iframe 로드는 그대로 둔다
+  // 처음 넣은 HTML과 우편번호 서비스 주소만 허용한다.
+  // (Android는 iframe 요청에도 isTopFrame을 믿을 수 없어서 프레임 여부 대신 주소로 판단)
   const handleShouldStartLoad = (request) => {
-    if (request.isTopFrame === false) return true;
     const url = request.url || "";
-    return url.startsWith("about:") || url.startsWith("data:");
+    if (url === PAGE_BASE_URL) return true;
+    if (url.startsWith("about:") || url.startsWith("data:")) return true;
+    const host = url.match(/^https:\/\/([^/?#]+)/)?.[1];
+    return !!host && POSTCODE_HOSTS.includes(host);
   };
 
   const handleRetry = () => {
@@ -198,7 +217,7 @@ const AddressSearchScreen = ({ navigation }) => {
         {status !== "error" && (
           <WebView
             key={reloadKey}
-            source={{ html: POSTCODE_HTML }}
+            source={{ html: POSTCODE_HTML, baseUrl: PAGE_BASE_URL }}
             originWhitelist={["*"]}
             javaScriptEnabled
             domStorageEnabled
