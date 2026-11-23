@@ -26,7 +26,14 @@ const AddressSearchInput = ({
     return (
       <BaseInput
         {...rest}
-        inputProps={{ value, onChangeText, placeholder: "주소를 직접 입력" }}
+        // 직접 입력도 긴 주소가 한 줄에서 잘리지 않게 여러 줄 허용
+        inputProps={{
+          value,
+          onChangeText,
+          placeholder: "주소를 직접 입력",
+          multiline: true,
+          textAlignVertical: "center",
+        }}
         rightIcon={searchIcon}
       />
     );
@@ -38,9 +45,11 @@ const AddressSearchInput = ({
         {...rest}
         rightIcon={<Ionicons name="search" size={24} color={colors.purple} />}
       >
+        {/* 긴 주소도 잘리지 않게 줄 수 제한 없이 감싸고, 한글은 단어 단위로 줄바꿈 */}
         <Text
           style={[styles.valueText, !value && styles.placeholder]}
-          numberOfLines={2}
+          lineBreakStrategyIOS="hangul-word"
+          textBreakStrategy="balanced"
         >
           {value || placeholder}
         </Text>
@@ -56,6 +65,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontFamily: "nanumSquareR",
     fontSize: normalizeFont(16),
+    lineHeight: normalizeFont(22),
     color: "#000",
   },
   placeholder: {
