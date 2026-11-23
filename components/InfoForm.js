@@ -77,11 +77,17 @@ const InfoForm = ({ setFormType }) => {
         dirty,
         setFieldValue,
         setFieldTouched,
+        setValues,
       }) => {
         useEffect(() => {
           if (selectedAddress) {
-            setFieldValue("address", selectedAddress.addressName);
-            setFieldValue("zipCode", selectedAddress.zipCode);
+            // 주소·우편번호를 한 번에 넣는다. setFieldValue를 두 번 부르면 두 번째 검증이
+            // 이전 값(빈 주소)으로 돌아 필수 에러가 남는다
+            setValues((prev) => ({
+              ...prev,
+              address: selectedAddress.addressName,
+              zipCode: selectedAddress.zipCode,
+            }));
             setManualAddress(false);
             // 선택 후 재선택 시 효과 적용 안 되는 문제 방지를 위해 params 초기화
             navigation.setParams({ selectedAddress: undefined });
@@ -123,10 +129,10 @@ const InfoForm = ({ setFormType }) => {
                 autoCapitalize="none"
                 manual={manualAddress}
                 value={values.address}
-                onChangeText={(text) => {
-                  setFieldValue("address", text);
-                  setFieldValue("zipCode", "");
-                }}
+                // 직접 입력한 주소에는 맞는 우편번호가 없으므로 같이 비운다
+                onChangeText={(text) =>
+                  setValues((prev) => ({ ...prev, address: text, zipCode: "" }))
+                }
                 onBlur={handleBlur("address")}
                 onPressSearch={openAddressSearch}
                 errorText={touched.address && errors.address}
