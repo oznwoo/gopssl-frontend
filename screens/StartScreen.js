@@ -8,6 +8,7 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   Image,
+  ScrollView,
 } from "react-native";
 import StartForm from "../components/StartForm";
 import SignInForm from "../components/SignInForm";
@@ -43,31 +44,43 @@ const StartScreen = () => {
         backgroundColor: "#fff",
       }}
     >
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <View style={styles.pageContainer}>
-          <View style={styles.logoContainer}>
-            <Image
-              source={logoImage}
-              style={styles.logo}
-              resizeMode="contain"
-            />
-            <Text style={styles.phrase} allowFontScaling={false}>
-              {"무질서함에서 질서를, \n복잡함 속에서 아름다움을"}
-            </Text>
-          </View>
+      {/* 가입 폼은 칸이 많아 작은 화면·키보드가 올라온 상태에서 넘칠 수 있다 → 스크롤 */}
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
+        showsVerticalScrollIndicator={false}
+      >
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View style={styles.pageContainer}>
+            <View style={styles.logoContainer}>
+              <Image
+                source={logoImage}
+                style={styles.logo}
+                resizeMode="contain"
+              />
+              <Text style={styles.phrase} allowFontScaling={false}>
+                {"무질서함에서 질서를, \n복잡함 속에서 아름다움을"}
+              </Text>
+            </View>
 
-          <View style={styles.flexibleFormContainer}>
-            <CurrentComponent setFormType={setFormType} />
+            <View style={styles.flexibleFormContainer}>
+              <CurrentComponent setFormType={setFormType} />
+            </View>
           </View>
-        </View>
-      </TouchableWithoutFeedback>
+        </TouchableWithoutFeedback>
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
+  scrollContent: {
+    flexGrow: 1,
+  },
+  // ScrollView 안이라 flex:1(기준 크기 0) 대신 flexGrow:1 → 내용이 길면 겹치지 않고 스크롤
   pageContainer: {
-    flex: 1,
+    flexGrow: 1,
     backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "flex-start",
@@ -79,10 +92,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: normalizeSize(40), // ✅ 반응형 간격
     gap: normalizeSize(16), // ✅ 반응형 gap
-    flex: 1,
+    flexGrow: 1,
   },
   flexibleFormContainer: {
-    flex: 1,
+    flexGrow: 1,
     width: "100%",
     alignItems: "center",
     justifyContent: "flex-end",
