@@ -11,6 +11,7 @@ import { getAllCustomer, CUSTOMER_CACHE_KEY } from "./customerActions";
 import { setCustomers } from "../store/customerSlice";
 import { store } from "../store/store";
 import axios from "axios";
+import { TERMS_VERSION, PRIVACY_VERSION } from "../constants/legal";
 
 // 토큰 갱신 액션
 export const refreshToken = () => {
@@ -89,8 +90,41 @@ export const registerUserInfo = ({
   };
 };
 
+// 서버(UserCreate) 필드 → 가입 폼 필드
+const SIGNUP_FIELD_MAP = {
+  name: "name",
+  email: "email",
+  password: "password",
+  agree_terms: "agreeTerms",
+  agree_privacy: "agreePrivacy",
+  agree_over_14: "agreeOver14",
+  // 버전 누락은 사용자가 고칠 수 없는 앱 문제라 약관 칸에 표시만 한다
+  terms_version: "agreeTerms",
+  privacy_version: "agreePrivacy",
+};
+
+// FastAPI 422 detail([{ loc: ["body", "password"], msg: "Value error, ..." }])을
+// { password: "..." } 형태의 칸별 에러로 바꾼다. 같은 칸은 첫 메시지만 쓴다.
+const toSignUpFieldErrors = (detail) => {
+  const fieldErrors = {};
+  detail.forEach((item) => {
+    const field = SIGNUP_FIELD_MAP[item?.loc?.[1]];
+    if (!field || fieldErrors[field]) return;
+    fieldErrors[field] = String(item.msg || "").replace(/^Value error, /, "");
+  });
+  return fieldErrors;
+};
+
 // 회원가입 액션
-export const signUp = ({ name, email, password }) => {
+// passwordConfirm은 화면에서만 쓰고 서버로 보내지 않는다.
+export const signUp = ({
+  name,
+  email,
+  password,
+  agreeTerms,
+  agreePrivacy,
+  agreeOver14,
+}) => {
   return async (dispatch) => {
     try {
       // 회원가입은 인증이 필요하지 않으므로 일반 axios 사용
@@ -98,6 +132,11 @@ export const signUp = ({ name, email, password }) => {
         name,
         email,
         password,
+        terms_version: TERMS_VERSION,
+        privacy_version: PRIVACY_VERSION,
+        agree_terms: agreeTerms === true,
+        agree_privacy: agreePrivacy === true,
+        agree_over_14: agreeOver14 === true,
       });
 
       const token = response.data.access_token;
@@ -129,6 +168,7 @@ export const signUp = ({ name, email, password }) => {
 
       let errorMessage = "회원가입에 실패했습니다.";
       let statusCode = null;
+      let fieldErrors = null;
 
       if (e.response) {
         const { status, data } = e.response;
@@ -140,14 +180,19 @@ export const signUp = ({ name, email, password }) => {
         if (status === 400 && typeof data.detail === "string") {
           errorMessage = data.detail;
         } else if (status === 422 && Array.isArray(data.detail)) {
-          errorMessage = data.detail[0]?.msg || errorMessage;
-        } else if (data.detail) {
+          fieldErrors = toSignUpFieldErrors(data.detail);
+          errorMessage =
+            Object.values(fieldErrors)[0] ||
+            data.detail[0]?.msg ||
+            errorMessage;
+        } else if (typeof data?.detail === "string") {
           errorMessage = data.detail;
         }
       }
 
       const customError = new Error(errorMessage);
       customError.status = statusCode;
+      customError.fieldErrors = fieldErrors;
       throw customError;
     }
   };
