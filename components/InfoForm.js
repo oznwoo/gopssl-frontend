@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
 import colors from "../styles/color";
 import SubmitButton from "./SubmitButton";
@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { registerUserInfo } from "../actions/userActions";
 import { seedDefaultTreatments } from "../actions/treatmentActions";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { BaseInput } from "./Input";
+import { AddressSearchInput, BaseInput } from "./Input";
 import { normalizeFont } from "../utils/responsive";
 
 const InfoForm = ({ setFormType }) => {
@@ -17,6 +17,9 @@ const InfoForm = ({ setFormType }) => {
   const navigation = useNavigation();
   const route = useRoute();
   const selectedAddress = route.params?.selectedAddress;
+  const manualAddressParam = route.params?.manualAddress;
+  // 검색 화면이 실패해 "직접 입력"을 고른 경우에만 주소 타이핑 허용
+  const [manualAddress, setManualAddress] = useState(false);
   const userData = useSelector((state) => state.auth.user);
 
   const handleSubmit = async (values, { setSubmitting, setErrors }) => {
@@ -73,15 +76,40 @@ const InfoForm = ({ setFormType }) => {
         isValid,
         dirty,
         setFieldValue,
+        setFieldTouched,
+        setValues,
       }) => {
         useEffect(() => {
           if (selectedAddress) {
-            setFieldValue("address", selectedAddress.addressName);
-            setFieldValue("zipCode", selectedAddress.zipCode);
-            // 선택 후 재선택 시 효과 적용 안 되는 문제 방지를 위해 params 초기화도 고려
+            // 주소·우편번호를 한 번에 넣는다. setFieldValue를 두 번 부르면 두 번째 검증이
+            // 이전 값(빈 주소)으로 돌아 필수 에러가 남는다
+            setValues((prev) => ({
+              ...prev,
+              address: selectedAddress.addressName,
+              zipCode: selectedAddress.zipCode,
+            }));
+            setManualAddress(false);
+            // 선택 후 재선택 시 효과 적용 안 되는 문제 방지를 위해 params 초기화
             navigation.setParams({ selectedAddress: undefined });
           }
         }, [selectedAddress]);
+
+        useEffect(() => {
+          if (manualAddressParam) {
+            setManualAddress(true);
+            // 직접 입력한 주소에는 맞는 우편번호가 없으므로 비운다
+            setFieldValue("zipCode", "");
+            navigation.setParams({ manualAddress: undefined });
+          }
+        }, [manualAddressParam]);
+
+        const openAddressSearch = () => {
+          setFieldTouched("address", true, false);
+          navigation.navigate("AddressSearchScreen", {
+            backScreen: route.name,
+            formData: values,
+          });
+        };
         return (
           <View style={styles.formContainer}>
             <View style={styles.contentContainer}>
@@ -94,16 +122,29 @@ const InfoForm = ({ setFormType }) => {
                 onBlur={handleBlur("storeName")}
                 errorText={touched.storeName && errors.storeName}
               />
-              {/* 주소 검색(카카오)은 운영 키 부재로 숨김. 직접 입력만 지원.
-                  AddressSearchInput / AddressSearchScreen은 검색 API 교체 시 재사용 검토 */}
-              <BaseInput
+              {/* 주소는 필수. 칸을 누르면 우편번호 검색(WebView), 검색 실패 시에만 직접 입력 */}
+              <AddressSearchInput
                 id="address"
-                label={"주소 (선택)"}
+                label={"주소"}
                 autoCapitalize="none"
+                manual={manualAddress}
                 value={values.address}
-                onChangeText={handleChange("address")}
+                // 직접 입력한 주소에는 맞는 우편번호가 없으므로 같이 비운다
+                onChangeText={(text) =>
+                  setValues((prev) => ({ ...prev, address: text, zipCode: "" }))
+                }
                 onBlur={handleBlur("address")}
+                onPressSearch={openAddressSearch}
                 errorText={touched.address && errors.address}
+              />
+
+              {/* 검색 결과로만 채워지는 읽기 전용 칸 (직접 입력 시 빈 채로 둠) */}
+              <BaseInput
+                id="zip_code"
+                label={"우편번호"}
+                value={values.zipCode}
+                placeholder="주소 검색 시 자동 입력"
+                readOnly
               />
 
               <BaseInput
