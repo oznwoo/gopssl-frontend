@@ -66,6 +66,7 @@ const SignUpForm = ({ setFormType }) => {
         handleBlur,
         handleSubmit,
         setFieldValue,
+        setValues,
         values,
         errors,
         touched,
@@ -120,6 +121,7 @@ const SignUpForm = ({ setFormType }) => {
           <ConsentChecklist
             values={values}
             setFieldValue={setFieldValue}
+            setValues={setValues}
             errorText={
               CONSENT_ITEMS.map(
                 ({ field }) => touched[field] && errors[field],

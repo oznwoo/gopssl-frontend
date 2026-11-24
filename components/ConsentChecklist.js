@@ -53,13 +53,18 @@ const CheckRow = ({ checked, label, onToggle, url, strong }) => (
   </View>
 );
 
-// values: Formik values, setFieldValue: Formik setter, errorText: 동의 관련 에러(있으면 하나만 표시)
-const ConsentChecklist = ({ values, setFieldValue, errorText }) => {
+// values: Formik values, setFieldValue/setValues: Formik setter, errorText: 동의 관련 에러(있으면 하나만 표시)
+const ConsentChecklist = ({ values, setFieldValue, setValues, errorText }) => {
   const allChecked = CONSENT_ITEMS.every(({ field }) => values[field] === true);
 
   const toggleAll = () => {
     const next = !allChecked;
-    CONSENT_ITEMS.forEach(({ field }) => setFieldValue(field, next));
+    // setFieldValue를 여러 번 부르면 각 호출이 렌더 전 values로 검증해 에러가 남는다
+    // → 세 값을 한 번에 바꿔 완성된 값으로 한 번만 검증
+    const consents = Object.fromEntries(
+      CONSENT_ITEMS.map(({ field }) => [field, next]),
+    );
+    setValues({ ...values, ...consents });
   };
 
   return (
