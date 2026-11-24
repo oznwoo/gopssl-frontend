@@ -15,6 +15,8 @@ import Input, { BaseInput, PasswordInput } from "./Input";
 import SubmitButton from "./SubmitButton";
 import { signUp } from "../actions/authActions";
 import { SignUpSchema } from "../schemas/signUpSchema";
+import { PASSWORD_RULE_TEXT } from "../schemas/passwordSchema";
+import ConsentChecklist, { CONSENT_ITEMS } from "./ConsentChecklist";
 import { normalizeFont } from "../utils/responsive";
 
 const SignUpForm = ({ setFormType }) => {
@@ -29,10 +31,13 @@ const SignUpForm = ({ setFormType }) => {
       await dispatch(signUp(values));
       setFormType(FORM_TYPES.INFO);
     } catch (error) {
-      console.log("에러 상태코드:", error.status); // 여기서 접근 가능!
+      console.log("에러 상태코드:", error.status);
 
-      // 400은 중복 이메일 에러로 처리
-      if (error.status === 400) {
+      // 422: 서버 검증 실패(비밀번호 규칙·동의 누락) → 해당 칸에 표시
+      if (error.fieldErrors && Object.keys(error.fieldErrors).length > 0) {
+        setErrors(error.fieldErrors);
+      } else if (error.status === 400) {
+        // 400은 중복 이메일 에러로 처리
         setErrors({ email: error.message });
       } else {
         setErrors({ password: error.message });
@@ -44,7 +49,15 @@ const SignUpForm = ({ setFormType }) => {
 
   return (
     <Formik
-      initialValues={{ name: "", email: "", password: "" }}
+      initialValues={{
+        name: "",
+        email: "",
+        password: "",
+        passwordConfirm: "",
+        agreeTerms: false,
+        agreePrivacy: false,
+        agreeOver14: false,
+      }}
       validationSchema={SignUpSchema}
       onSubmit={handleSignUp}
     >
@@ -52,6 +65,8 @@ const SignUpForm = ({ setFormType }) => {
         handleChange,
         handleBlur,
         handleSubmit,
+        setFieldValue,
+        setValues,
         values,
         errors,
         touched,
@@ -86,6 +101,33 @@ const SignUpForm = ({ setFormType }) => {
             onBlur={handleBlur("password")}
             errorText={touched.password && errors.password}
           />
+          {!(touched.password && errors.password) && (
+            <Text style={styles.ruleText}>{PASSWORD_RULE_TEXT}</Text>
+          )}
+          <PasswordInput
+            id="passwordConfirm"
+            label={"비밀번호 확인"}
+            secureTextEntry
+            value={values.passwordConfirm}
+            onChangeText={handleChange("passwordConfirm")}
+            onBlur={handleBlur("passwordConfirm")}
+            // 입력을 시작하면 바로 일치 여부를 보여준다 (blur 기다리지 않음)
+            errorText={
+              (touched.passwordConfirm || values.passwordConfirm !== "") &&
+              errors.passwordConfirm
+            }
+          />
+
+          <ConsentChecklist
+            values={values}
+            setFieldValue={setFieldValue}
+            setValues={setValues}
+            errorText={
+              CONSENT_ITEMS.map(
+                ({ field }) => touched[field] && errors[field],
+              ).find(Boolean) || null
+            }
+          />
 
           {isSubmitting ? (
             <ActivityIndicator
@@ -119,6 +161,14 @@ const styles = StyleSheet.create({
   formContainer: {
     gap: 16,
     width: "100%",
+  },
+  ruleText: {
+    marginTop: -10,
+    paddingHorizontal: 4,
+    color: "#6B6B6B",
+    fontFamily: "nanumSquareR",
+    fontSize: normalizeFont(12),
+    letterSpacing: -0.5,
   },
   transitionButton: {
     alignSelf: "flex-end",
