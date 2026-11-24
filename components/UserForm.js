@@ -6,6 +6,8 @@ import {
   ScrollView,
   Alert,
   Platform,
+  Text,
+  TouchableOpacity,
 } from "react-native";
 import { Formik } from "formik";
 import { useDispatch, useSelector } from "react-redux";
@@ -18,6 +20,20 @@ import { commonStyles } from "../styles/commonStyles";
 import { UserSchema } from "../schemas/UserSchema";
 import { registerUserInfo } from "../actions/userActions";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { normalizeFont } from "../utils/responsive";
+
+// 읽기 전용 칸 오른쪽의 "변경" 버튼 → 전용 변경 화면으로 이동
+const ChangeButton = ({ onPress, label }) => (
+  <TouchableOpacity
+    onPress={onPress}
+    hitSlop={8}
+    style={styles.changeButton}
+    accessibilityRole="button"
+    accessibilityLabel={label}
+  >
+    <Text style={styles.changeButtonText}>변경</Text>
+  </TouchableOpacity>
+);
 
 const UserForm = () => {
   const insets = useSafeAreaInsets();
@@ -33,7 +49,6 @@ const UserForm = () => {
   // 초기값 세팅
   const initialValues = {
     name: user?.name || "",
-    email: user?.email || "",
     storeName: user?.store_name || "",
     address: user?.address || "",
     addressDetail: user?.address_detail || "",
@@ -49,9 +64,8 @@ const UserForm = () => {
       const zipCode = values.zipCode;
       await dispatch(
         registerUserInfo({
-          id: user.id,
+          // 이메일·비밀번호는 여기서 보내지 않는다 (19b: PUT /users/me가 무시)
           name: values.name,
-          email: values.email,
           store_name: values.storeName,
           // 빈 주소는 null이 아닌 ""로 보낸다 (백엔드 PUT /users/me는 null을 "변경 안 함"으로 처리)
           address,
@@ -140,14 +154,31 @@ const UserForm = () => {
                 errorText={touched.name && errors.name}
               />
 
+              {/* 이메일(로그인 아이디)·비밀번호는 현재 비밀번호 확인이 필요한 전용 화면에서만 바꾼다 */}
               <BaseInput
                 id="email"
                 label="이메일"
-                keyboardType="email-address"
-                value={values.email}
-                onChangeText={handleChange("email")}
-                onBlur={handleBlur("email")}
-                errorText={touched.email && errors.email}
+                value={user?.email || ""}
+                readOnly
+                specialButton={
+                  <ChangeButton
+                    label="이메일 변경"
+                    onPress={() => navigation.navigate("ChangeEmail")}
+                  />
+                }
+              />
+
+              <BaseInput
+                id="password"
+                label="비밀번호"
+                value="••••••••"
+                readOnly
+                specialButton={
+                  <ChangeButton
+                    label="비밀번호 변경"
+                    onPress={() => navigation.navigate("ChangePassword")}
+                  />
+                }
               />
 
               <BaseInput
@@ -232,5 +263,18 @@ const styles = StyleSheet.create({
     ...commonStyles.dropShadow,
     paddingVertical: 10,
     paddingHorizontal: 20,
+  },
+  changeButton: {
+    borderWidth: 1,
+    borderColor: colors.purple,
+    borderRadius: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+  },
+  changeButtonText: {
+    color: colors.purple,
+    fontFamily: "nanumSquareB",
+    fontSize: normalizeFont(13),
+    letterSpacing: -0.5,
   },
 });
