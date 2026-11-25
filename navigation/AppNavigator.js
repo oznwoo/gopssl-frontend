@@ -13,6 +13,7 @@ import { fetchTreatmentsThunk } from "../actions/treatmentActions";
 import { fetchDailyReport } from "../actions/reportActions";
 import colors from "../styles/color";
 import DailyReportModal from "../components/DailyReportModal";
+import { HomeTourProvider } from "../components/HomeTour";
 
 const AppNavigator = () => {
   const dispatch = useDispatch();
@@ -20,6 +21,10 @@ const AppNavigator = () => {
   const isFirst = useSelector((state) => state.auth.isFirst);
   const [isBootstrapping, setIsBootstrapping] = useState(true);
   const [reportData, setReportData] = useState(null);
+  // 홈 기능 안내가 요청됐거나 떠 있는 동안에는 어제 리포트를 미뤘다가 안내가 끝나면 보여 준다
+  const isTourBusy = useSelector(
+    (state) => state.tour.requested || state.tour.active
+  );
 
   useEffect(() => {
     const bootstrap = async () => {
@@ -82,7 +87,9 @@ const AppNavigator = () => {
     <>
       <NavigationContainer>
         {isAuth ? (
-          <MainNavigator />
+          <HomeTourProvider>
+            <MainNavigator />
+          </HomeTourProvider>
         ) : isFirst ? (
           <OnboardingNavigator />
         ) : (
@@ -91,7 +98,7 @@ const AppNavigator = () => {
       </NavigationContainer>
 
       <DailyReportModal
-        reportData={reportData}
+        reportData={isTourBusy ? null : reportData}
         onClose={() => setReportData(null)}
       />
     </>

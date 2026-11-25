@@ -23,6 +23,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import logoURL from "../assets/Gopssl.png";
 import SettingItem from "../components/SettingItem";
 import { describeError } from "../utils/describeError";
+import { requestHomeTour } from "../store/tourSlice";
 
 const SettingScreen = () => {
   const insets = useSafeAreaInsets();
@@ -35,6 +36,12 @@ const SettingScreen = () => {
 
   const handleNavigate = (target) => {
     navigation.navigate(target);
+  };
+
+  // 홈 탭으로 이동한 뒤 기능 안내를 처음부터 다시 띄운다 (이미 본 사용자도)
+  const handleReplayGuide = () => {
+    dispatch(requestHomeTour({ replay: true }));
+    navigation.navigate("DailySales");
   };
 
   const handleLogout = () => {
@@ -97,7 +104,8 @@ const SettingScreen = () => {
         <Text style={styles.userName}>
           <Text style={{ fontFamily: "nanumSquareEB" }}>{name}</Text> 원장님
         </Text>
-        <Text style={styles.dDayText}>개업일로부터 D+1000 🎉</Text>
+        {/* 개업일 D-day는 아직 개업일 입력 기능이 없어 고정값(D+1000)만 보여서 숨김. 기능 개발 후 복구 */}
+        {/* <Text style={styles.dDayText}>개업일로부터 D+1000 🎉</Text> */}
       </View>
 
       <ScrollView contentContainerStyle={styles.contentContainer}>
@@ -139,6 +147,17 @@ const SettingScreen = () => {
                 />
               }
               onPress={() => handleNavigate("DeletedCustomers")}
+            />
+            <SettingItem
+              title={"사용 가이드 다시 보기"}
+              icon={
+                <Ionicons
+                  name="help-circle-outline"
+                  size={16}
+                  color={colors.purple}
+                />
+              }
+              onPress={handleReplayGuide}
             />
             <SettingItem
               title={"상세 정보"}

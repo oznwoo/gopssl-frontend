@@ -78,6 +78,8 @@ const FloatingExpandButton = (props) => {
       )}
 
       <Animated.View
+        ref={props.tourRef}
+        collapsable={false}
         style={[
           styles.buttonContainer,
           props.style,

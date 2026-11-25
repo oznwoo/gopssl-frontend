@@ -35,7 +35,8 @@ const TreatmentSettingScreen = () => {
         onRightButtonPress={handleAddCategory}
         rightButton={<Text style={styles.categotyPlusText}>카테고리 추가</Text>}
       />
-      <View style={styles.contentContainer}>
+      {/* 목록 끝이 Android 내비게이션 바에 가리지 않도록 */}
+      <View style={[styles.contentContainer, { paddingBottom: insets.bottom }]}>
         <TreatmentManageMenu />
       </View>
 
