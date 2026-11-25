@@ -115,7 +115,11 @@ const DeletedCustomersScreen = () => {
           <FlatList
             data={sections}
             keyExtractor={([key]) => key}
-            contentContainerStyle={styles.listContent}
+            // 마지막 항목의 복구 버튼이 Android 내비게이션 바에 가리지 않도록
+            contentContainerStyle={[
+              styles.listContent,
+              { paddingBottom: 24 + insets.bottom },
+            ]}
             renderItem={({ item: [month, customers] }) => (
               <View style={styles.section}>
                 <Text style={styles.monthTitle}>{month}</Text>

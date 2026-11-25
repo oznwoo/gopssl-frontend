@@ -17,11 +17,13 @@ import InfoForm from "../components/InfoForm";
 import { FORM_TYPES } from "../constants/formTypes";
 import { useRoute } from "@react-navigation/native";
 import { normalizeFont, normalizeSize } from "../utils/responsive"; // ✅ 폰트 & 간격 전용
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import logoImage from "../assets/Gopssl.png";
 
 const StartScreen = () => {
   const route = useRoute();
+  const insets = useSafeAreaInsets();
   const [formType, setFormType] = useState(route.params?.formType || FORM_TYPES.START);
 
   useEffect(() => {
@@ -52,7 +54,13 @@ const StartScreen = () => {
         showsVerticalScrollIndicator={false}
       >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <View style={styles.pageContainer}>
+          {/* Android 3버튼 내비게이션 바(edge-to-edge)에 가입·로그인·완료 버튼이 가리지 않도록 아래 inset만큼 더 띄운다 */}
+          <View
+            style={[
+              styles.pageContainer,
+              { paddingBottom: normalizeSize(48) + insets.bottom },
+            ]}
+          >
             <View style={styles.logoContainer}>
               <Image
                 source={logoImage}
