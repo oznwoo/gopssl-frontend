@@ -21,6 +21,7 @@ import FormHeader from "../components/FormHeader";
 import colors from "../styles/color";
 import { commonStyles } from "../styles/commonStyles";
 import { normalizeFont } from "../utils/responsive";
+import { describeError } from "../utils/describeError";
 
 const DeletedCustomersScreen = () => {
   const insets = useSafeAreaInsets();
@@ -35,7 +36,7 @@ const DeletedCustomersScreen = () => {
         const res = await apiClient.get("/customers/deleted");
         setDeletedList(res.data);
       } catch (e) {
-        console.error(e);
+        console.error(describeError(e));
       } finally {
         setIsLoading(false);
       }

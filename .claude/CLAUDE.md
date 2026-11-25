@@ -28,7 +28,7 @@
 | 캘린더 | react-native-calendars | |
 | 아이콘 | @expo/vector-icons (Ionicons, FontAwesome5/6) | |
 | 검색 최적화 | lodash.debounce (500ms) | |
-| 로컬 저장소 | AsyncStorage | |
+| 로컬 저장소 | AsyncStorage | 토큰(JWT)만 expo-secure-store (`utils/tokenStorage.js`) |
 | 배포 | Expo EAS Build 예정 | |
 
 ---

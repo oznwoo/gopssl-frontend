@@ -14,6 +14,8 @@ import AddressSearchScreen from "../screens/AddressSearchScreen";
 import DetailScreen from "../screens/DetailScreen";
 import TreatmentSettingScreen from "../screens/TreatmentSettingScreen";
 import DeletedCustomersScreen from "../screens/DeletedCustomersScreen";
+import ChangeEmailScreen from "../screens/ChangeEmailScreen";
+import ChangePasswordScreen from "../screens/ChangePasswordScreen";
 
 import { Ionicons } from "@expo/vector-icons";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
@@ -128,6 +130,16 @@ const StackNavigator = () => (
     <Stack.Screen
       name="DeletedCustomers"
       component={DeletedCustomersScreen}
+      options={{ headerShown: false }}
+    />
+    <Stack.Screen
+      name="ChangeEmail"
+      component={ChangeEmailScreen}
+      options={{ headerShown: false }}
+    />
+    <Stack.Screen
+      name="ChangePassword"
+      component={ChangePasswordScreen}
       options={{ headerShown: false }}
     />
   </Stack.Navigator>

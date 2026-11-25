@@ -21,6 +21,7 @@ import {
 } from "../actions/treatmentActions";
 import DraggableTreatmentGrid from "./DraggableTreatmentGrid";
 import { TypeInput } from "./Input";
+import { describeError } from "../utils/describeError";
 
 const TreatmentManageMenu = () => {
   const { treatments, categories } = useSelector((state) => state.treatment);
@@ -105,7 +106,7 @@ const TreatmentManageMenu = () => {
     try {
       await dispatch(updateCategoriesOrder(newMenuData));
     } catch (error) {
-      console.error("카테고리 순서 변경 실패:", error);
+      console.error("카테고리 순서 변경 실패:", describeError(error));
     } finally {
       setIsLoading(false);
     }
@@ -130,7 +131,7 @@ const TreatmentManageMenu = () => {
     try {
       await dispatch(updateTreatmentsOrder(treatmentsToUpdate));
     } catch (error) {
-      console.error("시술 순서 변경 실패:", error);
+      console.error("시술 순서 변경 실패:", describeError(error));
     } finally {
       setIsLoading(false);
     }

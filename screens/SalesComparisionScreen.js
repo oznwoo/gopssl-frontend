@@ -16,6 +16,7 @@ import { normalizeFont, normalizeSize } from "../utils/responsive";
 import { formatNumber } from "../utils/format";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import AnimatedText from "../components/AnimatedText";
+import { describeError } from "../utils/describeError";
 
 const SalesComparisionScreen = (props) => {
   const insets = useSafeAreaInsets();
@@ -32,7 +33,7 @@ const SalesComparisionScreen = (props) => {
         const data = await getMonthlySalesSummary(year, month);
         setStatisticsData({ ...data }); // 새 객체로 변경
       } catch (e) {
-        console.error("매출 요약 조회 실패:", e);
+        console.error("매출 요약 조회 실패:", describeError(e));
         setStatisticsData(null);
       } finally {
         setIsLoading(false);

@@ -1,21 +1,34 @@
 {
   "cli": {
-    "version": ">= 16.0.0"
+    "version": ">= 16.0.0",
+    "appVersionSource": "remote"
   },
   "build": {
     "preview": {
       "distribution": "internal",
       "env": {
-        "EXPO_PUBLIC_BASE_URL": "http://144.24.147.125:8000"
+        "EXPO_PUBLIC_BASE_URL": "https://dev-api.gopssl.com"
       }
+    },
+    "beta": {
+      "env": {
+        "EXPO_PUBLIC_BASE_URL": "https://dev-api.gopssl.com"
+      },
+      "autoIncrement": true
     },
     "production": {
       "env": {
-        "EXPO_PUBLIC_BASE_URL": "http://144.24.147.125:8000"
-      }
+        "EXPO_PUBLIC_BASE_URL": "https://api.gopssl.com"
+      },
+      "autoIncrement": true
     }
   },
   "submit": {
-    "production": {}
+    "production": {
+      "android": { "track": "alpha" }
+    },
+    "beta": {
+      "android": { "track": "alpha" }
+    }
   }
 }

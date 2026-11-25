@@ -14,6 +14,7 @@ import { getCustomerbyId } from "../actions/customerActions";
 import { useDispatch } from "react-redux";
 import { normalizeFont } from "../utils/responsive";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { describeError } from "../utils/describeError";
 
 const CustomerScreen = ({ route }) => {
   const insets = useSafeAreaInsets();
@@ -34,7 +35,7 @@ const CustomerScreen = ({ route }) => {
         const data = await dispatch(getCustomerbyId(customerId));
         setCustomerData(data);
       } catch (error) {
-        console.log(error);
+        console.log(describeError(error));
       } finally {
         setIsLoading(false);
       }

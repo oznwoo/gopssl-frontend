@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
 import colors from "../styles/color";
 import SubmitButton from "./SubmitButton";
@@ -7,8 +7,9 @@ import { InfoSchema } from "../schemas/InfoSchema";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
 import { registerUserInfo } from "../actions/userActions";
+import { seedDefaultTreatments } from "../actions/treatmentActions";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { AddressSearchInput, BaseInput, DetailInput } from "./Input";
+import { AddressSearchInput, BaseInput } from "./Input";
 import { normalizeFont } from "../utils/responsive";
 
 const InfoForm = ({ setFormType }) => {
@@ -16,6 +17,9 @@ const InfoForm = ({ setFormType }) => {
   const navigation = useNavigation();
   const route = useRoute();
   const selectedAddress = route.params?.selectedAddress;
+  const manualAddressParam = route.params?.manualAddress;
+  // 검색 화면이 실패해 "직접 입력"을 고른 경우에만 주소 타이핑 허용
+  const [manualAddress, setManualAddress] = useState(false);
   const userData = useSelector((state) => state.auth.user);
 
   const handleSubmit = async (values, { setSubmitting, setErrors }) => {
@@ -24,11 +28,15 @@ const InfoForm = ({ setFormType }) => {
         registerUserInfo({
           ...userData,
           store_name: values.storeName,
-          address: values.address,
-          zip_code: values.zipCode,
-          address_detail: values.addressDetail,
+          // 빈 주소는 null이 아닌 ""로 보낸다 (백엔드 PUT /users/me는 null을 "변경 안 함"으로 처리)
+          address: values.address.trim(),
+          zip_code: values.zipCode.trim(),
+          address_detail: values.addressDetail.trim(),
         })
       );
+
+      // 신규 가입 시 기본 시술 메뉴 자동 등록 (실패해도 흐름은 계속)
+      await dispatch(seedDefaultTreatments());
 
       await AsyncStorage.setItem("@viewedOnboarding", "true");
       navigation.navigate("OnboardingScreen");
@@ -68,15 +76,40 @@ const InfoForm = ({ setFormType }) => {
         isValid,
         dirty,
         setFieldValue,
+        setFieldTouched,
+        setValues,
       }) => {
         useEffect(() => {
           if (selectedAddress) {
-            setFieldValue("address", selectedAddress.addressName);
-            setFieldValue("zipCode", selectedAddress.zipCode);
-            // 선택 후 재선택 시 효과 적용 안 되는 문제 방지를 위해 params 초기화도 고려
+            // 주소·우편번호를 한 번에 넣는다. setFieldValue를 두 번 부르면 두 번째 검증이
+            // 이전 값(빈 주소)으로 돌아 필수 에러가 남는다
+            setValues((prev) => ({
+              ...prev,
+              address: selectedAddress.addressName,
+              zipCode: selectedAddress.zipCode,
+            }));
+            setManualAddress(false);
+            // 선택 후 재선택 시 효과 적용 안 되는 문제 방지를 위해 params 초기화
             navigation.setParams({ selectedAddress: undefined });
           }
         }, [selectedAddress]);
+
+        useEffect(() => {
+          if (manualAddressParam) {
+            setManualAddress(true);
+            // 직접 입력한 주소에는 맞는 우편번호가 없으므로 비운다
+            setFieldValue("zipCode", "");
+            navigation.setParams({ manualAddress: undefined });
+          }
+        }, [manualAddressParam]);
+
+        const openAddressSearch = () => {
+          setFieldTouched("address", true, false);
+          navigation.navigate("AddressSearchScreen", {
+            backScreen: route.name,
+            formData: values,
+          });
+        };
         return (
           <View style={styles.formContainer}>
             <View style={styles.contentContainer}>
@@ -89,34 +122,34 @@ const InfoForm = ({ setFormType }) => {
                 onBlur={handleBlur("storeName")}
                 errorText={touched.storeName && errors.storeName}
               />
+              {/* 주소는 필수. 칸을 누르면 우편번호 검색(WebView), 검색 실패 시에만 직접 입력 */}
               <AddressSearchInput
                 id="address"
                 label={"주소"}
                 autoCapitalize="none"
+                manual={manualAddress}
                 value={values.address}
-                onChangeText={handleChange("address")}
+                // 직접 입력한 주소에는 맞는 우편번호가 없으므로 같이 비운다
+                onChangeText={(text) =>
+                  setValues((prev) => ({ ...prev, address: text, zipCode: "" }))
+                }
                 onBlur={handleBlur("address")}
+                onPressSearch={openAddressSearch}
                 errorText={touched.address && errors.address}
-                onPressIcon={() => {
-                  navigation.navigate("AddressSearchScreen", {
-                    backScreen: "StartScreen",
-                    formData: values,
-                  });
-                }}
-                readOnly
               />
 
+              {/* 검색 결과로만 채워지는 읽기 전용 칸 (직접 입력 시 빈 채로 둠) */}
               <BaseInput
                 id="zip_code"
                 label={"우편번호"}
-                autoCapitalize="none"
                 value={values.zipCode}
+                placeholder="주소 검색 시 자동 입력"
                 readOnly
               />
 
               <BaseInput
                 id="address_detail"
-                label={"상세주소"}
+                label={"상세주소 (선택)"}
                 autoCapitalize="none"
                 value={values.addressDetail}
                 onChangeText={handleChange("addressDetail")}
