@@ -23,9 +23,25 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import colors from "../styles/color";
 import { normalizeSize } from "../utils/responsive";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTourTarget } from "../components/HomeTour";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
+
+// 전체 부모 영역을 터치 가능하게 한 탭 버튼. 홈 기능 안내에서 강조할 수 있게 ref를 등록한다
+const TabButton = ({ routeName, style, children, ...props }) => {
+  const tourRef = useTourTarget(`tab-${routeName}`);
+  return (
+    <TouchableOpacity
+      {...props}
+      ref={tourRef}
+      style={[style, { paddingHorizontal: 12, paddingVertical: 16 }]}
+      activeOpacity={0.7}
+    >
+      {children}
+    </TouchableOpacity>
+  );
+};
 
 const TabNavigator = () => {
   const insets = useSafeAreaInsets();
@@ -47,18 +63,8 @@ const TabNavigator = () => {
           marginVertical: Platform.OS === "android" ? 2 : 0,
         },
         headerShown: false,
-        // ✅ 전체 부모 영역을 터치 가능하게
         tabBarButton: (props) => (
-          <TouchableOpacity
-            {...props}
-            style={[
-              props.style,
-              { paddingHorizontal: 12, paddingVertical: 16 },
-            ]}
-            activeOpacity={0.7}
-          >
-            {props.children}
-          </TouchableOpacity>
+          <TabButton {...props} routeName={route.name} />
         ),
         tabBarIcon: ({ color, size }) => {
           let IconComponent = null;

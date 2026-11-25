@@ -9,6 +9,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { registerUserInfo } from "../actions/userActions";
 import { seedDefaultTreatments } from "../actions/treatmentActions";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { onboardingSuccess } from "../store/authSlice";
+import { requestHomeTour } from "../store/tourSlice";
 import { AddressSearchInput, BaseInput } from "./Input";
 import { normalizeFont } from "../utils/responsive";
 
@@ -38,8 +40,12 @@ const InfoForm = ({ setFormType }) => {
       // 신규 가입 시 기본 시술 메뉴 자동 등록 (실패해도 흐름은 계속)
       await dispatch(seedDefaultTreatments());
 
+      // @viewedOnboarding = 가입(가게 정보 입력) 완료 표시. 홈 안내 완료 여부와는 별개다
       await AsyncStorage.setItem("@viewedOnboarding", "true");
-      navigation.navigate("OnboardingScreen");
+      // 소개 슬라이드 없이 바로 홈으로 보내고, 홈 위에서 기능 안내를 띄운다.
+      // 요청을 먼저 넣어야 메인 진입 직후 어제 리포트 모달이 안내보다 먼저 뜨지 않는다
+      dispatch(requestHomeTour());
+      dispatch(onboardingSuccess());
     } catch (error) {
       console.log("에러 상태코드:", error.message); // 여기서 접근 가능!
 

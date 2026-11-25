@@ -20,6 +20,7 @@ import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { normalizeFont } from "../utils/responsive";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { describeError } from "../utils/describeError";
+import { useHomeTourAutoStart, useTourTarget } from "../components/HomeTour";
 
 const DailySalesScreen = () => {
   const insets = useSafeAreaInsets();
@@ -27,6 +28,9 @@ const DailySalesScreen = () => {
   const [date, setDate] = useState(new Date());
   const [salesData, setSalesData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const dateHeaderRef = useTourTarget("dateHeader");
+  const addButtonRef = useTourTarget("addButton");
+  const dailyTotalRef = useTourTarget("dailyTotal");
 
   const changeDate = useCallback((offset) => {
     setDate((prev) => {
@@ -52,6 +56,10 @@ const DailySalesScreen = () => {
 
   // 👇 Animated 값
   const scrollY = useRef(new Animated.Value(0)).current;
+
+  // 신규 가입 직후·설정에서 다시 보기 요청 시, 매출 로딩이 끝난 뒤 기능 안내 시작.
+  // 스크롤로 합계·+ 버튼이 숨겨진 상태면 빈 곳을 강조하게 되므로 시작 직전에 원위치시킨다
+  useHomeTourAutoStart(!isLoading, () => scrollY.setValue(0));
 
   const transitionCustomer = useCallback(
     (itemId = undefined) => {
@@ -98,10 +106,12 @@ const DailySalesScreen = () => {
   return (
     <View style={styles.pageContainer}>
       <View style={{ paddingTop: insets.top }}>
-        <DateHeader
-          currentDate={date}
-          onChangeDate={(newDateStr) => setDate(new Date(newDateStr))}
-        />
+        <View ref={dateHeaderRef} collapsable={false}>
+          <DateHeader
+            currentDate={date}
+            onChangeDate={(newDateStr) => setDate(new Date(newDateStr))}
+          />
+        </View>
       </View>
 
       <View style={styles.contentContainer}>
@@ -164,6 +174,7 @@ const DailySalesScreen = () => {
         )}
 
         <FloatingExpandButton
+          tourRef={addButtonRef}
           date={date}
           style={[styles.plusButton]}
           transform={[
@@ -180,6 +191,8 @@ const DailySalesScreen = () => {
 
       {/* 👇 합계 영역 → 스크롤 따라 translateY & opacity */}
       <Animated.View
+        ref={dailyTotalRef}
+        collapsable={false}
         style={[
           styles.totalContainer,
           Platform.OS === "android" && {
