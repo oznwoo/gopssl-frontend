@@ -1,4 +1,5 @@
 import { apiClient } from "../constants/baseURL";
+import { describeError } from "../utils/describeError";
 
 export const getDailySalesSummary = async (year, month) => {
   try {
@@ -7,7 +8,7 @@ export const getDailySalesSummary = async (year, month) => {
     });
     return response.data;
   } catch (error) {
-    console.error("getDailySalesSummary error:", error);
+    console.error("getDailySalesSummary error:", describeError(error));
     throw error;
   }
 };
@@ -19,7 +20,7 @@ export const getMonthlySalesSummary = async (year, month) => {
     });
     return response.data;
   } catch (error) {
-    console.error("getMonthlySalesSummary error:", error);
+    console.error("getMonthlySalesSummary error:", describeError(error));
     throw error;
   }
 };

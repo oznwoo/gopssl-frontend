@@ -17,6 +17,7 @@ import {
   deleteCategorySuccess,
 } from "../store/treatmentSlice";
 import { Alert } from "react-native";
+import { describeError } from "../utils/describeError";
 
 // 📌 전체 조회 (시술 + 카테고리)
 export const fetchTreatmentsThunk = () => async (dispatch) => {
@@ -76,7 +77,7 @@ export const getTreatmentbyId = (treatmentId) => {
       const response = await apiClient.get(`/treatments/${treatmentId}`);
       return response.data;
     } catch (e) {
-      console.log("Error:", e.response?.data || e.message);
+      console.log("Error:", describeError(e));
       throw e;
     }
   };
@@ -98,7 +99,7 @@ export const createTreatment =
 
       return response.data;
     } catch (error) {
-      console.error("Treatment post error:", error);
+      console.error("Treatment post error:", describeError(error));
       throw error;
     }
   };
@@ -119,7 +120,7 @@ export const updateTreatment =
 
       return response.data;
     } catch (error) {
-      console.error("Treatment update error:", error);
+      console.error("Treatment update error:", describeError(error));
       throw error;
     }
   };
@@ -135,7 +136,7 @@ export const deleteTreatment = (treatment_id) => {
 
       return treatment_id;
     } catch (e) {
-      console.log("Error:", e.response?.data || e.message);
+      console.log("Error:", describeError(e));
       throw e;
     }
   };
@@ -166,7 +167,7 @@ export const updateTreatmentsOrder = (orderedTreatments) => {
     } catch (e) {
       console.error(
         "Error updating treatments order:",
-        e.response?.data || e.message
+        describeError(e)
       );
       // 에러 발생 시 원래 순서로 롤백
       dispatch(updateTreatmentsOrderSuccess(originalTreatments));
@@ -193,7 +194,7 @@ export const updateCategoriesOrder = (orderedCategories) => {
     } catch (e) {
       console.error(
         "Error updating categories order:",
-        e.response?.data || e.message
+        describeError(e)
       );
       // 에러 발생 시 원래 순서로 롤백
       dispatch(updateCategoriesOrderSuccess(originalCategories));
@@ -201,7 +202,7 @@ export const updateCategoriesOrder = (orderedCategories) => {
         "오류",
         "카테고리 순서 변경에 실패했습니다. 다시 시도해주세요."
       );
-      console.log("Error:", e.response?.data || e.message);
+      console.log("Error:", describeError(e));
       throw e;
     }
   };
@@ -220,7 +221,7 @@ export const createTreatmentCategory =
 
       return response.data;
     } catch (error) {
-      console.error("Treatment category post error:", error);
+      console.error("Treatment category post error:", describeError(error));
       throw error;
     }
   };
@@ -239,7 +240,7 @@ export const updateTreatmentCategory =
 
       return response.data;
     } catch (error) {
-      console.error("Category update error:", error);
+      console.error("Category update error:", describeError(error));
       throw error;
     }
   };
@@ -255,7 +256,7 @@ export const deleteTreatmentCategory = (category_id) => {
 
       return category_id;
     } catch (e) {
-      console.log("Error:", e.response?.data || e.message);
+      console.log("Error:", describeError(e));
       throw e;
     }
   };

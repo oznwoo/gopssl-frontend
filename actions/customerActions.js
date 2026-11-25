@@ -2,6 +2,7 @@ import { apiClient } from "../constants/baseURL";
 import { registerSuccess } from "../store/authSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { setCustomers } from "../store/customerSlice";
+import { describeError } from "../utils/describeError";
 
 export const CUSTOMER_CACHE_KEY = "customers_cache";
 
@@ -17,7 +18,7 @@ export const registerCustomer = ({ user_id, name, phone_number, detail }) => {
 
       return response.data; // 결과 반환 (optional)
     } catch (e) {
-      console.log("Error:", e.response?.data || e.message);
+      console.log("Error:", describeError(e));
       throw e; // ⬅️ 호출한 곳에서 catch 가능하게
     }
   };
@@ -41,7 +42,7 @@ export const updateCustomer = ({
 
       return response.data; // 결과 반환 (optional)
     } catch (e) {
-      console.log("Error:", e.response?.data || e.message);
+      console.log("Error:", describeError(e));
       throw e; // ⬅️ 호출한 곳에서 catch 가능하게
     }
   };
@@ -57,7 +58,7 @@ export const getCustomerbyId = (customerId) => {
 
       return { ...customerResponse.data, sales: saleResponse.data }; // 결과 반환 (optional)
     } catch (e) {
-      console.log("Error:", e.response?.data || e.message);
+      console.log("Error:", describeError(e));
       throw e; // ⬅️ 호출한 곳에서 catch 가능하게
     }
   };
@@ -84,7 +85,7 @@ export const getAllCustomer = () => {
 
       return customers;
     } catch (e) {
-      console.error(e);
+      console.error(describeError(e));
       throw e;
     }
   };
@@ -117,7 +118,7 @@ export const deleteCustomerById = (customerId) => {
 
       return response.data; // 결과 반환 (optional)
     } catch (e) {
-      console.log("Error:", e.response?.data || e.message);
+      console.log("Error:", describeError(e));
       throw e; // ⬅️ 호출한 곳에서 catch 가능하게
     }
   };
@@ -129,7 +130,7 @@ export const permanentDeleteCustomer = (customerId) => {
       const response = await apiClient.delete(`/customers/${customerId}/permanent`);
       return response.data;
     } catch (e) {
-      console.log("Error:", e.response?.data || e.message);
+      console.log("Error:", describeError(e));
       throw e;
     }
   };
@@ -141,7 +142,7 @@ export const restoreCustomer = (customerId) => {
       const response = await apiClient.post(`/customers/${customerId}/restore`);
       return response.data;
     } catch (e) {
-      console.log("Error:", e.response?.data || e.message);
+      console.log("Error:", describeError(e));
       throw e;
     }
   };

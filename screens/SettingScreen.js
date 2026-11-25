@@ -22,6 +22,7 @@ import { normalizeFont, normalizeSize } from "../utils/responsive";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import logoURL from "../assets/Gopssl.png";
 import SettingItem from "../components/SettingItem";
+import { describeError } from "../utils/describeError";
 
 const SettingScreen = () => {
   const insets = useSafeAreaInsets();
@@ -41,7 +42,7 @@ const SettingScreen = () => {
       setIsLoading(true);
       dispatch(logout());
     } catch (error) {
-      console.error(error);
+      console.error(describeError(error));
     } finally {
       setIsLoading(false);
     }

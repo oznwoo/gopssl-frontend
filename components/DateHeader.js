@@ -7,6 +7,7 @@ import { formatKoreanDate } from "../utils/format";
 import { commonStyles } from "../styles/commonStyles";
 import { getDailySalesSummary } from "../actions/saleStatisticsActions";
 import { normalizeFont, normalizeSize } from "../utils/responsive";
+import { describeError } from "../utils/describeError";
 
 const dayNames = ["일", "월", "화", "수", "목", "금", "토"];
 
@@ -36,7 +37,7 @@ const DateHeader = ({ currentDate, onChangeDate, onlyCalendar }) => {
     getDailySalesSummary(year, month)
       .then((data) => setSalesByDate(data))
       .catch((e) => {
-        console.error("매출 요약 조회 실패:", e);
+        console.error("매출 요약 조회 실패:", describeError(e));
         setSalesByDate({});
       });
   }, [monthDate]);
