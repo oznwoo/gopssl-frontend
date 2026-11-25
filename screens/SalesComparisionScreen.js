@@ -229,7 +229,7 @@ const SalesComparisionScreen = (props) => {
           <View style={{ gap: 12, margin: 8 }}>
             <Text style={styles.boxTitle}>매출 비교</Text>
             <Text style={styles.boxDetail}>
-              아래의 지표는 {storeName}의 매달 1일부터
+              아래의 지표는 <Text style={styles.storeName}>{storeName}</Text>의 매달 1일부터
               현재일까지를 비교한 지표입니다.
             </Text>
           </View>
@@ -355,6 +355,10 @@ const styles = StyleSheet.create({
     fontSize: normalizeFont(10),
     letterSpacing: -0.5,
     color: "#656d72",
+  },
+  // boxDetail 안에 중첩돼 크기·색은 물려받고 굵기만 한 단계 올린다
+  storeName: {
+    fontFamily: "nanumSquareEB",
   },
   chartContainer: {
     maxWidth: "100%",
