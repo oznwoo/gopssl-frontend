@@ -13,7 +13,7 @@ import SalesBarChart from "../components/SalesBarChart";
 import YearlyComparisonChart from "../components/YearlyComparisionChart";
 import { getMonthlySalesSummary } from "../actions/saleStatisticsActions";
 import { normalizeFont, normalizeSize } from "../utils/responsive";
-import { formatNumber, withSubjectParticle } from "../utils/format";
+import { formatNumber } from "../utils/format";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import AnimatedText from "../components/AnimatedText";
 import { describeError } from "../utils/describeError";
@@ -229,7 +229,7 @@ const SalesComparisionScreen = (props) => {
           <View style={{ gap: 12, margin: 8 }}>
             <Text style={styles.boxTitle}>매출 비교</Text>
             <Text style={styles.boxDetail}>
-              아래의 지표는 {withSubjectParticle(storeName)} 매달 1일부터
+              아래의 지표는 {storeName}의 매달 1일부터
               현재일까지를 비교한 지표입니다.
             </Text>
           </View>
