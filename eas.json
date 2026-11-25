@@ -24,7 +24,9 @@
     }
   },
   "submit": {
-    "production": {},
+    "production": {
+      "android": { "track": "alpha" }
+    },
     "beta": {
       "android": { "track": "alpha" }
     }
