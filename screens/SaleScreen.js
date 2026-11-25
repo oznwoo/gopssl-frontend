@@ -14,6 +14,7 @@ import { useDispatch } from "react-redux";
 import { getSaleById } from "../actions/saleActions";
 import { normalizeFont } from "../utils/responsive";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { describeError } from "../utils/describeError";
 
 const SaleScreen = ({ route }) => {
   const insets = useSafeAreaInsets();
@@ -34,7 +35,7 @@ const SaleScreen = ({ route }) => {
         const data = await dispatch(getSaleById(saleId));
         setSaleData(data);
       } catch (error) {
-        console.log(error);
+        console.log(describeError(error));
       } finally {
         setIsLoading(false);
       }

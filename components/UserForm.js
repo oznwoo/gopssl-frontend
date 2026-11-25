@@ -21,6 +21,7 @@ import { UserSchema } from "../schemas/UserSchema";
 import { registerUserInfo } from "../actions/userActions";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { normalizeFont } from "../utils/responsive";
+import { describeError } from "../utils/describeError";
 
 // 읽기 전용 칸 오른쪽의 "변경" 버튼 → 전용 변경 화면으로 이동
 const ChangeButton = ({ onPress, label }) => (
@@ -78,7 +79,7 @@ const UserForm = () => {
         screen: "Setting",
       });
     } catch (error) {
-      console.error("수정 오류:", error);
+      console.error("수정 오류:", describeError(error));
       setErrors({ submit: "수정 중 오류가 발생했습니다." });
     } finally {
       setSubmitting(false);

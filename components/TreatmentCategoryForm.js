@@ -11,6 +11,7 @@ import {
 } from "../actions/treatmentActions";
 import { useDispatch, useSelector } from "react-redux";
 import * as Yup from "yup";
+import { describeError } from "../utils/describeError";
 
 const CategorySchema = Yup.object().shape({
   name: Yup.string().required("카테고리명을 입력해주세요."),
@@ -41,7 +42,7 @@ const TreatmentCategoryForm = ({ onClose, mode = "register", data }) => {
               resetForm();
               onClose(); // 모달 닫기
             } catch (error) {
-              console.log(error);
+              console.log(describeError(error));
               setErrors({ submit: "등록 중 오류가 발생했습니다." });
             } finally {
               setSubmitting(false);
@@ -76,7 +77,7 @@ const TreatmentCategoryForm = ({ onClose, mode = "register", data }) => {
               Alert.alert("알림", "카테고리 수정이 완료되었습니다.");
               onClose();
             } catch (error) {
-              console.log(error);
+              console.log(describeError(error));
               setErrors({ submit: "수정 중 오류가 발생했습니다." });
             } finally {
               setSubmitting(false);

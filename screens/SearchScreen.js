@@ -19,6 +19,7 @@ import colors from "../styles/color";
 import { normalizeFont } from "../utils/responsive";
 import { getAllCustomer } from "../actions/customerActions";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { describeError } from "../utils/describeError";
 
 const SearchScreen = ({ navigation }) => {
   const insets = useSafeAreaInsets();
@@ -41,7 +42,7 @@ const SearchScreen = ({ navigation }) => {
       try {
         await dispatch(getAllCustomer());
       } catch (err) {
-        console.log("고객 목록 초기 로딩 실패:", err);
+        console.log("고객 목록 초기 로딩 실패:", describeError(err));
       } finally {
         setLoading(false);
         console.timeEnd("getAllCustomer_initial");
@@ -59,7 +60,7 @@ const SearchScreen = ({ navigation }) => {
     try {
       await dispatch(getAllCustomer());
     } catch (err) {
-      console.log("새로고침 실패:", err);
+      console.log("새로고침 실패:", describeError(err));
     } finally {
       setRefreshing(false);
     }

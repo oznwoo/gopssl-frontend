@@ -2,6 +2,7 @@ import { apiClient } from "../constants/baseURL";
 import { registerSuccess } from "../store/authSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { setCustomers } from "../store/customerSlice";
+import { describeError } from "../utils/describeError";
 
 export const CUSTOMER_CACHE_KEY = "customers_cache";
 
@@ -84,7 +85,7 @@ export const getAllCustomer = () => {
 
       return customers;
     } catch (e) {
-      console.error(e);
+      console.error(describeError(e));
       throw e;
     }
   };

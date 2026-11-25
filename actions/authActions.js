@@ -11,6 +11,7 @@ import { setCustomers } from "../store/customerSlice";
 import { store } from "../store/store";
 import axios from "axios";
 import { TERMS_VERSION, PRIVACY_VERSION } from "../constants/legal";
+import { describeError } from "../utils/describeError";
 
 // 토큰 갱신 액션
 export const refreshToken = () => {
@@ -32,7 +33,7 @@ export const refreshToken = () => {
 
       return newToken;
     } catch (error) {
-      console.error("토큰 갱신 실패:", error);
+      console.error("토큰 갱신 실패:", describeError(error));
       // 토큰 갱신 실패 시 로그아웃
       dispatch(logoutAction());
       throw error;
@@ -108,13 +109,8 @@ export const signUp = ({
       dispatch(signUpSuccess({ token, user }));
       await AsyncStorage.setItem("user", JSON.stringify(user));
     } catch (e) {
-      console.log("회원가입 에러 전체:", e);
-      console.log("에러 응답:", e.response);
-      if (e.response) {
-        console.log("에러 응답 헤더:", e.response.headers);
-        console.log("에러 응답 상태:", e.response.status);
-        console.log("에러 응답 상태 텍스트:", e.response.statusText);
-      }
+      // 요청 바디(비밀번호)·헤더가 섞이지 않도록 상태코드와 서버 메시지만 남긴다
+      console.log("회원가입 실패:", describeError(e));
 
       let errorMessage = "회원가입에 실패했습니다.";
       let statusCode = null;
@@ -122,9 +118,6 @@ export const signUp = ({
 
       if (e.response) {
         const { status, data } = e.response;
-        console.log("에러 상태:", status);
-        console.log("에러 데이터:", data);
-
         statusCode = status;
 
         if (status === 400 && typeof data.detail === "string") {

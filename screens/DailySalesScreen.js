@@ -19,6 +19,7 @@ import DateHeader from "../components/DateHeader";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { normalizeFont } from "../utils/responsive";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { describeError } from "../utils/describeError";
 
 const DailySalesScreen = () => {
   const insets = useSafeAreaInsets();
@@ -77,7 +78,7 @@ const DailySalesScreen = () => {
       const data = await getSalesByDate(isoDate);
       setSalesData(data.length ? data : null);
     } catch (e) {
-      console.log("🔴 API 호출 실패:", e);
+      console.log("🔴 API 호출 실패:", describeError(e));
       setSalesData(null);
     } finally {
       setIsLoading(false);

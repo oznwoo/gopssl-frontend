@@ -1,4 +1,5 @@
 import { apiClient } from "../constants/baseURL";
+import { describeError } from "../utils/describeError";
 
 // thunk
 export const postSaleThunk = (saleData) => async (dispatch) => {
@@ -6,7 +7,7 @@ export const postSaleThunk = (saleData) => async (dispatch) => {
     const response = await apiClient.post(`/sales/`, saleData);
     return response.data;
   } catch (error) {
-    console.error("Sale post error:", error);
+    console.error("Sale post error:", describeError(error));
     throw error;
   }
 };
@@ -16,7 +17,7 @@ export const updateSaleThunk = (saleData) => async (dispatch) => {
     const response = await apiClient.put(`/sales/`, saleData);
     return response.data;
   } catch (error) {
-    console.error("Sale post error:", error);
+    console.error("Sale post error:", describeError(error));
     throw error;
   }
 };
@@ -28,7 +29,7 @@ export const getSalesByDate = async (dateString) => {
     });
     return response.data;
   } catch (error) {
-    console.log(error);
+    console.log(describeError(error));
   }
 };
 

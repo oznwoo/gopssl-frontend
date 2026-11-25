@@ -17,6 +17,7 @@ import {
   deleteCategorySuccess,
 } from "../store/treatmentSlice";
 import { Alert } from "react-native";
+import { describeError } from "../utils/describeError";
 
 // 📌 전체 조회 (시술 + 카테고리)
 export const fetchTreatmentsThunk = () => async (dispatch) => {
@@ -98,7 +99,7 @@ export const createTreatment =
 
       return response.data;
     } catch (error) {
-      console.error("Treatment post error:", error);
+      console.error("Treatment post error:", describeError(error));
       throw error;
     }
   };
@@ -119,7 +120,7 @@ export const updateTreatment =
 
       return response.data;
     } catch (error) {
-      console.error("Treatment update error:", error);
+      console.error("Treatment update error:", describeError(error));
       throw error;
     }
   };
@@ -220,7 +221,7 @@ export const createTreatmentCategory =
 
       return response.data;
     } catch (error) {
-      console.error("Treatment category post error:", error);
+      console.error("Treatment category post error:", describeError(error));
       throw error;
     }
   };
@@ -239,7 +240,7 @@ export const updateTreatmentCategory =
 
       return response.data;
     } catch (error) {
-      console.error("Category update error:", error);
+      console.error("Category update error:", describeError(error));
       throw error;
     }
   };

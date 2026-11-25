@@ -31,6 +31,7 @@ import {
 import { commonStyles } from "../styles/commonStyles";
 import { getAllCustomer, registerCustomer } from "../actions/customerActions";
 import { normalizeFont } from "../utils/responsive";
+import { describeError } from "../utils/describeError";
 
 const SaleForm = ({ saleDate, data, mode }) => {
     const dispatch = useDispatch();
@@ -161,7 +162,7 @@ const SaleForm = ({ saleDate, data, mode }) => {
                             Alert.alert("알림", "매출 등록이 완료되었습니다.");
                             resetForm();
                         } catch (error) {
-                            console.log(error);
+                            console.log(describeError(error));
                             setErrors({
                                 submit: "등록 중 오류가 발생했습니다.",
                             });
@@ -227,7 +228,7 @@ const SaleForm = ({ saleDate, data, mode }) => {
                                 "고객 정보 수정이 완료되었습니다.",
                             );
                         } catch (error) {
-                            console.log(error);
+                            console.log(describeError(error));
                             setErrors({
                                 submit: "수정 중 오류가 발생했습니다.",
                             });
@@ -259,7 +260,7 @@ const SaleForm = ({ saleDate, data, mode }) => {
                             Alert.alert("알림", "매출이 삭제되었습니다.");
                             navigation.goBack();
                         } catch (error) {
-                            console.log(error);
+                            console.log(describeError(error));
                             setErrors({
                                 submit: "삭제 중 오류가 발생했습니다.",
                             });

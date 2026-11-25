@@ -11,6 +11,7 @@ import {
   updateTreatment,
 } from "../actions/treatmentActions";
 import { useDispatch, useSelector } from "react-redux";
+import { describeError } from "../utils/describeError";
 
 const TreatmentForm = ({
   isVisible,
@@ -63,7 +64,7 @@ const TreatmentForm = ({
               Alert.alert("알림", "시술 등록이 완료되었습니다.");
               resetForm();
             } catch (error) {
-              console.log(error);
+              console.log(describeError(error));
               setErrors({ submit: "등록 중 오류가 발생했습니다." });
             } finally {
               setSubmitting(false);
@@ -104,7 +105,7 @@ const TreatmentForm = ({
               Alert.alert("알림", "시술 수정이 완료되었습니다.");
               resetForm();
             } catch (error) {
-              console.log(error);
+              console.log(describeError(error));
               setErrors({ submit: "등록 중 오류가 발생했습니다." });
             } finally {
               setSubmitting(false);
@@ -134,7 +135,7 @@ const TreatmentForm = ({
               Alert.alert("알림", "시술이 삭제되었습니다.");
               onClose();
             } catch (error) {
-              console.log(error);
+              console.log(describeError(error));
               setErrors({ submit: "삭제 중 오류가 발생했습니다." });
             }
           },
