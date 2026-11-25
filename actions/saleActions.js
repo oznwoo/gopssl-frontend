@@ -40,7 +40,7 @@ export const getSaleById = (saleId) => {
 
       return response.data; // 결과 반환 (optional)
     } catch (e) {
-      console.log("Error:", e.response?.data || e.message);
+      console.log("Error:", describeError(e));
       throw e; // ⬅️ 호출한 곳에서 catch 가능하게
     }
   };
@@ -53,7 +53,7 @@ export const deleteSaleById = (saleId) => {
 
       return response.data; // 결과 반환 (optional)
     } catch (e) {
-      console.log("Error:", e.response?.data || e.message);
+      console.log("Error:", describeError(e));
       throw e; // ⬅️ 호출한 곳에서 catch 가능하게
     }
   };
