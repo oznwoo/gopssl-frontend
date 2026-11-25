@@ -23,6 +23,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import logoURL from "../assets/Gopssl.png";
 import SettingItem from "../components/SettingItem";
 import { describeError } from "../utils/describeError";
+import { requestHomeTour } from "../store/tourSlice";
 
 const SettingScreen = () => {
   const insets = useSafeAreaInsets();
@@ -35,6 +36,12 @@ const SettingScreen = () => {
 
   const handleNavigate = (target) => {
     navigation.navigate(target);
+  };
+
+  // 홈 탭으로 이동한 뒤 기능 안내를 처음부터 다시 띄운다 (이미 본 사용자도)
+  const handleReplayGuide = () => {
+    dispatch(requestHomeTour({ replay: true }));
+    navigation.navigate("DailySales");
   };
 
   const handleLogout = () => {
@@ -139,6 +146,17 @@ const SettingScreen = () => {
                 />
               }
               onPress={() => handleNavigate("DeletedCustomers")}
+            />
+            <SettingItem
+              title={"사용 가이드 다시 보기"}
+              icon={
+                <Ionicons
+                  name="help-circle-outline"
+                  size={16}
+                  color={colors.purple}
+                />
+              }
+              onPress={handleReplayGuide}
             />
             <SettingItem
               title={"상세 정보"}
