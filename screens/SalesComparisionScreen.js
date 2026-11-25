@@ -13,16 +13,19 @@ import SalesBarChart from "../components/SalesBarChart";
 import YearlyComparisonChart from "../components/YearlyComparisionChart";
 import { getMonthlySalesSummary } from "../actions/saleStatisticsActions";
 import { normalizeFont, normalizeSize } from "../utils/responsive";
-import { formatNumber } from "../utils/format";
+import { formatNumber, withSubjectParticle } from "../utils/format";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import AnimatedText from "../components/AnimatedText";
 import { describeError } from "../utils/describeError";
+import { useSelector } from "react-redux";
 
 const SalesComparisionScreen = (props) => {
   const insets = useSafeAreaInsets();
   const [date, setDate] = useState(new Date());
   const [statisticsData, setStatisticsData] = useState({});
   const [isLoading, setIsLoading] = useState(true);
+  const storeName =
+    useSelector((state) => state.auth.user?.store_name)?.trim() || "우리 가게";
 
   useEffect(() => {
     const fetchData = async () => {
@@ -226,8 +229,8 @@ const SalesComparisionScreen = (props) => {
           <View style={{ gap: 12, margin: 8 }}>
             <Text style={styles.boxTitle}>매출 비교</Text>
             <Text style={styles.boxDetail}>
-              아래의 지표는 곱슬머리가 매달 1일부터 현재일까지를 비교한
-              지표입니다.
+              아래의 지표는 {withSubjectParticle(storeName)} 매달 1일부터
+              현재일까지를 비교한 지표입니다.
             </Text>
           </View>
           <View style={styles.chartContainer}>
