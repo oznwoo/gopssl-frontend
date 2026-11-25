@@ -104,7 +104,8 @@ const SettingScreen = () => {
         <Text style={styles.userName}>
           <Text style={{ fontFamily: "nanumSquareEB" }}>{name}</Text> 원장님
         </Text>
-        <Text style={styles.dDayText}>개업일로부터 D+1000 🎉</Text>
+        {/* 개업일 D-day는 아직 개업일 입력 기능이 없어 고정값(D+1000)만 보여서 숨김. 기능 개발 후 복구 */}
+        {/* <Text style={styles.dDayText}>개업일로부터 D+1000 🎉</Text> */}
       </View>
 
       <ScrollView contentContainerStyle={styles.contentContainer}>
