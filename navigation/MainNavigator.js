@@ -11,7 +11,6 @@ import CustomerScreen from "../screens/CustomerScreen";
 import SaleScreen from "../screens/SaleScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 import AddressSearchScreen from "../screens/AddressSearchScreen";
-import DetailScreen from "../screens/DetailScreen";
 import TreatmentSettingScreen from "../screens/TreatmentSettingScreen";
 import DeletedCustomersScreen from "../screens/DeletedCustomersScreen";
 import ChangeEmailScreen from "../screens/ChangeEmailScreen";
@@ -119,11 +118,6 @@ const StackNavigator = () => (
     <Stack.Screen
       name="Profile"
       component={ProfileScreen}
-      options={{ headerShown: false }}
-    />
-    <Stack.Screen
-      name="Detail"
-      component={DetailScreen}
       options={{ headerShown: false }}
     />
     <Stack.Screen

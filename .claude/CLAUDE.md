@@ -55,7 +55,6 @@ Gopssl-frontend/
 │   ├── CustomerScreen.js     # 고객 등록/수정/조회
 │   ├── SaleScreen.js         # 매출 등록/수정/조회
 │   ├── ProfileScreen.js      # 프로필 수정
-│   ├── DetailScreen.js       # 앱 상세정보 (v1.0.0)
 │   └── AddressSearchScreen.js # 주소 검색 (카카오 API)
 │
 ├── components/

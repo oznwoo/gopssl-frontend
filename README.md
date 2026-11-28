@@ -132,7 +132,6 @@ npm run android  # Android 에뮬레이터
 - 일부 액션 파일(`authActions.js` 등)에 디버깅용 `console.log`가 남아 있어 정리가 필요하다.
 - 자동화된 테스트가 없다. 회귀를 사람이 직접 확인하고 있어 우선순위로 도입할 계획이다.
 - 매출/시술 데이터가 아직 인메모리 위주로 관리돼, 고객 캐시처럼 TanStack Query 기반 캐싱으로 확장할 예정이다.
-- `DetailScreen`(앱 정보 화면)이 최소 구현 상태다.
 - 장기적으로 TypeScript 전환, Expo Router 도입, Redux → Zustand/TanStack Query 전환을 계획하고 있다.
 
 ---

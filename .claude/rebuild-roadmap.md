@@ -77,7 +77,7 @@ useTreatmentStore: {
 ## Phase 3 — 기능 개선
 - [ ] DailySalesScreen: TanStack Query로 캐싱 교체
 - [ ] SearchScreen: TanStack Query useQuery로 debounce 검색 교체
-- [ ] DetailScreen: 실제 앱 정보 화면으로 구현 (현재 미구현)
+- [x] DetailScreen 제거 → 설정 화면 하단에 앱 버전 표시 (`앱 버전 1.1.0 (5)` 형식)
 - [ ] 앱 전체 에러 바운더리 추가
 - [ ] 로딩 스켈레톤 UI 추가
 
@@ -98,4 +98,3 @@ useTreatmentStore: {
 - `authActions.js`: `console.log` 디버깅 코드 다수 잔존 → 제거 필요
 - 매출 캐시(`salesCache`)가 인메모리라 앱 재시작 시 초기화됨 → TanStack Query로 해결 가능
 - 시술 항목(`treatments`)이 Redux에 저장되지만 앱 재시작 시 재fetch 필요
-- `DetailScreen`이 사실상 미구현 상태 (버전 텍스트만 있음)
