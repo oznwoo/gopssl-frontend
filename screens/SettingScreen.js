@@ -13,7 +13,6 @@ import colors from "../styles/color";
 import SubmitButton from "../components/SubmitButton";
 import { commonStyles } from "../styles/commonStyles";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import Fontisto from "@expo/vector-icons/Fontisto";
 import { useDispatch, useSelector } from "react-redux";
 import { logout, deleteAccount } from "../actions/authActions";
@@ -24,6 +23,19 @@ import logoURL from "../assets/Gopssl.png";
 import SettingItem from "../components/SettingItem";
 import { describeError } from "../utils/describeError";
 import { requestHomeTour } from "../store/tourSlice";
+import * as Application from "expo-application";
+
+// 설정 화면 맨 아래에 작게 보여 줄 앱 버전. 예: "앱 버전 1.1.0 (5)"
+// 설치된 앱에서 읽으므로 내부 테스트 때 폰에 어떤 빌드가 깔렸는지 Play Console과 바로 비교할 수 있다.
+// - nativeApplicationVersion: app.json의 version (사용자용)
+// - nativeBuildVersion: EAS가 빌드마다 1씩 올리는 versionCode / buildNumber
+// Expo Go 등에서 값이 없으면 있는 것만 보여 준다.
+const VERSION_LABEL = (() => {
+  const name = Application.nativeApplicationVersion;
+  const build = Application.nativeBuildVersion;
+  if (!name) return "";
+  return build ? `앱 버전 ${name} (${build})` : `앱 버전 ${name}`;
+})();
 
 const SettingScreen = () => {
   const insets = useSafeAreaInsets();
@@ -159,17 +171,6 @@ const SettingScreen = () => {
               }
               onPress={handleReplayGuide}
             />
-            <SettingItem
-              title={"상세 정보"}
-              icon={
-                <FontAwesome6
-                  name="circle-exclamation"
-                  size={16}
-                  color={colors.purple}
-                />
-              }
-              onPress={() => handleNavigate("Detail")}
-            />
           </View>
         </View>
         <View style={{ paddingHorizontal: 16, paddingTop: 8 }}>
@@ -192,6 +193,7 @@ const SettingScreen = () => {
             </TouchableOpacity>
           )}
         </View>
+        <Text style={styles.versionText}>{VERSION_LABEL}</Text>
       </ScrollView>
     </View>
   );
@@ -252,9 +254,11 @@ const styles = StyleSheet.create({
     width: "100%",
     gap: 8,
   },
+  // contentContainer의 gap(12)이 이미 위아래 간격을 만들어 주므로 여백은 최소로 둔다
+  // (로그아웃 ↔ 회원 탈퇴 ↔ 앱 버전을 한 묶음처럼 보이게)
   deleteAccountContainer: {
     alignItems: "center",
-    paddingVertical: 16,
+    paddingTop: 4,
   },
   deleteAccountText: {
     fontFamily: "nanumSquareR",
@@ -262,5 +266,12 @@ const styles = StyleSheet.create({
     letterSpacing: -0.5,
     color: colors.lightPurple,
     textDecorationLine: "underline",
+  },
+  versionText: {
+    textAlign: "center",
+    fontFamily: "nanumSquareR",
+    fontSize: normalizeFont(12),
+    letterSpacing: -0.3,
+    color: colors.lightPurple,
   },
 });
