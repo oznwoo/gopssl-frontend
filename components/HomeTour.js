@@ -96,6 +96,13 @@ export const HomeTourProvider = ({ children }) => {
   const dispatch = useDispatch();
   const userId = useSelector((state) => state.auth.user?.id);
   const targetsRef = useRef({});
+  // 좌표 기준점: 앱 화면 전체를 감싸는 View (화면 맨 위 (0, 0)에 붙어 있다).
+  // Android(Fabric)의 measureInWindow는 "상태바를 뺀 보이는 영역" 기준이라 edge-to-edge에서
+  // y가 상태바 높이만큼 작게 나온다(RootShadowNode의 viewportOffset). 대상과 같은 트리에 있는
+  // 기준점을 같이 재서 빼면 그 차이가 상쇄되어 "화면 맨 위 기준" 좌표가 된다.
+  // 오버레이 Modal 안에서 재면 안 된다: Modal은 RootNodeKind라 viewportOffset이 붙지 않는다.
+  // iOS는 기준점이 (0, 0)으로 나와 기존 동작과 같다.
+  const anchorRef = useRef(null);
   const [stepIndex, setStepIndex] = useState(-1);
   // 어느 단계의 측정 결과인지 같이 들고 있어야 단계가 바뀌는 순간 이전 구멍이 비치지 않는다
   const [measured, setMeasured] = useState({ index: -1, rect: null });
@@ -129,11 +136,19 @@ export const HomeTourProvider = ({ children }) => {
     if (stepIndex < 0) return;
     let cancelled = false;
     const keys = HOME_TOUR_STEPS[stepIndex].targets;
-    Promise.all(keys.map((key) => measureNode(targetsRef.current[key]))).then(
-      (rects) => {
-        if (!cancelled) setMeasured({ index: stepIndex, rect: unionRect(rects) });
-      }
-    );
+    Promise.all([
+      measureNode(anchorRef),
+      ...keys.map((key) => measureNode(targetsRef.current[key])),
+    ]).then(([anchor, ...rects]) => {
+      if (cancelled) return;
+      const rect = unionRect(rects);
+      const ox = anchor?.x ?? 0;
+      const oy = anchor?.y ?? 0;
+      setMeasured({
+        index: stepIndex,
+        rect: rect && { ...rect, x: rect.x - ox, y: rect.y - oy },
+      });
+    });
     return () => {
       cancelled = true;
     };
@@ -146,7 +161,9 @@ export const HomeTourProvider = ({ children }) => {
 
   return (
     <TourContext.Provider value={value}>
-      {children}
+      <View ref={anchorRef} collapsable={false} style={styles.anchor}>
+        {children}
+      </View>
       <TourOverlay
         visible={stepIndex >= 0}
         stepIndex={stepIndex}
@@ -346,6 +363,9 @@ const TourOverlay = ({ visible, stepIndex, rect, onPrev, onNext, onSkip }) => {
 };
 
 const styles = StyleSheet.create({
+  anchor: {
+    flex: 1,
+  },
   root: {
     flex: 1,
   },
