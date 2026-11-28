@@ -54,7 +54,10 @@ const TabNavigator = () => {
         tabBarInactiveTintColor: colors.lightPurple,
         tabBarStyle: {
           backgroundColor: "#fff",
-          height: normalizeSize(56 + insets.bottom),
+          // 시스템 영역(insets.bottom)은 실제 크기라 화면 배율을 곱하면 안 된다.
+          // 탭 바는 paddingBottom으로 insets.bottom을 그대로 쓰므로, 배율을 곱하면
+          // 좁은 화면(갤럭시 등)에서 아이콘 영역만 줄어든다. 3버튼 내비게이션은 inset이 커서 더 티가 난다.
+          height: normalizeSize(56) + insets.bottom,
           borderTopColor: colors.backgroundPurple,
           borderTopWidth: Platform.OS === "android" ? 0.5 : 1,
         },
