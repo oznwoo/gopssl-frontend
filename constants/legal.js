@@ -7,4 +7,4 @@ export const TERMS_URL =
   "https://pale-heliotrope-5e6.notion.site/Gopssl-42314877c98b81728184f21c378f5235";
 
 export const TERMS_VERSION = "2026-11-24";
-export const PRIVACY_VERSION = "2026-11-24";
+export const PRIVACY_VERSION = "2026-11-28";
