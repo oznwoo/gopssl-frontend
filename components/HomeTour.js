@@ -222,21 +222,40 @@ export const useHomeTourAutoStart = (ready, onBeforeStart) => {
 };
 
 const TourOverlay = ({ visible, stepIndex, rect, onPrev, onNext, onSkip }) => {
+  const rootRef = useRef(null);
   const [size, setSize] = useState(null);
+  // 오버레이 루트를 같은 measureInWindow로 잰 원점. 대상 좌표에서 이 값을 빼서 오버레이 좌표로 바꾼다.
+  // Android(Fabric)의 measureInWindow는 "화면에서 상태바 등을 뺀 보이는 영역" 기준이라
+  // edge-to-edge에서는 y가 상태바 높이만큼 작게 나온다(오버레이 루트는 -상태바 높이로 잡힘).
+  // 대상과 오버레이를 같은 방식으로 재서 빼면 기기·내비게이션 방식과 관계없이 그 차이가 상쇄된다.
+  // iOS는 두 값 모두 화면 맨 위 기준이라 원점이 (0, 0)이 되어 기존 동작과 같다.
+  const [origin, setOrigin] = useState(null);
+
+  const handleRootLayout = useCallback((e) => {
+    setSize(e.nativeEvent.layout);
+    const node = rootRef.current;
+    if (!node || typeof node.measureInWindow !== "function") {
+      setOrigin({ x: 0, y: 0 });
+      return;
+    }
+    node.measureInWindow((x, y) => setOrigin({ x: x || 0, y: y || 0 }));
+  }, []);
+
   if (!visible) return null;
 
   const step = HOME_TOUR_STEPS[stepIndex];
   const isLast = stepIndex === HOME_TOUR_STEPS.length - 1;
-  const ready = rect !== undefined && size !== null;
+  const ready = rect !== undefined && size !== null && origin !== null;
 
-  const hole = rect
-    ? {
-        x: rect.x - HOLE_PADDING,
-        y: rect.y - HOLE_PADDING,
-        width: rect.width + HOLE_PADDING * 2,
-        height: rect.height + HOLE_PADDING * 2,
-      }
-    : null;
+  const hole =
+    rect && origin
+      ? {
+          x: rect.x - origin.x - HOLE_PADDING,
+          y: rect.y - origin.y - HOLE_PADDING,
+          width: rect.width + HOLE_PADDING * 2,
+          height: rect.height + HOLE_PADDING * 2,
+        }
+      : null;
 
   // 구멍이 화면 아래쪽에 있으면 말풍선을 위에, 위쪽에 있으면 아래에 둔다
   let bubblePosition = styles.bubbleCenter;
@@ -260,8 +279,10 @@ const TourOverlay = ({ visible, stepIndex, rect, onPrev, onNext, onSkip }) => {
       onRequestClose={onSkip}
     >
       <View
+        ref={rootRef}
+        collapsable={false}
         style={styles.root}
-        onLayout={(e) => setSize(e.nativeEvent.layout)}
+        onLayout={handleRootLayout}
       >
         <Svg style={StyleSheet.absoluteFill} width="100%" height="100%">
           <Defs>
