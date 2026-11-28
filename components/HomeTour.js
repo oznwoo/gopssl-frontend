@@ -96,6 +96,13 @@ export const HomeTourProvider = ({ children }) => {
   const dispatch = useDispatch();
   const userId = useSelector((state) => state.auth.user?.id);
   const targetsRef = useRef({});
+  // 좌표 기준점: 앱 화면 전체를 감싸는 View (화면 맨 위 (0, 0)에 붙어 있다).
+  // Android(Fabric)의 measureInWindow는 "상태바를 뺀 보이는 영역" 기준이라 edge-to-edge에서
+  // y가 상태바 높이만큼 작게 나온다(RootShadowNode의 viewportOffset). 대상과 같은 트리에 있는
+  // 기준점을 같이 재서 빼면 그 차이가 상쇄되어 "화면 맨 위 기준" 좌표가 된다.
+  // 오버레이 Modal 안에서 재면 안 된다: Modal은 RootNodeKind라 viewportOffset이 붙지 않는다.
+  // iOS는 기준점이 (0, 0)으로 나와 기존 동작과 같다.
+  const anchorRef = useRef(null);
   const [stepIndex, setStepIndex] = useState(-1);
   // 어느 단계의 측정 결과인지 같이 들고 있어야 단계가 바뀌는 순간 이전 구멍이 비치지 않는다
   const [measured, setMeasured] = useState({ index: -1, rect: null });
@@ -129,11 +136,19 @@ export const HomeTourProvider = ({ children }) => {
     if (stepIndex < 0) return;
     let cancelled = false;
     const keys = HOME_TOUR_STEPS[stepIndex].targets;
-    Promise.all(keys.map((key) => measureNode(targetsRef.current[key]))).then(
-      (rects) => {
-        if (!cancelled) setMeasured({ index: stepIndex, rect: unionRect(rects) });
-      }
-    );
+    Promise.all([
+      measureNode(anchorRef),
+      ...keys.map((key) => measureNode(targetsRef.current[key])),
+    ]).then(([anchor, ...rects]) => {
+      if (cancelled) return;
+      const rect = unionRect(rects);
+      const ox = anchor?.x ?? 0;
+      const oy = anchor?.y ?? 0;
+      setMeasured({
+        index: stepIndex,
+        rect: rect && { ...rect, x: rect.x - ox, y: rect.y - oy },
+      });
+    });
     return () => {
       cancelled = true;
     };
@@ -146,7 +161,9 @@ export const HomeTourProvider = ({ children }) => {
 
   return (
     <TourContext.Provider value={value}>
-      {children}
+      <View ref={anchorRef} collapsable={false} style={styles.anchor}>
+        {children}
+      </View>
       <TourOverlay
         visible={stepIndex >= 0}
         stepIndex={stepIndex}
@@ -222,40 +239,21 @@ export const useHomeTourAutoStart = (ready, onBeforeStart) => {
 };
 
 const TourOverlay = ({ visible, stepIndex, rect, onPrev, onNext, onSkip }) => {
-  const rootRef = useRef(null);
   const [size, setSize] = useState(null);
-  // 오버레이 루트를 같은 measureInWindow로 잰 원점. 대상 좌표에서 이 값을 빼서 오버레이 좌표로 바꾼다.
-  // Android(Fabric)의 measureInWindow는 "화면에서 상태바 등을 뺀 보이는 영역" 기준이라
-  // edge-to-edge에서는 y가 상태바 높이만큼 작게 나온다(오버레이 루트는 -상태바 높이로 잡힘).
-  // 대상과 오버레이를 같은 방식으로 재서 빼면 기기·내비게이션 방식과 관계없이 그 차이가 상쇄된다.
-  // iOS는 두 값 모두 화면 맨 위 기준이라 원점이 (0, 0)이 되어 기존 동작과 같다.
-  const [origin, setOrigin] = useState(null);
-
-  const handleRootLayout = useCallback((e) => {
-    setSize(e.nativeEvent.layout);
-    const node = rootRef.current;
-    if (!node || typeof node.measureInWindow !== "function") {
-      setOrigin({ x: 0, y: 0 });
-      return;
-    }
-    node.measureInWindow((x, y) => setOrigin({ x: x || 0, y: y || 0 }));
-  }, []);
-
   if (!visible) return null;
 
   const step = HOME_TOUR_STEPS[stepIndex];
   const isLast = stepIndex === HOME_TOUR_STEPS.length - 1;
-  const ready = rect !== undefined && size !== null && origin !== null;
+  const ready = rect !== undefined && size !== null;
 
-  const hole =
-    rect && origin
-      ? {
-          x: rect.x - origin.x - HOLE_PADDING,
-          y: rect.y - origin.y - HOLE_PADDING,
-          width: rect.width + HOLE_PADDING * 2,
-          height: rect.height + HOLE_PADDING * 2,
-        }
-      : null;
+  const hole = rect
+    ? {
+        x: rect.x - HOLE_PADDING,
+        y: rect.y - HOLE_PADDING,
+        width: rect.width + HOLE_PADDING * 2,
+        height: rect.height + HOLE_PADDING * 2,
+      }
+    : null;
 
   // 구멍이 화면 아래쪽에 있으면 말풍선을 위에, 위쪽에 있으면 아래에 둔다
   let bubblePosition = styles.bubbleCenter;
@@ -279,10 +277,8 @@ const TourOverlay = ({ visible, stepIndex, rect, onPrev, onNext, onSkip }) => {
       onRequestClose={onSkip}
     >
       <View
-        ref={rootRef}
-        collapsable={false}
         style={styles.root}
-        onLayout={handleRootLayout}
+        onLayout={(e) => setSize(e.nativeEvent.layout)}
       >
         <Svg style={StyleSheet.absoluteFill} width="100%" height="100%">
           <Defs>
@@ -367,6 +363,9 @@ const TourOverlay = ({ visible, stepIndex, rect, onPrev, onNext, onSkip }) => {
 };
 
 const styles = StyleSheet.create({
+  anchor: {
+    flex: 1,
+  },
   root: {
     flex: 1,
   },
